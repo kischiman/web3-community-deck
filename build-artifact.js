@@ -43,14 +43,8 @@ const replace = (pattern, replacement) => {
   html = html.replace(pattern, replacement);
 };
 
-replace(
-  /<div class="companion-card">[\s\S]*?<\/div>/,
-  `<div class="companion-card">
-        This is the shared copy of a live workshop tool. In the room the table is written live,
-        with web search, against whatever the group says. Here, try it yourself — the answers
-        come from a library built into the page.
-      </div>`
-);
+// no phone to point at, and the page explains itself — drop the card entirely
+replace(/<div class="companion-card">[\s\S]*?<\/div>/, "");
 
 // --- example marks, keyed by domain slug
 const marks = {};
