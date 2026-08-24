@@ -149,7 +149,6 @@ fetch("/api/info")
   .then((r) => r.json())
   .then(({ companionUrl }) => {
     document.getElementById("companion-url").textContent = companionUrl;
-    document.getElementById("nav-companion-url").textContent = companionUrl.replace(/^https?:\/\//, "");
   })
   .catch(() => {});
 
@@ -291,6 +290,17 @@ bottleneckList.addEventListener("dragend", () => {
 });
 
 // ---------------------------------------------------------------- actions
+
+const captureForm = document.getElementById("capture");
+const entry = document.getElementById("entry");
+
+captureForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const text = entry.value.trim();
+  if (!text) return;
+  entry.value = "";
+  post("/api/bottlenecks", { text });
+});
 
 generateBtn.addEventListener("click", () => post("/api/generate", {}));
 // Two-tap clear — no modal dialog to block the room, no accidental wipe mid-talk.

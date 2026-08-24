@@ -530,9 +530,15 @@
       </div>
     </div>
 
-    <div style="margin-top: 32px;">
+    <form class="capture" id="capture">
+      <input id="entry" type="text" maxlength="240" autocomplete="off"
+             placeholder="What is the community stuck on?" aria-label="Add a bottleneck" />
+      <button class="btn" type="submit">Add</button>
+    </form>
+
+    <div class="bottleneck-list">
       <ul class="bottlenecks" id="bottlenecks"></ul>
-      <div class="empty" id="bottlenecks-empty">Nothing captured yet — add the first one from the phone.</div>
+      <div class="empty" id="bottlenecks-empty">Nothing captured yet — type a bottleneck above.</div>
     </div>
 
     <div class="actions">

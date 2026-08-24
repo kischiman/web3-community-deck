@@ -35,31 +35,21 @@ html = html.replace(/<script src="\/ask\.js"><\/script>/, "");
 // --- inline every image
 html = html.replace(/src="(\/img\/[^"]+)"/g, (_, p) => `src="${dataUri(p)}"`);
 
-// --- the phone companion has no counterpart in a shared page
-html = html.replace(/<div class="nav-companion">[\s\S]*?<\/div>/, "");
-html = html.replace(
+// --- the phone companion has no counterpart in a static page.
+// The capture form itself is real markup in index.html, so nothing needs injecting here —
+// only the two places that point at a phone need rewording.
+const replace = (pattern, replacement) => {
+  if (!pattern.test(html)) throw new Error(`build: pattern no longer matches — ${pattern}`);
+  html = html.replace(pattern, replacement);
+};
+
+replace(
   /<div class="companion-card">[\s\S]*?<\/div>/,
   `<div class="companion-card">
-        This is the shared copy of a live workshop tool. In the room, bottlenecks arrive from a
-        phone and the table is written by Claude with web search. Here, try it yourself —
-        the answers come from a library built into the page.
+        This is the shared copy of a live workshop tool. In the room the table is written live,
+        with web search, against whatever the group says. Here, try it yourself — the answers
+        come from a library built into the page.
       </div>`
-);
-html = html.replace(
-  /<div class="empty" id="bottlenecks-empty">[\s\S]*?<\/div>/,
-  `<div class="empty" id="bottlenecks-empty">Nothing captured yet — add a bottleneck above.</div>`
-);
-
-// --- a capture field, since there is no phone feeding this one
-html = html.replace(
-  /<div style="margin-top: 40px;">/,
-  `<form class="capture" id="capture">
-      <input id="entry" type="text" maxlength="240" autocomplete="off"
-             placeholder="What is the community stuck on?" />
-      <button class="btn" type="submit">Add</button>
-    </form>
-
-    <div style="margin-top: 24px;">`
 );
 
 // --- example marks, keyed by domain slug
@@ -315,13 +305,8 @@ window.deckGo = (slide, sub) => go(slide, sub);
 ${askJs}
 `;
 
+// .capture now lives in deck.css — only the static copy's own quirks belong here
 const extraCss = `
-.capture { display: flex; gap: 10px; margin-top: 36px; max-width: 640px; }
-.capture input {
-  flex: 1; min-width: 0; font: inherit; font-size: 16px; padding: 13px 16px;
-  border: 1px solid var(--rule); border-radius: 8px; background: #fff; color: var(--ink);
-}
-.capture input:focus { outline: none; border-color: var(--accent); }
 .companion-card { max-width: 340px; }
 .bottleneck { cursor: grab; }
 `;
