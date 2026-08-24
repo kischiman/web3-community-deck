@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Web3 · Community &amp; Social Resilience</title>
+<link rel="stylesheet" href="/deck.css" />
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">Web3 &amp; social resilience <span>· Singapore</span></div>
+  <span class="nav-current" id="nav-current"></span>
+  <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-items">
+    <span class="bars" aria-hidden="true"><span></span><span></span><span></span></span>
+    <span class="sr">Slides</span>
+  </button>
+  <div class="nav-items" id="nav-items"></div>
+
+  <div class="nav-ask" id="nav-ask">
+    <button class="ask-toggle" id="ask-toggle" type="button" aria-label="Ask this document">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6" /><line x1="13.4" y1="13.4" x2="18" y2="18" /></svg>
+    </button>
+    <form class="ask-form" id="ask-form" role="search">
+      <svg class="ask-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6" /><line x1="13.4" y1="13.4" x2="18" y2="18" /></svg>
+      <input id="ask-input" type="text" placeholder="Ask this document" autocomplete="off"
+             aria-label="Ask this document" aria-expanded="false" aria-controls="ask-panel" />
+    </form>
+    <div class="ask-panel" id="ask-panel" role="region" aria-live="polite" hidden></div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════ 1 · PROPOSAL ══ -->
+<section class="slide" data-slide="0" data-title="Proposal">
+  <div class="inner">
+    <p class="eyebrow">01 · Proposal</p>
+    <h1>Digital technologies for community-building and social resilience</h1>
+
+    <div class="proposal-grid">
+      <div class="col">
+        <div class="map-wrap">
+          <svg viewBox="50 96 930 268" role="img" aria-label="Singapore, showing the three study neighbourhoods">
+            <defs>
+              <clipPath id="landclip">
+                <path d="M 92 236 C 104 210, 128 190, 158 182 C 176 178, 190 186, 206 180 C 226 172, 240 156, 264 152 C 288 148, 306 160, 330 154 C 352 148, 370 134, 396 132 C 420 130, 438 142, 462 138 C 488 134, 508 120, 536 120 C 562 120, 580 132, 606 128 C 632 124, 652 112, 680 116 C 706 120, 722 132, 748 132 C 772 132, 790 124, 812 134 C 838 146, 858 162, 880 178 C 902 194, 922 210, 936 232 C 946 248, 944 262, 930 272 C 910 288, 884 296, 858 304 C 832 312, 806 316, 780 322 C 752 328, 726 336, 698 340 C 670 344, 642 344, 614 348 C 586 352, 560 358, 532 356 C 506 354, 484 344, 458 346 C 432 348, 410 358, 384 354 C 358 350, 336 338, 310 338 C 284 338, 262 344, 236 338 C 210 332, 188 320, 164 308 C 140 296, 118 282, 104 264 C 96 254, 88 246, 92 236 Z" />
+              </clipPath>
+            </defs>
+
+            <rect class="water" x="0" y="0" width="1000" height="500" />
+            <g class="graticule">
+              <line x1="0" y1="100" x2="1000" y2="100" /><line x1="0" y1="200" x2="1000" y2="200" />
+              <line x1="0" y1="300" x2="1000" y2="300" />
+              <line x1="200" y1="0" x2="200" y2="500" /><line x1="400" y1="0" x2="400" y2="500" />
+              <line x1="600" y1="0" x2="600" y2="500" /><line x1="800" y1="0" x2="800" y2="500" />
+            </g>
+
+            <path class="landmass" d="M 92 236 C 104 210, 128 190, 158 182 C 176 178, 190 186, 206 180 C 226 172, 240 156, 264 152 C 288 148, 306 160, 330 154 C 352 148, 370 134, 396 132 C 420 130, 438 142, 462 138 C 488 134, 508 120, 536 120 C 562 120, 580 132, 606 128 C 632 124, 652 112, 680 116 C 706 120, 722 132, 748 132 C 772 132, 790 124, 812 134 C 838 146, 858 162, 880 178 C 902 194, 922 210, 936 232 C 946 248, 944 262, 930 272 C 910 288, 884 296, 858 304 C 832 312, 806 316, 780 322 C 752 328, 726 336, 698 340 C 670 344, 642 344, 614 348 C 586 352, 560 358, 532 356 C 506 354, 484 344, 458 346 C 432 348, 410 358, 384 354 C 358 350, 336 338, 310 338 C 284 338, 262 344, 236 338 C 210 332, 188 320, 164 308 C 140 296, 118 282, 104 264 C 96 254, 88 246, 92 236 Z" />
+
+            <g class="roads" clip-path="url(#landclip)">
+              <path d="M 90 268 C 260 240, 420 268, 560 246 C 700 224, 830 246, 950 226" />
+              <path d="M 100 214 C 280 206, 430 232, 600 210 C 740 192, 860 210, 960 250" />
+              <path d="M 240 140 L 268 360" /><path d="M 430 124 L 452 358" />
+              <path d="M 610 124 L 630 352" /><path d="M 790 128 L 800 322" />
+              <path d="M 150 190 L 310 344" /><path d="M 690 118 L 860 300" />
+            </g>
+
+            <g class="region" data-region="control">
+              <circle class="patch" cx="250" cy="246" r="52" />
+              <g class="pin" transform="translate(250 214)">
+                <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
+                <circle cx="0" cy="-24" r="4.5" />
+              </g>
+              <text class="maplabel" x="250" y="322">Control Group</text>
+            </g>
+
+            <g class="region" data-region="web2">
+              <circle class="patch" cx="516" cy="252" r="52" />
+              <g class="pin" transform="translate(516 220)">
+                <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
+                <circle cx="0" cy="-24" r="4.5" />
+              </g>
+              <text class="maplabel" x="516" y="328">Web 2.0</text>
+            </g>
+
+            <g class="region" data-region="web3">
+              <circle class="patch" cx="782" cy="234" r="52" />
+              <g class="pin" transform="translate(782 202)">
+                <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
+                <circle cx="0" cy="-24" r="4.5" />
+              </g>
+              <text class="maplabel" x="782" y="310">Web 3.0</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="map-legend stacked">
+          <button data-region="control" aria-pressed="false">
+            <b>Control Group · A</b>
+            <span>Conventional communication only. No digital technology actively promoted — the baseline.</span>
+          </button>
+          <button data-region="web2" aria-pressed="false">
+            <b>Web 2.0 · B</b>
+            <span>First-generation apps of the WhatsApp / WeChat / Facebook class, plus push messages and in-app surveys for some sub-groups.</span>
+          </button>
+          <button data-region="web3" aria-pressed="false">
+            <b>Web 3.0 · C</b>
+            <span>A targeted second-generation app, co-designed with residents and supported by technology experts.</span>
+          </button>
+        </div>
+
+        <p class="note">
+          Three neighbourhoods in one planning district, matched on socio-demographic profile and built
+          environment. Baseline survey: 100 people each. Common theme — a <b>caring community</b>.
+        </p>
+      </div>
+
+      <div class="col">
+        <div class="card tight">
+          <h3>Goals</h3>
+          <ul>
+            <li>Understand how <b>ground-up community-building initiatives</b> that build social resilience can be facilitated through digital apps.</li>
+            <li>Answer the core question: <b>which of the two generations — Web 2.0 or Web 3.0 — is more effective</b> at letting citizens address a common issue together, and <b>which features make the difference</b>.</li>
+            <li>Define effectiveness twice over: how quickly and sustainably a project is realised, and how strongly trust, social capital and social beliefs improve.</li>
+            <li>Produce a report and journal publications, a <b>community engagement manual</b>, and a policy brief for MCCY, MCI and IMDA.</li>
+          </ul>
+        </div>
+
+        <div class="card tight">
+          <h3>Hypotheses</h3>
+          <dl class="hyp">
+            <div>
+              <dt>H1</dt>
+              <dd>Social resilience is strengthened when people work together, ground-up, to identify and address common needs — with spillover onto the wider neighbourhood. Without physical contact, collaboration rarely extends past a small group of trusted initiators.</dd>
+            </div>
+            <div>
+              <dt>H2</dt>
+              <dd>Web 2.0 apps <em>in addition to</em> physical contact are more effective than physical contact alone.</dd>
+            </div>
+            <div>
+              <dt>H3</dt>
+              <dd>Web 3.0 creates conditions for deeper connection — permissionless membership, co-creation, norm-setting, verified pro-social behaviour — and so enhances resilience and delivery more than any other form of digital engagement.</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ 2 · WHAT IS WEB3 ══ -->
+<section class="slide" data-slide="1" data-title="Web3">
+  <div class="inner">
+    <p class="eyebrow">02 · Definitions</p>
+    <h1>Web3</h1>
+
+    <table class="web3-table">
+      <thead>
+        <tr>
+          <th class="c-icon"><span class="sr">Icon</span></th>
+          <th class="c-use">Use</th>
+          <th class="c-what">What it does</th>
+          <th class="c-prim">Primitives</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="c-icon"><img src="/img/funding.svg" alt="Contributors funding a shared, visible pool" /></td>
+          <td class="c-use">Decentralized funding</td>
+          <td class="c-what">Decentralized, transparent funding.</td>
+          <td class="c-prim"><span>Transparency</span><span>Decentralisation</span></td>
+        </tr>
+        <tr>
+          <td class="c-icon"><img src="/img/usdc.svg" alt="USDC" /></td>
+          <td class="c-use">Payments</td>
+          <td class="c-what">Payments on stablecoins across borders, with settlement in seconds.</td>
+          <td class="c-prim"><span>Currency</span></td>
+        </tr>
+        <tr>
+          <td class="c-icon"><img class="art" src="/img/bored-ape.png" alt="Bored Ape Yacht Club #0" /></td>
+          <td class="c-use">Status</td>
+          <td class="c-what">NFTs as status goods and collection items.</td>
+          <td class="c-prim"><span>NFTs</span><span>Digital ownership</span></td>
+        </tr>
+        <tr>
+          <td class="c-icon"><img src="/img/discord.svg" alt="Discord" /></td>
+          <td class="c-use">Access</td>
+          <td class="c-what">NFTs as key cards to enter online communities.</td>
+          <td class="c-prim"><span>NFTs</span><span>Identity data</span></td>
+        </tr>
+        <tr>
+          <td class="c-icon"><img src="/img/ethereum.svg" alt="Ethereum" /></td>
+          <td class="c-use">Automation</td>
+          <td class="c-what">Smart contracts can make payments conditional on real-world events.</td>
+          <td class="c-prim"><span>Smart contracts</span></td>
+        </tr>
+        <tr>
+          <td class="c-icon"><img src="/img/zcash.svg" alt="Zcash" /></td>
+          <td class="c-use">Privacy</td>
+          <td class="c-what">Verification of payments is public; origin and purpose can stay private.</td>
+          <td class="c-prim"><span>Privacy</span><span>Encrypted data</span></td>
+        </tr>
+        <tr>
+          <td class="c-icon"><img class="art" src="/img/hypercerts.png" alt="Hypercerts" /></td>
+          <td class="c-use">Reputation</td>
+          <td class="c-what">Contributions made portable and verifiable: Hypercerts, Gitcoin Passports.</td>
+          <td class="c-prim"><span>Identity data</span></td>
+        </tr>
+        <tr>
+          <td class="c-icon"><img src="/img/dao.svg" alt="A DAO — distributed members around a shared treasury" /></td>
+          <td class="c-use">Coordination</td>
+          <td class="c-what">DAOs coordinate people around a shared treasury with enforced rules.</td>
+          <td class="c-prim"><span>Decentralisation</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ 3 · PITFALLS ══ -->
+<section class="slide" data-slide="2" data-title="Practices">
+  <div class="inner">
+    <p class="eyebrow">03 · What works</p>
+    <h1>Practices</h1>
+
+    <div class="grid g3">
+      <div class="card">
+        <h2>Emergence</h2>
+        <ul>
+          <li><b>Observe.</b> Ethnographic research before design — spend time with the people and the place, and document what is actually happening before proposing anything.</li>
+          <li><b>Design for emergent behaviours</b> — set conditions and constraints, not outcomes. The system's job is to make good behaviour easy, not to prescribe it.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Trust and education</h2>
+        <ul>
+          <li><b>Teach how it works</b> before asking anyone to use it. Comprehension is what turns interest into participation.</li>
+          <li><b>Earn trust.</b> Make people trust you — adoption follows trusted recommendations.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Documentation</h2>
+        <ul>
+          <li><b>Test with users and research the market</b> — build against a real, observed user and a clear picture of the external environment.</li>
+          <li><b>Document the internal structure</b> — decision rights written down, and a shared understanding of what the team needs to function.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ 4 · PROCESS ══ -->
+<section class="slide" data-slide="3" data-title="Process" data-panels="3">
+  <div class="inner">
+    <p class="eyebrow">04 · Research Process</p>
+
+    <div class="subnav-row">
+      <div class="subnav" role="tablist" aria-label="Process">
+        <button type="button" role="tab" data-sub="0">Process</button>
+      </div>
+      <span class="subnav-label">Precedents</span>
+      <div class="subnav" role="tablist" aria-label="Precedents">
+        <button type="button" role="tab" data-sub="1">Argentina</button>
+        <button type="button" role="tab" data-sub="2">Australia</button>
+        <button type="button" role="tab" data-sub="3">Japan</button>
+      </div>
+    </div>
+
+    <!-- 4a · the process -->
+    <div class="panel" data-sub="0">
+      <h1>The process</h1>
+
+      <div class="phases">
+        <article class="phase" data-open="false">
+          <button class="phase-head" type="button" aria-expanded="false">
+            <span class="phase-num">Phase 1</span>
+            <span class="phase-title">Setup &amp; research</span>
+            <span class="phase-dur">6 months</span>
+            <span class="chev" aria-hidden="true"></span>
+          </button>
+          <div class="phase-body">
+            <div>
+              <h3>Objective</h3>
+              <ul>
+                <li>Identify three neighbourhoods</li>
+                <li>Generate community project ideas</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Outcomes</h3>
+              <ul>
+                <li>Initial survey data</li>
+                <li>Summary of Web2 and Web3 primitives</li>
+                <li>Project ideas</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Process</h3>
+              <ul>
+                <li>Preparation — site selection and interviews <span class="dur">2–3 days</span></li>
+                <li>Social resilience survey: social capital, rootedness, individual and community well-being</li>
+                <li>Ideation workshops <span class="dur">2–3 days</span></li>
+                <li>Synthesis <span class="dur">3 days</span></li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase" data-open="false">
+          <button class="phase-head" type="button" aria-expanded="false">
+            <span class="phase-num">Phase 2</span>
+            <span class="phase-title">App development &amp; usage</span>
+            <span class="phase-dur">8 months</span>
+            <span class="chev" aria-hidden="true"></span>
+          </button>
+          <div class="phase-body">
+            <div>
+              <h3>Objective</h3>
+              <ul>
+                <li>Develop apps in Web2 and Web3</li>
+                <li>Teams work on their own projects</li>
+                <li>Data collection</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Outcomes</h3>
+              <ul>
+                <li>Implemented apps</li>
+                <li>Data collection pipeline</li>
+                <li>Community project curation</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Process</h3>
+              <ul>
+                <li>Educational sessions</li>
+                <li>Design sprints <span class="dur">2 weeks</span></li>
+                <li>Implementation of apps and data pipeline</li>
+                <li>Deployment and onboarding</li>
+                <li>Interim in-app surveys</li>
+                <li>Completion survey, research and user testing</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase" data-open="false">
+          <button class="phase-head" type="button" aria-expanded="false">
+            <span class="phase-num">Phase 3</span>
+            <span class="phase-title">Assessment</span>
+            <span class="phase-dur">4 months</span>
+            <span class="chev" aria-hidden="true"></span>
+          </button>
+          <div class="phase-body">
+            <div>
+              <h3>Objective</h3>
+              <ul>
+                <li>Direct evidence of engagement and impact within communities</li>
+                <li>Evaluation of surveys and documentation of findings</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Outcomes</h3>
+              <ul>
+                <li>Community engagement manual</li>
+                <li>One or two policy briefs</li>
+                <li>Journal publications</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Process</h3>
+              <ul>
+                <li>Repeat the Phase One survey with the same respondents, plus the residents who built the apps</li>
+                <li>App telemetry</li>
+                <li>Compare results across the three neighbourhoods against their own baselines</li>
+                <li>Share findings with participants first, then citizens and policymakers</li>
+                <li>Mitigate confounding factors</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- 4b · Argentina -->
+    <div class="panel" data-sub="1">
+      <h1>Argentina Onchain Residency</h1>
+
+      <article class="case">
+        <figure class="case-photo">
+          <img src="/img/argentina-residency.jpg" alt="A workshop session during the Argentina Onchain Residency: participants at tables with laptops, a facilitator presenting a slide reading &quot;What might be useful to the residency?&quot;" />
+          <figcaption>Scoping session during the residency. From <em>Participatory Unblocking of Blockchain Use Cases</em>, BlockchainGov.</figcaption>
+        </figure>
+        <header>
+          <p class="case-meta">San Martín de los Andes · 1–15 November 2025 · two weeks in person · part of Edge Patagonia, ahead of Devconnect Buenos Aires · 50+ builders, researchers and entrepreneurs with Argentine stakeholders from government, business, universities, cooperatives and civil society</p>
+          <p class="case-source">
+            <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6465860" target="_blank" rel="noreferrer">Read the full paper on SSRN</a>
+          </p>
+        </header>
+        <div class="case-body">
+          <div>
+            <h3>How it ran</h3>
+            <p>A six-step method — <em>Participatory Unblocking of Blockchain Use Cases</em> — built on a methodological inversion: start from concrete problems and the barriers to adoption, then ask whether an onchain system is feasible, appropriate and desirable.</p>
+            <ol class="steps">
+              <li>Choose the place and define the problem scope</li>
+              <li>Structured discovery of local needs that could genuinely benefit from blockchain's guarantees</li>
+              <li>Recruit local and international builders against the selected problem statements</li>
+              <li>Convene in person — talks and workshops on economic, socio-political and cultural context, and on what has already been tried</li>
+              <li>A time-bounded design sprint, with continuous feedback from the people closest to each problem</li>
+              <li>Connect local users to builders after the event, to support sustained implementation</li>
+            </ol>
+          </div>
+          <div>
+            <h3>What came out</h3>
+            <p><b>21 problem statements from 10+ organisations</b> — public procurement, health logistics, elections and civic participation, municipal budgeting and open data, fintech rails, SME treasury, ticketing and artist royalties, industrial certification, NGO operations, university credentialing.</p>
+            <p><b>Seven working prototypes</b> in the second week: Teach ID (verifiable teacher credentials), Córdobras (onchain procurement records and asset passports), Señalica (liquid democracy with privacy-preserving voting), VotAR (WhatsApp-based voting for low-cost organisational elections), MatePlus (community loyalty keeping value local), COTEPAY (community-owned payments channelling float into yield for members), Constellation (place-based coordination using escrow and portable reputation).</p>
+
+            <h3 class="spaced">What was learned</h3>
+            <ul>
+              <li>Contextualised, participatory design measurably narrows the gap between promise and utility — prototypes should be grounded in <b>documented coordination failures</b>, not speculative use cases.</li>
+              <li>Embedding inside a larger event created attentional trade-offs; two weeks gave immersion but at a relaxed pace; remoteness raised coordination costs and limited institutional participation.</li>
+              <li>Builders were not paid to build specific solutions, so they followed their own interests — collaborative in spirit, but some problem statements went unaddressed.</li>
+              <li>Next time: narrower thematic scope, smaller curated cohorts, an explicit <b>handoff plan</b> per prototype, and incentives that ask problem-owners to commit resources upfront.</li>
+            </ul>
+          </div>
+        </div>
+
+      </article>
+    </div>
+
+    <!-- 4c · Australia -->
+    <div class="panel" data-sub="2">
+      <h1>The Home Internet Project, Central Australia</h1>
+
+      <article class="case">
+        <figure class="case-photo">
+          <img src="/img/central-australia.jpg" alt="Aerial view of Central Australia: vehicle tracks and a watercourse crossing red and green scrubland." />
+          <figcaption>Tracks across Central Australia — the country these outstations sit in. Photo: Wikimedia Commons, CC BY-SA 3.0.</figcaption>
+        </figure>
+        <header>
+          <p class="case-meta">Ellie Rennie et al. · a four-year project · three remote Aboriginal outstations — Kwale Kwale, Mungalawurru, Imangara · 20 computers into 20 homes · ~50 participants · with the Centre for Appropriate Technology, the Central Land Council, a consumer peak body and university researchers</p>
+        </header>
+        <div class="case-body">
+          <div>
+            <h3>How it ran</h3>
+            <p>The intervention was a computer and a satellite internet connection installed in each of twenty homes across three outstations, kept running with training and maintenance for the length of the study, in three phases:</p>
+            <ol class="steps">
+              <li><b>Consultation.</b> Initial contact through local organisations; elders in the three outstations gave permission, including formal ethics approval. Prior ICT use and perceived barriers documented before anything was installed.</li>
+              <li><b>Living with it.</b> Computers installed by August 2011. Structured interviews 3–4 times a year, one-on-one and in groups. Visits of a day or two per community every six weeks, much of it spent in houses responding to on-the-spot requests. Two years of training and maintenance support produced <b>1,458 event records</b>. Usage data extracted mid-project with owners' permission to check that stated use matched actual use. Comparison sites: Papunya (shared facility) and Ali Curung (mobile coverage).</li>
+              <li><b>Handing over.</b> From the end of 2013, residents were helped to set up their own services and the transition to household-controlled accounts was documented, with visits continuing through 2014.</li>
+            </ol>
+          </div>
+          <div>
+            <h3>What was found</h3>
+            <ul>
+              <li>Seventeen of twenty computers were still operational after a year; only two were lost across the whole project.</li>
+              <li><b>The "communal lifestyle" assumption was wrong.</b> People wanted to be identified as owners — padlocks, passwords, taking the cords away when travelling. Shared facilities were captured by particular families.</li>
+              <li>Putting computers in homes shifted the gender pattern: women were the most frequent user in two-thirds of households, against a telecentre elsewhere that became so identified with young men a separate women's room was needed.</li>
+              <li>Mobility — between houses and out of community — has consequences for ownership, billing and fixed infrastructure like satellite dishes.</li>
+              <li><b>The real barrier was the retail structure, not the desire.</b> Post-paid billing, the only option, was intolerable to many; about half the owners struggled to hold a sufficient bank balance over the first six months. In Ali Curung, everyone paying for internet paid for <em>pre-paid</em> mobile broadband, though satellite was cheaper.</li>
+            </ul>
+
+            <h3 class="spaced">What it taught about method</h3>
+            <ul>
+              <li>A small trial cannot be randomised or replicated — but it shows <b>why</b> an approach works, not merely whether it does, and reveals social dynamics no statistic surfaces.</li>
+              <li>Consent and consultation preclude random selection; the design has to stay adaptive to community concerns.</li>
+              <li>Theory was built as the project ran, rather than one theory being tested from commencement.</li>
+            </ul>
+          </div>
+        </div>
+
+      </article>
+    </div>
+
+    <!-- 4d · Japan -->
+    <div class="panel" data-sub="3">
+      <h1>Kaeru-chan, Japan</h1>
+
+      <article class="case">
+        <figure class="case-photo">
+          <img src="/img/kaeru-chan.jpg" alt="The Kaeru-chan pipeline in use: a phone showing the participant journey screen with actions to log, beside a laptop showing the operator dashboard with live scan feeds and a scheduled-job audit trail." />
+          <figcaption>The participant screen and the operator dashboard side by side — live scans, care actions, and the scheduled-job audit trail.</figcaption>
+        </figure>
+        <header>
+          <p class="case-meta">An IRB-compliant data collection pipeline for a field study — NFC-tagged objects that travel between participants, a phone-first journey, and a consent model built for a research ethics board rather than retrofitted to one.</p>
+        </header>
+        <div class="case-body">
+          <div>
+            <h3>How it works</h3>
+            <p>Each object carries an NFC chip. Scanning it opens a web journey on the participant's own phone — no app to install, no account to create.</p>
+            <ol class="steps">
+              <li><b>Landing.</b> The scan resolves to a per-chip page, framing the condition the participant has been assigned to.</li>
+              <li><b>Consent.</b> An explicit notice with Consent / No thanks, then a short demographics step. Declining ends the journey cleanly with a brief exit questionnaire.</li>
+              <li><b>The journey.</b> Participants log what they actually did — moved it, shared it, handed it to someone else — and can leave a postcard of text and a photo.</li>
+              <li><b>Exit.</b> A 1&ndash;7 scale survey, then a thank-you screen carrying a <b>Withdraw all my data</b> button.</li>
+            </ol>
+            <p class="note">Chip capacity turned out to be load-bearing: NTAG213 silently truncates mid-URL, so the study runs on NTAG215/216.</p>
+          </div>
+          <div>
+            <h3>What makes it IRB-compliant</h3>
+            <ul>
+              <li><b>Withdrawal actually deletes.</b> One transaction removes demographics, survey, scan and action rows together — not a flag, not a soft delete.</li>
+              <li><b>Photos are stripped of EXIF client-side</b>, so location metadata never reaches the server in the first place.</li>
+              <li><b>Identity is separated from data.</b> Participants appear as a UUID, and the table linking them to anything identifying is destroyed on a schedule — with the destruction itself logged.</li>
+              <li><b>Consent has a shelf life.</b> Scheduled jobs abandon never-decided consents, time out inactive quests at 60 days, and send reminders at 30.</li>
+              <li><b>The audit trail is the interface.</b> Every scheduled run — backups, linking destruction, abandonment, timeouts — is visible on the dashboard with its outcome, so compliance can be inspected rather than asserted.</li>
+            </ul>
+            <h3 class="spaced">Why it is here</h3>
+            <p>Phase two will require data collection.</p>
+          </div>
+        </div>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ 5 · WORKSHOP ══ -->
+<section class="slide" data-slide="4" data-title="Practical examples">
+  <div class="inner">
+    <div class="workshop-head">
+      <div>
+        <p class="eyebrow">05 · Live</p>
+        <h1>Practical examples of Web3</h1>
+      </div>
+      <div class="companion-card">
+        Add from your phone
+        <code id="companion-url">—</code>
+      </div>
+    </div>
+
+    <div style="margin-top: 32px;">
+      <ul class="bottlenecks" id="bottlenecks"></ul>
+      <div class="empty" id="bottlenecks-empty">Nothing captured yet — add the first one from the phone.</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="generate">Generate solutions</button>
+      <button class="btn ghost" id="reset">Clear</button>
+      <span class="status" id="gen-status"></span>
+    </div>
+
+    <div class="results" id="results" hidden>
+      <div class="results-head">
+        <div>Only in Web3<span>What the primitives make possible that a database does not</span></div>
+        <div>Already in Web2<span>What has worked without any of it — often the better first move</span></div>
+      </div>
+      <div id="rows"></div>
+      <p class="source-note" id="source-note"></p>
+    </div>
+  </div>
+</section>
+
+<script src="/deck.js"></script>
+<script src="/ask.js"></script>
+</body>
+</html>

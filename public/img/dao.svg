@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="DAO — a shared treasury with distributed members">
+  <g stroke="#B03A1A" stroke-width="2.5" opacity="0.55">
+    <line x1="50" y1="50" x2="50" y2="14"/>
+    <line x1="50" y1="50" x2="81" y2="32"/>
+    <line x1="50" y1="50" x2="81" y2="68"/>
+    <line x1="50" y1="50" x2="50" y2="86"/>
+    <line x1="50" y1="50" x2="19" y2="68"/>
+    <line x1="50" y1="50" x2="19" y2="32"/>
+    <path d="M50 14 L81 32 L81 68 L50 86 L19 68 L19 32 Z" fill="none" stroke-dasharray="4 5"/>
+  </g>
+  <g fill="#B03A1A">
+    <circle cx="50" cy="14" r="7"/><circle cx="81" cy="32" r="7"/><circle cx="81" cy="68" r="7"/>
+    <circle cx="50" cy="86" r="7"/><circle cx="19" cy="68" r="7"/><circle cx="19" cy="32" r="7"/>
+  </g>
+  <circle cx="50" cy="50" r="13" fill="#17150F"/>
+  <circle cx="50" cy="50" r="5" fill="#FBFAF7"/>
+</svg>
