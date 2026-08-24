@@ -43,6 +43,38 @@ is on for slide 5 in all three: Google Search grounding, the OpenAI web-search t
 
 The startup banner tells you which provider is live, so you can confirm before a session.
 
+## Where it can run
+
+| | Deck | Phone companion | Live model calls |
+|---|---|---|---|
+| **Local** (`npm start`) | ✅ | ✅ same Wi-Fi | ✅ |
+| **Deployed** (below) | ✅ | ✅ anywhere | ✅ |
+| **GitHub Pages** (`docs/index.html`) | ✅ | ❌ no server | ❌ offline fallbacks |
+
+The companion is a remote control, not a page: it POSTs to the server and listens on an
+SSE stream to stay in step with the big screen. Static hosting can't provide that, which is
+why the Pages build is the deck only.
+
+## Deploying
+
+Both configs are in the repo. **Never commit the key** — set it in the host's dashboard.
+
+**Render** (no card needed): dashboard → New → Blueprint → pick this repo. `render.yaml`
+does the rest; then add `GEMINI_API_KEY` under the service's Environment tab.
+
+**Fly.io** (container, `Dockerfile` + `fly.toml`):
+
+```bash
+fly auth login
+fly launch --copy-config --no-deploy
+fly secrets import < .env     # sets the key without printing it
+fly deploy
+```
+
+Once deployed, the address shown in the deck's top bar becomes the public URL, so the phone
+can join from any network. Free tiers sleep when idle — set `min_machines_running = 1`
+before a live session so the first request isn't a cold start.
+
 ## Driving it
 
 | | |

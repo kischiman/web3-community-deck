@@ -119,6 +119,17 @@ function lanAddress() {
   return "localhost";
 }
 
+// The address to put on the big screen for the phone to open.
+// Deployed, that is whatever host the browser used; locally it is the LAN IP,
+// since a phone cannot reach "localhost".
+function companionUrl(req) {
+  const host = req.headers["x-forwarded-host"] || req.headers.host || "";
+  const proto = req.headers["x-forwarded-proto"] || "http";
+  const local = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(:\d+)?$/i.test(host);
+  if (host && !local) return `${proto}://${host}/m`;
+  return `http://${lanAddress()}:${PORT}/m`;
+}
+
 // ---------------------------------------------------------------- routes
 
 const server = http.createServer(async (req, res) => {
@@ -135,6 +146,9 @@ const server = http.createServer(async (req, res) => {
       "content-type": "text/event-stream",
       "cache-control": "no-cache",
       connection: "keep-alive",
+      // nginx-based proxies buffer responses by default, which would stall the
+      // stream and make the phone and the screen fall out of step when deployed
+      "x-accel-buffering": "no",
     });
     res.write(`data: ${JSON.stringify(state)}\n\n`);
     clients.add(res);
@@ -150,7 +164,7 @@ const server = http.createServer(async (req, res) => {
 
   if (pathname === "/api/info") {
     return json(res, 200, {
-      companionUrl: `http://${lanAddress()}:${PORT}/m`,
+      companionUrl: companionUrl(req),
       provider: providerLabel(),
       steps: STEPS,
     });
