@@ -40,18 +40,35 @@ async function signIn(password) {
 }
 
 async function api(path, body) {
-  const res = await fetch(path, {
-    method: body ? "POST" : "GET",
-    headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  let res;
+  try {
+    res = await fetch(path, {
+      method: body ? "POST" : "GET",
+      headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    throw new Error("Could not reach the server — check your connection.");
+  }
+
   if (res.status === 401) {
     sessionStorage.removeItem(KEY);
     token = "";
-    showGate("Session expired — sign in again.");
-    throw new Error("unauthorised");
+    throw new Error("Session expired — sign in again.");
   }
-  return res.json();
+
+  // Anything else non-OK must throw too. Returning the error body as if it were
+  // data poisons the caller's state and the failure surfaces somewhere unrelated.
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Server returned ${res.status}`);
+  }
+
+  try {
+    return await res.json();
+  } catch {
+    throw new Error("The server sent something unreadable.");
+  }
 }
 
 function showGate(message) {
@@ -63,11 +80,13 @@ function showGate(message) {
   }
 }
 
+// Load and draw first, and only then dismiss the gate. Hiding it up front means a
+// failure halfway through leaves you staring at an empty panel with no way back.
 async function enter() {
   state = await api("/api/admin/state");
+  render();
   $("gate").hidden = true;
   $("panel").hidden = false;
-  render();
   connect();
 }
 

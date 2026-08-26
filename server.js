@@ -146,7 +146,18 @@ function companionUrl(req) {
 
 // ---------------------------------------------------------------- routes
 
-const server = http.createServer(async (req, res) => {
+const server = http.createServer((req, res) => {
+  // An exception anywhere below would otherwise leave the request hanging with no
+  // response at all — which in a browser looks like nothing happening, with nothing
+  // in the console to go on. Always answer, even if only to say what broke.
+  handle(req, res).catch((err) => {
+    console.error(`[500] ${req.method} ${req.url}:`, err.stack || err.message);
+    if (!res.headersSent) json(res, 500, { error: err.message || "server error" });
+    else res.end();
+  });
+});
+
+async function handle(req, res) {
   const url = new URL(req.url, `http://${req.headers.host}`);
   const { pathname } = url;
 
@@ -409,7 +420,7 @@ const server = http.createServer(async (req, res) => {
 
   // --- static assets
   return serveStatic(res, pathname.replace(/^\//, ""));
-});
+}
 
 server.listen(PORT, "0.0.0.0", () => {
   const lan = lanAddress();
