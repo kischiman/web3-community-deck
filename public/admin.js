@@ -28,7 +28,7 @@ const RATE_LABELS = {
 // ---------------------------------------------------------------- auth
 
 async function signIn(password) {
-  const res = await fetch("/api/admin/login", {
+  const res = await timedFetch("/api/admin/login", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ password }),
@@ -36,20 +36,36 @@ async function signIn(password) {
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || "Could not sign in");
   token = data.token;
-  sessionStorage.setItem(KEY, token);
+  // private-mode browsers can refuse storage; the token still works for this page
+  try {
+    sessionStorage.setItem(KEY, token);
+  } catch {
+    console.warn("[admin] sessionStorage unavailable — you'll sign in again on reload");
+  }
+}
+
+/** fetch that gives up rather than hanging forever — a hang is invisible otherwise. */
+async function timedFetch(path, options = {}, ms = 15000) {
+  const stop = new AbortController();
+  const timer = setTimeout(() => stop.abort(), ms);
+  try {
+    return await fetch(path, { ...options, signal: stop.signal });
+  } catch (err) {
+    if (err.name === "AbortError") {
+      throw new Error(`The server did not answer ${path} within ${ms / 1000}s.`);
+    }
+    throw new Error(`Could not reach ${path} — check your connection.`);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 async function api(path, body) {
-  let res;
-  try {
-    res = await fetch(path, {
-      method: body ? "POST" : "GET",
-      headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
-      body: body ? JSON.stringify(body) : undefined,
-    });
-  } catch {
-    throw new Error("Could not reach the server — check your connection.");
-  }
+  const res = await timedFetch(path, {
+    method: body ? "POST" : "GET",
+    headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+    body: body ? JSON.stringify(body) : undefined,
+  });
 
   if (res.status === 401) {
     sessionStorage.removeItem(KEY);
@@ -120,6 +136,65 @@ $("gate-form").addEventListener("submit", async (e) => {
     clearTimeout(slow);
     button.disabled = false;
     button.textContent = original;
+  }
+});
+
+// Walk the same three steps the sign-in does, reporting each on screen. The password
+// is read from the field and never echoed.
+$("diagnose").addEventListener("click", async () => {
+  const out = $("diag");
+  out.hidden = false;
+  const lines = [];
+  const show = (s) => {
+    lines.push(s);
+    out.textContent = lines.join("\n");
+  };
+
+  show("1. is admin configured on the server?");
+  try {
+    const { enabled } = await (await timedFetch("/api/admin/enabled", {}, 10000)).json();
+    show(`   → ${enabled ? "yes" : "NO — ADMIN_PASSWORD is not set on the server"}`);
+    if (!enabled) return;
+  } catch (err) {
+    return show(`   → failed: ${err.message}`);
+  }
+
+  const pw = $("pw").value;
+  if (!pw) return show("\n2. type your password into the field above, then run this again");
+
+  show(`\n2. signing in (password length ${pw.length})…`);
+  let tok;
+  try {
+    const res = await timedFetch(
+      "/api/admin/login",
+      { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ password: pw }) },
+      10000
+    );
+    const data = await res.json().catch(() => ({}));
+    show(`   → HTTP ${res.status}${data.error ? " · " + data.error : ""}`);
+    if (!res.ok) return show("\n   The password is being rejected. Check it in your host's dashboard.");
+    tok = data.token;
+    show(`   → token received (${tok.length} chars)`);
+  } catch (err) {
+    return show(`   → failed: ${err.message}`);
+  }
+
+  show("\n3. loading the panel data…");
+  try {
+    const res = await timedFetch("/api/admin/state", { headers: { authorization: `Bearer ${tok}` } }, 15000);
+    show(`   → HTTP ${res.status}`);
+    const data = await res.json().catch(() => null);
+    if (!res.ok) return show(`   → ${data?.error || "server error"}`);
+    show(`   → ${data.tasks?.length ?? 0} lines, ${Object.keys(data.rates ?? {}).length} rates`);
+    show("\nAll three steps passed — signing you in now.");
+    token = tok;
+    state = data;
+    render();
+    $("gate").hidden = true;
+    $("panel").hidden = false;
+    connect();
+  } catch (err) {
+    show(`   → failed: ${err.message}`);
   }
 });
 
