@@ -142,6 +142,16 @@ body { overflow-x: hidden; }
 .nav-toggle[aria-expanded="true"] .bars span:nth-child(2) { opacity: 0; }
 .nav-toggle[aria-expanded="true"] .bars span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
+/* lede on the second proposal version */
+
+.v2-lede {
+  margin: -8px 0 24px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 78ch;
+}
+
 /* ---------------------------------------------------------------- ask box */
 
 .nav-ask { position: relative; display: flex; align-items: center; flex: 0 0 auto; margin-left: 16px; }
@@ -565,6 +575,8 @@ p { line-height: 1.6; }
   flex-wrap: wrap;
   margin-bottom: 24px;
 }
+
+.subnav-label.first { padding-left: 0; border-left: 0; }
 
 .subnav-label {
   font-family: var(--mono);
@@ -1134,7 +1146,6 @@ p { line-height: 1.6; }
   <div class="inner">
     <p class="eyebrow">01 · Proposal</p>
     <h1>Digital technologies for community-building and social resilience</h1>
-
     <div class="proposal-grid">
       <div class="col">
         <div class="map-wrap">
@@ -1243,6 +1254,7 @@ p { line-height: 1.6; }
         </div>
       </div>
     </div>
+
   </div>
 </section>
 
@@ -1355,14 +1367,14 @@ p { line-height: 1.6; }
     <p class="eyebrow">04 · Research Process</p>
 
     <div class="subnav-row">
-      <div class="subnav" role="tablist" aria-label="Process">
+      <div class="subnav" role="tablist" aria-label="Process version">
         <button type="button" role="tab" data-sub="0" aria-selected="true">Process</button>
       </div>
       <span class="subnav-label">Precedents</span>
       <div class="subnav" role="tablist" aria-label="Precedents">
-        <button type="button" role="tab" data-sub="1">Argentina</button>
-        <button type="button" role="tab" data-sub="2">Australia</button>
-        <button type="button" role="tab" data-sub="3">Japan</button>
+        <button type="button" role="tab" data-sub="2">Argentina</button>
+        <button type="button" role="tab" data-sub="3">Australia</button>
+        <button type="button" role="tab" data-sub="4">Japan</button>
       </div>
     </div>
 
@@ -1486,8 +1498,9 @@ p { line-height: 1.6; }
       </div>
     </div>
 
+
     <!-- 4b · Argentina -->
-    <div class="panel" data-sub="1">
+    <div class="panel" data-sub="2">
       <h1>Argentina Onchain Residency</h1>
 
       <article class="case">
@@ -1533,7 +1546,7 @@ p { line-height: 1.6; }
     </div>
 
     <!-- 4c · Australia -->
-    <div class="panel" data-sub="2">
+    <div class="panel" data-sub="3">
       <h1>The Home Internet Project, Central Australia</h1>
 
       <article class="case">
@@ -1581,7 +1594,7 @@ p { line-height: 1.6; }
     </div>
 
     <!-- 4d · Japan -->
-    <div class="panel" data-sub="3">
+    <div class="panel" data-sub="4">
       <h1>Kaeru-chan, Japan</h1>
 
       <article class="case">
@@ -2111,10 +2124,13 @@ document.addEventListener("keydown", (e) => {
   else if (/^[1-5]$/.test(e.key)) go(Number(e.key) - 1, 0);
 });
 
+// keyed on position, so a stripped panel needs no renumbering
 document.querySelectorAll(".subnav").forEach((nav) => {
   nav.addEventListener("click", (e) => {
     const tab = e.target.closest("button");
-    if (tab) go(current, Number(tab.dataset.sub));
+    if (!tab) return;
+    const all = [...slides[current].querySelectorAll(".subnav button")];
+    go(current, all.indexOf(tab));
   });
 });
 

@@ -94,11 +94,14 @@ document.addEventListener("keydown", (e) => {
   else if (/^[1-5]$/.test(e.key)) go(Number(e.key) - 1, 0, true);
 });
 
-// sub-slide tabs
+// Sub-slide tabs. Keyed on position rather than data-sub, so a panel can be
+// removed at build time without renumbering everything that follows it.
 document.querySelectorAll(".subnav").forEach((nav) => {
   nav.addEventListener("click", (e) => {
     const tab = e.target.closest("button");
-    if (tab) go(current, Number(tab.dataset.sub), true);
+    if (!tab) return;
+    const all = [...slides[current].querySelectorAll(".subnav button")];
+    go(current, all.indexOf(tab), true);
   });
 });
 

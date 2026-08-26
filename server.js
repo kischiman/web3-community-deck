@@ -12,6 +12,7 @@ import { fileURLToPath } from "node:url";
 import { generateSolutions } from "./lib/generate.js";
 import { answerFromDeck } from "./lib/ask.js";
 import { providerLabel } from "./lib/llm.js";
+import * as budget from "./lib/budget-store.js";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC = path.join(HERE, "public");
@@ -24,7 +25,7 @@ const DECK = [
   { title: "Proposal", panels: ["Proposal"] },
   { title: "Web3", panels: ["Web3"] },
   { title: "Practices", panels: ["Practices"] },
-  { title: "Process", panels: ["Process", "Argentina", "Australia", "Japan"] },
+  { title: "Process", panels: ["Process V1", "Process V2", "Argentina", "Australia", "Japan"] },
   { title: "Practical examples", panels: ["Practical examples"] },
 ];
 
@@ -46,6 +47,18 @@ const state = {
 
 let nextId = 1;
 const clients = new Set();
+const budgetClients = new Set();
+
+function budgetChanged() {
+  const payload = `data: ${JSON.stringify({ updatedAt: budget.getState().updatedAt })}\n\n`;
+  for (const res of budgetClients) {
+    try {
+      res.write(payload);
+    } catch {
+      budgetClients.delete(res);
+    }
+  }
+}
 
 function broadcast() {
   const payload = `data: ${JSON.stringify(state)}\n\n`;
@@ -139,6 +152,43 @@ const server = http.createServer(async (req, res) => {
   // --- pages
   if (pathname === "/") return serveStatic(res, "index.html");
   if (pathname === "/m" || pathname === "/mobile") return serveStatic(res, "mobile.html");
+  if (pathname === "/budget") return serveStatic(res, "budget.html");
+
+  // --- budget: shared state, so everyone with the link sees the same numbers
+  if (pathname === "/api/budget") {
+    return json(res, 200, {
+      phases: budget.PHASES,
+      rates: budget.getState().rates,
+      tasks: budget.getState().tasks,
+      totals: budget.totals(),
+      updatedAt: budget.getState().updatedAt,
+    });
+  }
+
+  if (pathname === "/api/budget/events") {
+    res.writeHead(200, {
+      "content-type": "text/event-stream",
+      "cache-control": "no-cache",
+      connection: "keep-alive",
+      "x-accel-buffering": "no",
+    });
+    res.write(`data: ${JSON.stringify({ updatedAt: budget.getState().updatedAt })}\n\n`);
+    budgetClients.add(res);
+    const keepAlive = setInterval(() => res.write(": ping\n\n"), 20000);
+    req.on("close", () => {
+      clearInterval(keepAlive);
+      budgetClients.delete(res);
+    });
+    return;
+  }
+
+  if (pathname === "/api/budget/export") {
+    res.writeHead(200, {
+      "content-type": "application/json",
+      "content-disposition": `attachment; filename="budget-${new Date().toISOString().slice(0, 10)}.json"`,
+    });
+    return res.end(JSON.stringify(budget.getState(), null, 2));
+  }
 
   // --- live state stream
   if (pathname === "/api/events") {
@@ -197,6 +247,26 @@ const server = http.createServer(async (req, res) => {
       state.sub = next.sub;
       broadcast();
       return json(res, 200, { ok: true, slide: state.slide, sub: state.sub });
+    }
+
+    // --- budget mutations. No auth: anyone with the link can edit, by design.
+    if (pathname.startsWith("/api/budget/")) {
+      const action = pathname.slice("/api/budget/".length);
+      const ok =
+        action === "rate" ? budget.setRate(body.key, body.value)
+        : action === "claim" ? budget.claim(body.id, body)
+        : action === "unclaim" ? budget.unclaim(body.id)
+        : action === "task" ? budget.addTask(body)
+        : action === "remove" ? budget.removeTask(body.id)
+        : action === "import" ? budget.replaceState(body.state)
+        : action === "reset" ? (budget.reset(), true)
+        : null;
+
+      if (ok === null) return json(res, 404, { error: "unknown budget action" });
+      if (!ok) return json(res, 400, { error: "could not apply" });
+
+      budgetChanged();
+      return json(res, 200, { ok: true, totals: budget.totals() });
     }
 
     // Ask-this-document. Retrieval happens in the page; this only reads the passages.

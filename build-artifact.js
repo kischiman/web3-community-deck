@@ -14,6 +14,11 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PUB = path.join(HERE, "public");
 const OUT = path.join(HERE, "dist", "deck.html");
 
+// Proposal V2 is not for publication yet. The GitHub Pages build is world-readable,
+// so V2 is stripped from it entirely — not hidden with CSS, removed from the file.
+// Pass --with-v2 only when the public site is meant to carry it.
+const PUBLISH_V2 = process.argv.includes("--with-v2");
+
 const MIME = { ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml" };
 
 function dataUri(relPath) {
@@ -151,10 +156,13 @@ document.addEventListener("keydown", (e) => {
   else if (/^[1-5]$/.test(e.key)) go(Number(e.key) - 1, 0);
 });
 
+// keyed on position, so a stripped panel needs no renumbering
 document.querySelectorAll(".subnav").forEach((nav) => {
   nav.addEventListener("click", (e) => {
     const tab = e.target.closest("button");
-    if (tab) go(current, Number(tab.dataset.sub));
+    if (!tab) return;
+    const all = [...slides[current].querySelectorAll(".subnav button")];
+    go(current, all.indexOf(tab));
   });
 });
 
@@ -316,13 +324,57 @@ ${script}
 </script>
 `;
 
+// dist/deck.html is the copy that gets shared, so it carries V1 only.
+// dist/deck-internal.html is the full one, for a private artifact.
+const INTERNAL = path.join(HERE, "dist", "deck-internal.html");
+
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
-fs.writeFileSync(OUT, page);
-console.log(`wrote ${OUT} — ${(fs.statSync(OUT).size / 1e6).toFixed(2)} MB`);
+fs.writeFileSync(INTERNAL, page);
+console.log(`wrote ${INTERNAL} — ${(fs.statSync(INTERNAL).size / 1e6).toFixed(2)} MB  (INTERNAL — includes V2)`);
 
 // The artifact host supplies its own document shell, so dist/deck.html is a fragment.
 // GitHub Pages does not — so emit a complete standalone document for it too.
 const PAGES = path.join(HERE, "docs", "index.html");
+
+// Strip V2 from the public build. Removing the panel alone would leave the toggle
+// pointing at nothing, so the nav control goes with it.
+function stripV2(src) {
+  // the panel, from its marker comment to the </div> before the next panel
+  let out = src.replace(
+    /\n *<!-- ── Process V2 · delivery model ── -->[\s\S]*?\n *<\/div>\n(?=\s*\n?\s*<!-- 4)/,
+    "\n"
+  );
+  // and its tab, which would otherwise select a panel that no longer exists
+  out = out.replace(/\n *<button type="button" role="tab"[^>]*data-v2="true"[^>]*>.*?<\/button>/, "");
+
+  // A lone "V1" tab under a "Process" label would advertise that a V2 exists.
+  // With V2 gone the group is just "Process".
+  out = out.replace(/\n *<span class="subnav-label first">Process<\/span>/, "");
+  out = out.replace(
+    /(<button type="button" role="tab" data-sub="0" aria-selected="true">)V1(<\/button>)/,
+    "$1Process$2"
+  );
+
+  // Check for the content itself, not for a label — a stale marker would pass silently
+  // Structural markers only — the V2 panel and its tab each carry data-v2, and the
+  // panel carries the comment. Spelling out V2's prose here would put it in the
+  // public repo via this very file.
+  const leaks = ['data-v2="true"', "<!-- ── Process V2"].filter((s) => out.includes(s));
+
+  if (leaks.length) {
+    throw new Error(`build: V2 leaked into the public build (${leaks.join(", ")}) — refusing to write`);
+  }
+  return out;
+}
+
+const pagesHtml = PUBLISH_V2 ? page : stripV2(page);
+
+// the shareable artifact, V1 only
+fs.writeFileSync(OUT, pagesHtml);
+console.log(
+  `wrote ${OUT} — ${(fs.statSync(OUT).size / 1e6).toFixed(2)} MB` +
+    (PUBLISH_V2 ? "  ⚠ INCLUDING proposal V2" : "  (shareable — V2 stripped)")
+);
 
 const standalone = `<!doctype html>
 <html lang="en">
@@ -331,14 +383,17 @@ const standalone = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="description" content="Web3 for community building and social resilience — a proposal, its precedents, and a live workshop." />
 <meta name="color-scheme" content="light" />
-${page.slice(0, page.indexOf("</style>") + "</style>".length)}
+${pagesHtml.slice(0, pagesHtml.indexOf("</style>") + "</style>".length)}
 </head>
 <body>
-${page.slice(page.indexOf("</style>") + "</style>".length)}
+${pagesHtml.slice(pagesHtml.indexOf("</style>") + "</style>".length)}
 </body>
 </html>
 `;
 
 fs.mkdirSync(path.dirname(PAGES), { recursive: true });
 fs.writeFileSync(PAGES, standalone);
-console.log(`wrote ${PAGES} — ${(fs.statSync(PAGES).size / 1e6).toFixed(2)} MB`);
+console.log(
+  `wrote ${PAGES} — ${(fs.statSync(PAGES).size / 1e6).toFixed(2)} MB` +
+    (PUBLISH_V2 ? "  ⚠ INCLUDING proposal V2" : "  (proposal V2 stripped)")
+);

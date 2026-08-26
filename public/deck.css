@@ -140,6 +140,16 @@ body { overflow-x: hidden; }
 .nav-toggle[aria-expanded="true"] .bars span:nth-child(2) { opacity: 0; }
 .nav-toggle[aria-expanded="true"] .bars span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
+/* lede on the second proposal version */
+
+.v2-lede {
+  margin: -8px 0 24px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 78ch;
+}
+
 /* ---------------------------------------------------------------- ask box */
 
 .nav-ask { position: relative; display: flex; align-items: center; flex: 0 0 auto; margin-left: 16px; }
@@ -563,6 +573,8 @@ p { line-height: 1.6; }
   flex-wrap: wrap;
   margin-bottom: 24px;
 }
+
+.subnav-label.first { padding-left: 0; border-left: 0; }
 
 .subnav-label {
   font-family: var(--mono);

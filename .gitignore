@@ -1,3 +1,10 @@
 node_modules/
 .env
 package-lock.json
+
+# Internal — must not reach the public repo while V2 is unpublished
+budget/
+dist/deck-internal.html
+
+# runtime state — the live copy lives on the server
+budget-state.json
