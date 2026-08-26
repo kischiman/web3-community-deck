@@ -11,33 +11,25 @@
 <header class="top">
   <div class="top-inner">
     <div>
-      <p class="eyebrow">Shared working document · everyone with this link can edit</p>
+      <p class="eyebrow">Shared working document · propose yourself for any line</p>
       <h1>Residency budget</h1>
     </div>
     <div class="top-actions">
       <span class="live" id="live">connecting…</span>
-      <a class="btn ghost" href="/api/budget/export">Export JSON</a>
+      <a class="btn ghost" href="/admin">Admin</a>
     </div>
   </div>
 </header>
 
 <main class="wrap">
-  <section class="rates">
-    <h3>Rate card · USD per day</h3>
-    <div class="rate-grid" id="rate-grid"></div>
-    <p class="hint">
-      Changing a rate here moves every unclaimed line that uses it. A claimed line keeps the
-      rate its claimant entered — their number is theirs, and the card can move underneath it.
-    </p>
-  </section>
-
   <div id="phases"></div>
 
   <section class="summary" id="summary"></section>
 
   <p class="footnote">
-    State lives on the server, so everyone sees the same numbers. Free hosting has an ephemeral
-    disk — <b>Export JSON</b> before anything you would hate to redo.
+    State lives on the server, so everyone sees the same numbers. Propose yourself for anything
+    you could take on — quantity, unit and your rate. Who ends up on the project is decided
+    separately.
   </p>
 </main>
 
@@ -46,7 +38,7 @@
 
 <div class="modal" id="claim-modal" role="dialog" aria-modal="true" aria-labelledby="claim-title" hidden>
   <header>
-    <h2 id="claim-title">Claim task</h2>
+    <h2 id="claim-title">Propose yourself</h2>
     <button class="x" id="claim-close" type="button" aria-label="Close">×</button>
   </header>
 
@@ -56,15 +48,18 @@
     <label for="c-name">Your name</label>
     <input id="c-name" type="text" maxlength="60" autocomplete="name" required />
 
-    <div class="calc">
+    <div class="calc calc-5">
       <div>
         <label for="c-qty">Quantity</label>
         <input id="c-qty" type="number" step="0.5" min="0" />
-        <span class="unit" id="c-unit">days</span>
+      </div>
+      <div>
+        <label for="c-unit">Unit</label>
+        <select id="c-unit"></select>
       </div>
       <div class="times">×</div>
       <div>
-        <label for="c-rate">Your rate · USD</label>
+        <label for="c-rate">Rate / unit · USD</label>
         <input id="c-rate" type="number" step="25" min="0" />
       </div>
       <div class="equals">=</div>
@@ -79,8 +74,8 @@
               placeholder="What this covers, what it assumes, anything the estimate depends on…"></textarea>
 
     <div class="modal-actions">
-      <button class="btn" type="submit" id="claim-submit">Claim task</button>
-      <button class="btn ghost" type="button" id="claim-release" hidden>Release</button>
+      <button class="btn" type="submit" id="claim-submit">Submit proposal</button>
+      <button class="btn ghost" type="button" id="claim-release" hidden>Withdraw</button>
     </div>
   </form>
 </div>
@@ -109,13 +104,8 @@
       </div>
       <div class="times">×</div>
       <div>
-        <label for="t-role">Role / rate</label>
-        <select id="t-role"></select>
-      </div>
-      <div class="equals">=</div>
-      <div class="calc-total">
-        <label>Line total</label>
-        <output id="t-total">$0</output>
+        <label for="t-unit">Unit</label>
+        <select id="t-unit"></select>
       </div>
     </div>
 

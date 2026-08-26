@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Budget admin</title>
+<link rel="stylesheet" href="/budget.css" />
+</head>
+<body>
+
+<!-- gate -->
+<div class="gate" id="gate">
+  <form class="gate-card" id="gate-form">
+    <p class="eyebrow">Residency budget</p>
+    <h1>Admin</h1>
+    <p class="gate-note" id="gate-note">The rate card and staffing decisions live here.</p>
+    <label for="pw">Password</label>
+    <input id="pw" type="password" autocomplete="current-password" required />
+    <button class="btn" type="submit">Sign in</button>
+    <p class="gate-error" id="gate-error" hidden></p>
+  </form>
+</div>
+
+<!-- panel -->
+<div id="panel" hidden>
+  <header class="top">
+    <div class="top-inner">
+      <div>
+        <p class="eyebrow">Admin · base rates and staffing</p>
+        <h1>Residency budget</h1>
+      </div>
+      <div class="top-actions">
+        <span class="live" id="live">live</span>
+        <a class="btn ghost" href="/budget">Public view</a>
+        <button class="btn ghost" id="export">Export</button>
+        <button class="btn ghost" id="signout">Sign out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="rates">
+      <h3>Base rate card · USD <span class="admin-only">admin only</span></h3>
+      <div class="rate-grid" id="rate-grid"></div>
+
+      <label class="switch">
+        <input type="checkbox" id="prefill" />
+        <span>
+          <b>Pre-fill these rates on the public dashboard</b>
+          <em>Off: collaborators enter their own rate with no anchor, and never see the card.
+          On: the claim form opens with the base rate already in it.</em>
+        </span>
+      </label>
+    </section>
+
+    <section class="people-block">
+      <h3>People</h3>
+      <div id="people"></div>
+    </section>
+
+    <div id="phases"></div>
+
+    <section class="summary" id="summary"></section>
+
+    <p class="footnote">
+      <b>Committed</b> uses the rate of whoever is on each line; unstaffed lines fall back to the
+      base rate card. Free hosting has an ephemeral disk — <b>Export</b> before any redeploy.
+    </p>
+  </main>
+</div>
+
+<script src="/admin.js"></script>
+</body>
+</html>
