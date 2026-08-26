@@ -17,6 +17,9 @@
 
 * { box-sizing: border-box; }
 
+/* an author display rule would otherwise beat [hidden] and keep it on screen */
+[hidden] { display: none !important; }
+
 html, body {
   margin: 0;
   background: var(--paper);
