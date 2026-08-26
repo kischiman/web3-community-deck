@@ -106,9 +106,8 @@ async function enter() {
   connect();
 }
 
-$("gate-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const button = e.target.querySelector("button");
+async function attemptSignIn() {
+  const button = $("signin");
   const say = (msg, isError) => {
     $("gate-error").textContent = msg;
     $("gate-error").hidden = !msg;
@@ -137,7 +136,26 @@ $("gate-form").addEventListener("submit", async (e) => {
     button.disabled = false;
     button.textContent = original;
   }
+}
+
+$("signin").addEventListener("click", attemptSignIn);
+
+// Enter in the password field, since there is no form to do it for us
+$("pw").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    attemptSignIn();
+  }
 });
+
+// If a password manager ever managed a native GET submit, the password landed in
+// the URL and therefore in browser history. Clear it and say so plainly.
+if (location.search.includes("password=") || location.search.includes("pw=")) {
+  history.replaceState(null, "", location.pathname);
+  $("gate-error").textContent =
+    "Your password may have been placed in this page's URL by a form submission — it has been cleared here, but consider changing it.";
+  $("gate-error").hidden = false;
+}
 
 // Walk the same three steps the sign-in does, reporting each on screen. The password
 // is read from the field and never echoed.
@@ -380,7 +398,7 @@ function connect() {
   if (!enabled) {
     $("gate-note").textContent =
       "Admin is not configured on this server. Set ADMIN_PASSWORD in the environment and restart.";
-    $("gate-form").querySelector("button").disabled = true;
+    $("signin").disabled = true;
     $("pw").disabled = true;
     return;
   }

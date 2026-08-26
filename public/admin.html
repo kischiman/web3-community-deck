@@ -10,18 +10,24 @@
 <body>
 
 <!-- gate -->
+<!--
+  Deliberately not a <form>. Password managers commonly submit via form.submit(),
+  which bypasses submit handlers and triggers a native page reload — the field
+  clears, no error appears, and everything resets. With no form there is nothing
+  to submit; the button and the Enter key are handled directly.
+-->
 <div class="gate" id="gate">
-  <form class="gate-card" id="gate-form">
+  <div class="gate-card">
     <p class="eyebrow">Residency budget</p>
     <h1>Admin</h1>
     <p class="gate-note" id="gate-note">The rate card and staffing decisions live here.</p>
     <label for="pw">Password</label>
-    <input id="pw" type="password" autocomplete="current-password" required />
-    <button class="btn" type="submit">Sign in</button>
+    <input id="pw" type="password" autocomplete="current-password" name="password" />
+    <button class="btn" id="signin" type="button">Sign in</button>
     <p class="gate-error" id="gate-error" hidden></p>
     <button class="linkish" id="diagnose" type="button">Trouble signing in? Run a check</button>
     <pre class="diag" id="diag" hidden></pre>
-  </form>
+  </div>
 </div>
 
 <!-- panel -->
