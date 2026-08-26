@@ -92,14 +92,34 @@ async function enter() {
 
 $("gate-form").addEventListener("submit", async (e) => {
   e.preventDefault();
-  $("gate-error").hidden = true;
+  const button = e.target.querySelector("button");
+  const say = (msg, isError) => {
+    $("gate-error").textContent = msg;
+    $("gate-error").hidden = !msg;
+    $("gate-error").style.color = isError ? "" : "var(--muted)";
+  };
+
+  say("");
+  button.disabled = true;
+  const original = button.textContent;
+  button.textContent = "Signing in…";
+
+  // A hung request is otherwise indistinguishable from a dead button.
+  const slow = setTimeout(() => say("Still waiting on the server…", false), 4000);
+
   try {
     await signIn($("pw").value);
     $("pw").value = "";
+    say("Loading the panel…", false);
     await enter();
+    say("");
   } catch (err) {
-    $("gate-error").textContent = err.message;
-    $("gate-error").hidden = false;
+    console.error("[admin] sign-in failed:", err);
+    say(err.message || "Something went wrong — see the console.", true);
+  } finally {
+    clearTimeout(slow);
+    button.disabled = false;
+    button.textContent = original;
   }
 });
 
