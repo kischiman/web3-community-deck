@@ -173,7 +173,7 @@ async function handle(req, res) {
 
   if (pathname === "/api/admin/state") {
     if (!auth.authed(req)) return json(res, 401, { error: "not signed in" });
-    return json(res, 200, budget.adminView());
+    return json(res, 200, { ...budget.adminView(), storage: budget.storageInfo() });
   }
 
   if (pathname === "/api/admin/enabled") {
@@ -425,6 +425,18 @@ async function handle(req, res) {
   return serveStatic(res, pathname.replace(/^\//, ""));
 }
 
+// State must be loaded before the first request, or a visitor could be served the
+// seed and then overwrite the real thing.
+await budget.init();
+
+// Coalesced writes could otherwise be dropped by a shutdown mid-deploy.
+for (const signal of ["SIGTERM", "SIGINT"]) {
+  process.on(signal, async () => {
+    await budget.flush().catch(() => {});
+    process.exit(0);
+  });
+}
+
 server.listen(PORT, "0.0.0.0", () => {
   const lan = lanAddress();
   console.log("");
@@ -438,6 +450,10 @@ server.listen(PORT, "0.0.0.0", () => {
     label
       ? `  Live features: ${label}  ·  offline fallbacks if a call fails`
       : "  Live features: off — no API key in .env, using offline fallbacks"
+  );
+  const store = budget.storageInfo();
+  console.log(
+    `  Budget storage: ${store.where}` + (store.durable ? "" : "  ⚠ edits are lost on redeploy")
   );
   console.log("");
 });

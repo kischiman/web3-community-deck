@@ -235,6 +235,17 @@ $("export").addEventListener("click", async () => {
 
 // ---------------------------------------------------------------- rendering
 
+function renderStorage() {
+  const s = state.storage;
+  const el = $("storage-warn");
+  if (!s || s.durable) return (el.hidden = true);
+  el.hidden = false;
+  el.innerHTML = `<b>Edits here are not durable.</b> State is kept in
+    <code>${esc(s.where)}</code>, which this host wipes on every redeploy. Set
+    <code>GIST_ID</code> and <code>GITHUB_TOKEN</code> in the environment to keep it
+    permanently — until then, use <b>Export</b> before any deploy.`;
+}
+
 function renderRates() {
   // Roles no longer drive any figure — each line carries its own rate — so the only
   // project-wide number left is contingency.
@@ -313,6 +324,7 @@ function lineHtml(t) {
 }
 
 function render() {
+  renderStorage();
   renderRates();
   renderPeople();
 
