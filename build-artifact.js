@@ -81,7 +81,7 @@ let currentSub = 0;
 let items = [];
 let nextId = 1;
 
-let version = "1";
+let version = document.querySelector('[data-version="2"]') ? "2" : "1";
 const forVersion = (el) => !el.dataset.version || el.dataset.version === version;
 const panelsFor = (i) => [...slides[i].querySelectorAll(".panel")].filter(forVersion);
 const tabsFor = (i) => [...slides[i].querySelectorAll(".subnav button")].filter(forVersion);
@@ -128,6 +128,10 @@ function go(index, sub) {
     s.querySelectorAll(".panel").forEach((p) => { if (!forVersion(p)) p.setAttribute("data-active", "false"); });
     s.querySelectorAll(".subnav button").forEach((b) => { b.hidden = !forVersion(b); });
   });
+
+  document.querySelectorAll("#nav-version button").forEach((b) =>
+    b.setAttribute("aria-pressed", String(b.dataset.version === version))
+  );
 
   const tabs = tabsFor(current);
   tabs.forEach((t, i) => t.setAttribute("aria-selected", String(i === currentSub)));
@@ -361,7 +365,10 @@ function stripV2(src) {
   out = out.replace(/\n *<div class="nav-version"[\s\S]*?<\/div>\n/, "\n");
   out = out.replace(/ data-version="1"/g, "");
 
-  const leaks = ['data-version="2"', 'class="nav-version"'].filter((x) => out.includes(x));
+  // Match markup, not the selector string the script uses to detect a V2 panel.
+  const leaks = ['<div class="panel" data-version="2"', '<div class="nav-version"'].filter((x) =>
+    out.includes(x)
+  );
   if (leaks.length) {
     throw new Error(`build: V2 leaked into the public build (${leaks.join(", ")}) — refusing to write`);
   }
