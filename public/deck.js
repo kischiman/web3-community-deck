@@ -16,8 +16,13 @@ let currentSub = 0;
 let lastRenderedIds = "";
 let lastGenStamp = "";
 
-// slide 4 carries three panels — process, then the two case studies
-const panelsFor = (i) => [...slides[i].querySelectorAll(".panel")];
+// Which proposal version is on screen. Panels and tabs may be tagged for one
+// version; anything untagged (the precedents) shows in both.
+let version = "1";
+
+const forVersion = (el) => !el.dataset.version || el.dataset.version === version;
+const panelsFor = (i) => [...slides[i].querySelectorAll(".panel")].filter(forVersion);
+const tabsFor = (i) => [...slides[i].querySelectorAll(".subnav button")].filter(forVersion);
 
 const esc = (s) =>
   String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -60,10 +65,18 @@ function go(index, sub, push) {
   [...navItems.children].forEach((b, i) => b.setAttribute("aria-current", String(i === current)));
   panels.forEach((p, i) => p.setAttribute("data-active", String(i === currentSub)));
 
-  const tabs = slides[current].querySelectorAll(".subnav button");
+  // hide any panel or tab belonging to the other version outright
+  slides.forEach((s) => {
+    s.querySelectorAll(".panel").forEach((p) => { if (!forVersion(p)) p.setAttribute("data-active", "false"); });
+    s.querySelectorAll(".subnav button").forEach((b) => { b.hidden = !forVersion(b); });
+  });
+
+  const tabs = tabsFor(current);
   tabs.forEach((t, i) => t.setAttribute("aria-selected", String(i === currentSub)));
 
-  const label = tabs.length ? `${slides[current].dataset.title} · ${tabs[currentSub].textContent}` : slides[current].dataset.title;
+  const label = tabs.length
+    ? `${slides[current].dataset.title} · ${tabs[currentSub]?.textContent ?? ""}`
+    : slides[current].dataset.title;
   navCurrent.textContent = `0${current + 1} · ${label}`;
 
   setMenu(false);
@@ -100,8 +113,7 @@ document.querySelectorAll(".subnav").forEach((nav) => {
   nav.addEventListener("click", (e) => {
     const tab = e.target.closest("button");
     if (!tab) return;
-    const all = [...slides[current].querySelectorAll(".subnav button")];
-    go(current, all.indexOf(tab), true);
+    go(current, tabsFor(current).indexOf(tab), true);
   });
 });
 
@@ -117,6 +129,19 @@ document.querySelectorAll(".phase-head").forEach((head) => {
 
 // let the ask-the-document box jump to a slide
 window.deckGo = (slide, sub) => go(slide, sub, true);
+
+// the global V1 / V2 control
+const navVersion = document.getElementById("nav-version");
+
+navVersion.addEventListener("click", (e) => {
+  const btn = e.target.closest("button");
+  if (!btn || btn.dataset.version === version) return;
+  version = btn.dataset.version;
+  navVersion.querySelectorAll("button").forEach((b) =>
+    b.setAttribute("aria-pressed", String(b.dataset.version === version))
+  );
+  go(current, 0, true); // land on the first panel this version actually has
+});
 
 go(0, 0, false);
 

@@ -14,9 +14,8 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PUB = path.join(HERE, "public");
 const OUT = path.join(HERE, "dist", "deck.html");
 
-// Proposal V2 is not for publication yet. The GitHub Pages build is world-readable,
-// so V2 is stripped from it entirely — not hidden with CSS, removed from the file.
-// Pass --with-v2 only when the public site is meant to carry it.
+// The artifact carries both versions. GitHub Pages is world-readable and indexed,
+// so V2 is stripped from that build unless --with-v2 says otherwise.
 const PUBLISH_V2 = process.argv.includes("--with-v2");
 
 const MIME = { ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml" };
@@ -82,7 +81,10 @@ let currentSub = 0;
 let items = [];
 let nextId = 1;
 
-const panelsFor = (i) => [...slides[i].querySelectorAll(".panel")];
+let version = "1";
+const forVersion = (el) => !el.dataset.version || el.dataset.version === version;
+const panelsFor = (i) => [...slides[i].querySelectorAll(".panel")].filter(forVersion);
+const tabsFor = (i) => [...slides[i].querySelectorAll(".subnav button")].filter(forVersion);
 
 const esc = (s) =>
   String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -122,11 +124,16 @@ function go(index, sub) {
   [...navItems.children].forEach((b, i) => b.setAttribute("aria-current", String(i === current)));
   panels.forEach((p, i) => p.setAttribute("data-active", String(i === currentSub)));
 
-  const tabs = slides[current].querySelectorAll(".subnav button");
+  slides.forEach((s) => {
+    s.querySelectorAll(".panel").forEach((p) => { if (!forVersion(p)) p.setAttribute("data-active", "false"); });
+    s.querySelectorAll(".subnav button").forEach((b) => { b.hidden = !forVersion(b); });
+  });
+
+  const tabs = tabsFor(current);
   tabs.forEach((t, i) => t.setAttribute("aria-selected", String(i === currentSub)));
 
   const label = tabs.length
-    ? slides[current].dataset.title + " · " + tabs[currentSub].textContent
+    ? slides[current].dataset.title + " · " + (tabs[currentSub] ? tabs[currentSub].textContent : "")
     : slides[current].dataset.title;
   navCurrent.textContent = "0" + (current + 1) + " · " + label;
 
@@ -161,8 +168,7 @@ document.querySelectorAll(".subnav").forEach((nav) => {
   nav.addEventListener("click", (e) => {
     const tab = e.target.closest("button");
     if (!tab) return;
-    const all = [...slides[current].querySelectorAll(".subnav button")];
-    go(current, all.indexOf(tab));
+    go(current, tabsFor(current).indexOf(tab));
   });
 });
 
@@ -302,6 +308,20 @@ resetBtn.addEventListener("click", () => {
   clearArmed = setTimeout(() => { clearArmed = null; resetBtn.textContent = "Clear"; }, 3000);
 });
 
+// the global V1 / V2 control
+const navVersion = document.getElementById("nav-version");
+if (navVersion) {
+  navVersion.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn || btn.dataset.version === version) return;
+    version = btn.dataset.version;
+    navVersion.querySelectorAll("button").forEach((b) =>
+      b.setAttribute("aria-pressed", String(b.dataset.version === version))
+    );
+    go(current, 0);
+  });
+}
+
 window.deckGo = (slide, sub) => go(slide, sub);
 
 ${askJs}
@@ -324,13 +344,7 @@ ${script}
 </script>
 `;
 
-// dist/deck.html is the copy that gets shared, so it carries V1 only.
-// dist/deck-internal.html is the full one, for a private artifact.
-const INTERNAL = path.join(HERE, "dist", "deck-internal.html");
-
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
-fs.writeFileSync(INTERNAL, page);
-console.log(`wrote ${INTERNAL} — ${(fs.statSync(INTERNAL).size / 1e6).toFixed(2)} MB  (INTERNAL — includes V2)`);
 
 // The artifact host supplies its own document shell, so dist/deck.html is a fragment.
 // GitHub Pages does not — so emit a complete standalone document for it too.
@@ -339,42 +353,28 @@ const PAGES = path.join(HERE, "docs", "index.html");
 // Strip V2 from the public build. Removing the panel alone would leave the toggle
 // pointing at nothing, so the nav control goes with it.
 function stripV2(src) {
-  // the panel, from its marker comment to the </div> before the next panel
+  // every V2 panel, plus the nav control that would otherwise point at nothing
   let out = src.replace(
-    /\n *<!-- ── Process V2 · delivery model ── -->[\s\S]*?\n *<\/div>\n(?=\s*\n?\s*<!-- 4)/,
-    "\n"
+    /\n *<div class="panel" data-version="2">[\s\S]*?\n *<\/div>(?=\n\s*(<\/div>|<!--))/g,
+    ""
   );
-  // and its tab, which would otherwise select a panel that no longer exists
-  out = out.replace(/\n *<button type="button" role="tab"[^>]*data-v2="true"[^>]*>.*?<\/button>/, "");
+  out = out.replace(/\n *<div class="nav-version"[\s\S]*?<\/div>\n/, "\n");
+  out = out.replace(/ data-version="1"/g, "");
 
-  // A lone "V1" tab under a "Process" label would advertise that a V2 exists.
-  // With V2 gone the group is just "Process".
-  out = out.replace(/\n *<span class="subnav-label first">Process<\/span>/, "");
-  out = out.replace(
-    /(<button type="button" role="tab" data-sub="0" aria-selected="true">)V1(<\/button>)/,
-    "$1Process$2"
-  );
-
-  // Check for the content itself, not for a label — a stale marker would pass silently
-  // Structural markers only — the V2 panel and its tab each carry data-v2, and the
-  // panel carries the comment. Spelling out V2's prose here would put it in the
-  // public repo via this very file.
-  const leaks = ['data-v2="true"', "<!-- ── Process V2"].filter((s) => out.includes(s));
-
+  const leaks = ['data-version="2"', 'class="nav-version"'].filter((x) => out.includes(x));
   if (leaks.length) {
     throw new Error(`build: V2 leaked into the public build (${leaks.join(", ")}) — refusing to write`);
   }
   return out;
 }
 
+
 const pagesHtml = PUBLISH_V2 ? page : stripV2(page);
 
-// the shareable artifact, V1 only
-fs.writeFileSync(OUT, pagesHtml);
-console.log(
-  `wrote ${OUT} — ${(fs.statSync(OUT).size / 1e6).toFixed(2)} MB` +
-    (PUBLISH_V2 ? "  ⚠ INCLUDING proposal V2" : "  (shareable — V2 stripped)")
-);
+
+// the artifact sent to the client — both versions, switched in the nav
+fs.writeFileSync(OUT, page);
+console.log(`wrote ${OUT} — ${(fs.statSync(OUT).size / 1e6).toFixed(2)} MB  (client copy — V1 + V2)`);
 
 const standalone = `<!doctype html>
 <html lang="en">

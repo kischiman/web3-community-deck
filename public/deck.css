@@ -153,6 +153,52 @@ body { overflow-x: hidden; }
   max-width: 78ch;
 }
 
+/* --------------------------------------------------- global proposal version */
+
+.nav-version {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex: 0 0 auto;
+  margin-left: 14px;
+  padding: 3px;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: 7px;
+  align-self: center;
+}
+
+.nav-version button {
+  border: 0;
+  background: none;
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  padding: 5px 11px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav-version button:hover { color: var(--ink); }
+
+.nav-version button[aria-pressed="true"] {
+  background: #fff;
+  color: var(--accent);
+  box-shadow: 0 1px 2px rgba(23, 21, 15, 0.09);
+}
+
+/* the budget's line list, shown as the process in V2 */
+.phase-body.single { grid-template-columns: 1fr; }
+.phase-body.single ul { columns: 2; column-gap: 34px; }
+.phase-body.single li { break-inside: avoid; margin-bottom: 9px; }
+.sub-note { font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+@media (max-width: 900px) {
+  .phase-body.single ul { columns: 1; }
+}
+
 /* ---------------------------------------------------------------- ask box */
 
 .nav-ask { position: relative; display: flex; align-items: center; flex: 0 0 auto; margin-left: 16px; }
@@ -1048,6 +1094,7 @@ p { line-height: 1.6; }
   }
 
   .nav-toggle { display: grid; }
+  .nav-version { margin-left: 8px; }
 
   /* the field would crowd the bar — it opens as a full-width row beneath it */
   .nav-ask { position: static; margin-left: 0; }

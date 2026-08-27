@@ -8,3 +8,6 @@ dist/deck-internal.html
 
 # runtime state — the live copy lives on the server
 budget-state.json
+
+# build output for the client artifact — carries proposal V2
+dist/

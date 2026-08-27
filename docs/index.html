@@ -162,6 +162,52 @@ body { overflow-x: hidden; }
   max-width: 78ch;
 }
 
+/* --------------------------------------------------- global proposal version */
+
+.nav-version {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex: 0 0 auto;
+  margin-left: 14px;
+  padding: 3px;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: 7px;
+  align-self: center;
+}
+
+.nav-version button {
+  border: 0;
+  background: none;
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  padding: 5px 11px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav-version button:hover { color: var(--ink); }
+
+.nav-version button[aria-pressed="true"] {
+  background: #fff;
+  color: var(--accent);
+  box-shadow: 0 1px 2px rgba(23, 21, 15, 0.09);
+}
+
+/* the budget's line list, shown as the process in V2 */
+.phase-body.single { grid-template-columns: 1fr; }
+.phase-body.single ul { columns: 2; column-gap: 34px; }
+.phase-body.single li { break-inside: avoid; margin-bottom: 9px; }
+.sub-note { font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+@media (max-width: 900px) {
+  .phase-body.single ul { columns: 1; }
+}
+
 /* ---------------------------------------------------------------- ask box */
 
 .nav-ask { position: relative; display: flex; align-items: center; flex: 0 0 auto; margin-left: 16px; }
@@ -1057,6 +1103,7 @@ p { line-height: 1.6; }
   }
 
   .nav-toggle { display: grid; }
+  .nav-version { margin-left: 8px; }
 
   /* the field would crowd the bar — it opens as a full-width row beneath it */
   .nav-ask { position: static; margin-left: 0; }
@@ -1141,6 +1188,7 @@ p { line-height: 1.6; }
   </button>
   <div class="nav-items" id="nav-items"></div>
 
+
   <div class="nav-ask" id="nav-ask">
     <button class="ask-toggle" id="ask-toggle" type="button" aria-label="Ask this document">
       <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6" /><line x1="13.4" y1="13.4" x2="18" y2="18" /></svg>
@@ -1159,111 +1207,117 @@ p { line-height: 1.6; }
   <div class="inner">
     <p class="eyebrow">01 · Proposal</p>
     <h1>Digital technologies for community-building and social resilience</h1>
-    <div class="proposal-grid">
-      <div class="col">
-        <div class="map-wrap">
-          <svg viewBox="50 96 930 268" role="img" aria-label="Singapore, showing the three study neighbourhoods">
-            <defs>
-              <clipPath id="landclip">
-                <path d="M 92 236 C 104 210, 128 190, 158 182 C 176 178, 190 186, 206 180 C 226 172, 240 156, 264 152 C 288 148, 306 160, 330 154 C 352 148, 370 134, 396 132 C 420 130, 438 142, 462 138 C 488 134, 508 120, 536 120 C 562 120, 580 132, 606 128 C 632 124, 652 112, 680 116 C 706 120, 722 132, 748 132 C 772 132, 790 124, 812 134 C 838 146, 858 162, 880 178 C 902 194, 922 210, 936 232 C 946 248, 944 262, 930 272 C 910 288, 884 296, 858 304 C 832 312, 806 316, 780 322 C 752 328, 726 336, 698 340 C 670 344, 642 344, 614 348 C 586 352, 560 358, 532 356 C 506 354, 484 344, 458 346 C 432 348, 410 358, 384 354 C 358 350, 336 338, 310 338 C 284 338, 262 344, 236 338 C 210 332, 188 320, 164 308 C 140 296, 118 282, 104 264 C 96 254, 88 246, 92 236 Z" />
-              </clipPath>
-            </defs>
+    <div class="panel" data-active="true">
+      <div class="proposal-grid">
+        <div class="col">
+          <div class="map-wrap">
+            <svg viewBox="50 96 930 268" role="img" aria-label="Singapore, showing the three study neighbourhoods">
+              <defs>
+                <clipPath id="landclip">
+                  <path d="M 92 236 C 104 210, 128 190, 158 182 C 176 178, 190 186, 206 180 C 226 172, 240 156, 264 152 C 288 148, 306 160, 330 154 C 352 148, 370 134, 396 132 C 420 130, 438 142, 462 138 C 488 134, 508 120, 536 120 C 562 120, 580 132, 606 128 C 632 124, 652 112, 680 116 C 706 120, 722 132, 748 132 C 772 132, 790 124, 812 134 C 838 146, 858 162, 880 178 C 902 194, 922 210, 936 232 C 946 248, 944 262, 930 272 C 910 288, 884 296, 858 304 C 832 312, 806 316, 780 322 C 752 328, 726 336, 698 340 C 670 344, 642 344, 614 348 C 586 352, 560 358, 532 356 C 506 354, 484 344, 458 346 C 432 348, 410 358, 384 354 C 358 350, 336 338, 310 338 C 284 338, 262 344, 236 338 C 210 332, 188 320, 164 308 C 140 296, 118 282, 104 264 C 96 254, 88 246, 92 236 Z" />
+                </clipPath>
+              </defs>
 
-            <rect class="water" x="0" y="0" width="1000" height="500" />
-            <g class="graticule">
-              <line x1="0" y1="100" x2="1000" y2="100" /><line x1="0" y1="200" x2="1000" y2="200" />
-              <line x1="0" y1="300" x2="1000" y2="300" />
-              <line x1="200" y1="0" x2="200" y2="500" /><line x1="400" y1="0" x2="400" y2="500" />
-              <line x1="600" y1="0" x2="600" y2="500" /><line x1="800" y1="0" x2="800" y2="500" />
-            </g>
-
-            <path class="landmass" d="M 92 236 C 104 210, 128 190, 158 182 C 176 178, 190 186, 206 180 C 226 172, 240 156, 264 152 C 288 148, 306 160, 330 154 C 352 148, 370 134, 396 132 C 420 130, 438 142, 462 138 C 488 134, 508 120, 536 120 C 562 120, 580 132, 606 128 C 632 124, 652 112, 680 116 C 706 120, 722 132, 748 132 C 772 132, 790 124, 812 134 C 838 146, 858 162, 880 178 C 902 194, 922 210, 936 232 C 946 248, 944 262, 930 272 C 910 288, 884 296, 858 304 C 832 312, 806 316, 780 322 C 752 328, 726 336, 698 340 C 670 344, 642 344, 614 348 C 586 352, 560 358, 532 356 C 506 354, 484 344, 458 346 C 432 348, 410 358, 384 354 C 358 350, 336 338, 310 338 C 284 338, 262 344, 236 338 C 210 332, 188 320, 164 308 C 140 296, 118 282, 104 264 C 96 254, 88 246, 92 236 Z" />
-
-            <g class="roads" clip-path="url(#landclip)">
-              <path d="M 90 268 C 260 240, 420 268, 560 246 C 700 224, 830 246, 950 226" />
-              <path d="M 100 214 C 280 206, 430 232, 600 210 C 740 192, 860 210, 960 250" />
-              <path d="M 240 140 L 268 360" /><path d="M 430 124 L 452 358" />
-              <path d="M 610 124 L 630 352" /><path d="M 790 128 L 800 322" />
-              <path d="M 150 190 L 310 344" /><path d="M 690 118 L 860 300" />
-            </g>
-
-            <g class="region" data-region="control">
-              <circle class="patch" cx="250" cy="246" r="52" />
-              <g class="pin" transform="translate(250 214)">
-                <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
-                <circle cx="0" cy="-24" r="4.5" />
+              <rect class="water" x="0" y="0" width="1000" height="500" />
+              <g class="graticule">
+                <line x1="0" y1="100" x2="1000" y2="100" /><line x1="0" y1="200" x2="1000" y2="200" />
+                <line x1="0" y1="300" x2="1000" y2="300" />
+                <line x1="200" y1="0" x2="200" y2="500" /><line x1="400" y1="0" x2="400" y2="500" />
+                <line x1="600" y1="0" x2="600" y2="500" /><line x1="800" y1="0" x2="800" y2="500" />
               </g>
-              <text class="maplabel" x="250" y="322">Control Group</text>
-            </g>
 
-            <g class="region" data-region="web2">
-              <circle class="patch" cx="516" cy="252" r="52" />
-              <g class="pin" transform="translate(516 220)">
-                <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
-                <circle cx="0" cy="-24" r="4.5" />
-              </g>
-              <text class="maplabel" x="516" y="328">Web 2.0</text>
-            </g>
+              <path class="landmass" d="M 92 236 C 104 210, 128 190, 158 182 C 176 178, 190 186, 206 180 C 226 172, 240 156, 264 152 C 288 148, 306 160, 330 154 C 352 148, 370 134, 396 132 C 420 130, 438 142, 462 138 C 488 134, 508 120, 536 120 C 562 120, 580 132, 606 128 C 632 124, 652 112, 680 116 C 706 120, 722 132, 748 132 C 772 132, 790 124, 812 134 C 838 146, 858 162, 880 178 C 902 194, 922 210, 936 232 C 946 248, 944 262, 930 272 C 910 288, 884 296, 858 304 C 832 312, 806 316, 780 322 C 752 328, 726 336, 698 340 C 670 344, 642 344, 614 348 C 586 352, 560 358, 532 356 C 506 354, 484 344, 458 346 C 432 348, 410 358, 384 354 C 358 350, 336 338, 310 338 C 284 338, 262 344, 236 338 C 210 332, 188 320, 164 308 C 140 296, 118 282, 104 264 C 96 254, 88 246, 92 236 Z" />
 
-            <g class="region" data-region="web3">
-              <circle class="patch" cx="782" cy="234" r="52" />
-              <g class="pin" transform="translate(782 202)">
-                <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
-                <circle cx="0" cy="-24" r="4.5" />
+              <g class="roads" clip-path="url(#landclip)">
+                <path d="M 90 268 C 260 240, 420 268, 560 246 C 700 224, 830 246, 950 226" />
+                <path d="M 100 214 C 280 206, 430 232, 600 210 C 740 192, 860 210, 960 250" />
+                <path d="M 240 140 L 268 360" /><path d="M 430 124 L 452 358" />
+                <path d="M 610 124 L 630 352" /><path d="M 790 128 L 800 322" />
+                <path d="M 150 190 L 310 344" /><path d="M 690 118 L 860 300" />
               </g>
-              <text class="maplabel" x="782" y="310">Web 3.0</text>
-            </g>
-          </svg>
+
+              <g class="region" data-region="control">
+                <circle class="patch" cx="250" cy="246" r="52" />
+                <g class="pin" transform="translate(250 214)">
+                  <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
+                  <circle cx="0" cy="-24" r="4.5" />
+                </g>
+                <text class="maplabel" x="250" y="322">Control Group</text>
+              </g>
+
+              <g class="region" data-region="web2">
+                <circle class="patch" cx="516" cy="252" r="52" />
+                <g class="pin" transform="translate(516 220)">
+                  <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
+                  <circle cx="0" cy="-24" r="4.5" />
+                </g>
+                <text class="maplabel" x="516" y="328">Web 2.0</text>
+              </g>
+
+              <g class="region" data-region="web3">
+                <circle class="patch" cx="782" cy="234" r="52" />
+                <g class="pin" transform="translate(782 202)">
+                  <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
+                  <circle cx="0" cy="-24" r="4.5" />
+                </g>
+                <text class="maplabel" x="782" y="310">Web 3.0</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="map-legend stacked">
+            <button data-region="control" aria-pressed="false">
+              <b>Control Group · A</b>
+              <span>Conventional communication only. No digital technology actively promoted — the baseline.</span>
+            </button>
+            <button data-region="web2" aria-pressed="false">
+              <b>Web 2.0 · B</b>
+              <span>First-generation apps of the WhatsApp / WeChat / Facebook class, plus push messages and in-app surveys for some sub-groups.</span>
+            </button>
+            <button data-region="web3" aria-pressed="false">
+              <b>Web 3.0 · C</b>
+              <span>A targeted second-generation app, co-designed with residents and supported by technology experts.</span>
+            </button>
+          </div>
+
+          <p class="note">
+            Three neighbourhoods in one planning district, matched on socio-demographic profile and built
+            environment. Baseline survey: 100 people each. Common theme — a <b>caring community</b>.
+          </p>
         </div>
 
-        <div class="map-legend stacked">
-          <button data-region="control" aria-pressed="false">
-            <b>Control Group · A</b>
-            <span>Conventional communication only. No digital technology actively promoted — the baseline.</span>
-          </button>
-          <button data-region="web2" aria-pressed="false">
-            <b>Web 2.0 · B</b>
-            <span>First-generation apps of the WhatsApp / WeChat / Facebook class, plus push messages and in-app surveys for some sub-groups.</span>
-          </button>
-          <button data-region="web3" aria-pressed="false">
-            <b>Web 3.0 · C</b>
-            <span>A targeted second-generation app, co-designed with residents and supported by technology experts.</span>
-          </button>
-        </div>
+        <div class="col">
+          <div class="card tight">
+            <h3>Goals</h3>
+            <ul>
+              <li>Understand how <b>ground-up community-building initiatives</b> that build social resilience can be facilitated through digital apps.</li>
+              <li>Answer the core question: <b>which of the two generations — Web 2.0 or Web 3.0 — is more effective</b> at letting citizens address a common issue together, and <b>which features make the difference</b>.</li>
+              <li>Define effectiveness twice over: how quickly and sustainably a project is realised, and how strongly trust, social capital and social beliefs improve.</li>
+              <li>Produce a report and journal publications, a <b>community engagement manual</b>, and a policy brief for MCCY, MCI and IMDA.</li>
+            </ul>
+          </div>
 
-        <p class="note">
-          Three neighbourhoods in one planning district, matched on socio-demographic profile and built
-          environment. Baseline survey: 100 people each. Common theme — a <b>caring community</b>.
-        </p>
+          <div class="card tight">
+            <h3>Hypotheses</h3>
+            <dl class="hyp">
+              <div>
+                <dt>H1</dt>
+                <dd>Social resilience is strengthened when people work together, ground-up, to identify and address common needs — with spillover onto the wider neighbourhood. Without physical contact, collaboration rarely extends past a small group of trusted initiators.</dd>
+              </div>
+              <div>
+                <dt>H2</dt>
+                <dd>Web 2.0 apps <em>in addition to</em> physical contact are more effective than physical contact alone.</dd>
+              </div>
+              <div>
+                <dt>H3</dt>
+                <dd>Web 3.0 creates conditions for deeper connection — permissionless membership, co-creation, norm-setting, verified pro-social behaviour — and so enhances resilience and delivery more than any other form of digital engagement.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <div class="col">
-        <div class="card tight">
-          <h3>Goals</h3>
-          <ul>
-            <li>Understand how <b>ground-up community-building initiatives</b> that build social resilience can be facilitated through digital apps.</li>
-            <li>Answer the core question: <b>which of the two generations — Web 2.0 or Web 3.0 — is more effective</b> at letting citizens address a common issue together, and <b>which features make the difference</b>.</li>
-            <li>Define effectiveness twice over: how quickly and sustainably a project is realised, and how strongly trust, social capital and social beliefs improve.</li>
-            <li>Produce a report and journal publications, a <b>community engagement manual</b>, and a policy brief for MCCY, MCI and IMDA.</li>
-          </ul>
-        </div>
-
-        <div class="card tight">
-          <h3>Hypotheses</h3>
-          <dl class="hyp">
-            <div>
-              <dt>H1</dt>
-              <dd>Social resilience is strengthened when people work together, ground-up, to identify and address common needs — with spillover onto the wider neighbourhood. Without physical contact, collaboration rarely extends past a small group of trusted initiators.</dd>
-            </div>
-            <div>
-              <dt>H2</dt>
-              <dd>Web 2.0 apps <em>in addition to</em> physical contact are more effective than physical contact alone.</dd>
-            </div>
-            <div>
-              <dt>H3</dt>
-              <dd>Web 3.0 creates conditions for deeper connection — permissionless membership, co-creation, norm-setting, verified pro-social behaviour — and so enhances resilience and delivery more than any other form of digital engagement.</dd>
-            </div>
-          </dl>
         </div>
       </div>
     </div>
@@ -1380,19 +1434,19 @@ p { line-height: 1.6; }
     <p class="eyebrow">04 · Research Process</p>
 
     <div class="subnav-row">
-      <div class="subnav" role="tablist" aria-label="Process version">
-        <button type="button" role="tab" data-sub="0" aria-selected="true">Process</button>
+      <div class="subnav" role="tablist" aria-label="Process">
+        <button type="button" role="tab" aria-selected="true">Process</button>
       </div>
       <span class="subnav-label">Precedents</span>
       <div class="subnav" role="tablist" aria-label="Precedents">
-        <button type="button" role="tab" data-sub="2">Argentina</button>
-        <button type="button" role="tab" data-sub="3">Australia</button>
-        <button type="button" role="tab" data-sub="4">Japan</button>
+        <button type="button" role="tab">Argentina</button>
+        <button type="button" role="tab">Australia</button>
+        <button type="button" role="tab">Japan</button>
       </div>
     </div>
 
     <!-- 4a · the process -->
-    <div class="panel" data-sub="0" data-active="true">
+    <div class="panel" data-active="true">
       <h1>The process</h1>
 
       <div class="phases">
@@ -1511,9 +1565,100 @@ p { line-height: 1.6; }
       </div>
     </div>
 
+    <!-- ── Process V2 · from the budget document ── -->
+          </div>
+        </article>
+
+        <article class="phase" data-open="true">
+          <button class="phase-head" type="button" aria-expanded="true">
+            <span class="phase-num">Phase 2</span>
+            <span class="phase-title">The two weeks</span>
+            <span class="phase-dur">2 weeks</span>
+            <span class="chev" aria-hidden="true"></span>
+          </button>
+          <div class="phase-body single">
+            <div>
+              <h3>Week one education, week two design sprint.</h3>
+              <ul>
+                <li>Kickoff design and preparation <span class="dur">12 days</span><br /><span class="sub-note">Week-one curriculum, week-two sprint structure, materials</span></li>
+                <li>Week 1 · education workshops <span class="dur">10 days</span><br /><span class="sub-note">Facilitation, two people in the room</span></li>
+                <li>Week 2 · design sprint <span class="dur">10 days</span><br /><span class="sub-note">Facilitation plus an engineer for feasibility in the room</span></li>
+                <li>Principal, both weeks <span class="dur">10 days</span><br /><span class="sub-note">Leading the room</span></li>
+                <li>Venue, catering and materials<br /><span class="sub-note">Two weeks — the space where people get to know each other</span></li>
+                <li>Participant incentives · workshops<br /><span class="sub-note">Attendance across two weeks</span></li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase" data-open="true">
+          <button class="phase-head" type="button" aria-expanded="true">
+            <span class="phase-num">Phase 2</span>
+            <span class="phase-title">Build</span>
+            <span class="phase-dur">build</span>
+            <span class="chev" aria-hidden="true"></span>
+          </button>
+          <div class="phase-body single">
+            <div>
+              <h3>Research prototypes, not products. Plus the pipeline, which does not scale down.</h3>
+              <ul>
+                <li>Web 2.0 prototype <span class="dur">12 days</span><br /><span class="sub-note">One person assembling a working prototype as they go, from tools that already exist. Not custom development</span></li>
+                <li>Web 3.0 prototype <span class="dur">30 days</span><br /><span class="sub-note">The harder of the two — custom, but research-grade rather than production</span></li>
+                <li>Design across both <span class="dur">20 days</span><br /><span class="sub-note">Interface, onboarding flows, plain-language content</span></li>
+                <li>Data pipeline <span class="dur">18 days</span><br /><span class="sub-note">IRB-compliant: consent, withdrawal that deletes, scheduled destruction. Adapted from Kaeru-chan. Does not scale down with user numbers</span></li>
+                <li>Technical direction <span class="dur">8 days</span><br /><span class="sub-note">Architecture, review, the handoff plan per tool</span></li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase" data-open="true">
+          <button class="phase-head" type="button" aria-expanded="true">
+            <span class="phase-num">Phase 2</span>
+            <span class="phase-title">Keeping it in use</span>
+            <span class="phase-dur">6 months</span>
+            <span class="chev" aria-hidden="true"></span>
+          </button>
+          <div class="phase-body single">
+            <div>
+              <h3>Adoption is a deliverable with an owner.</h3>
+              <ul>
+                <li>Deployment and onboarding <span class="dur">12 days</span><br /><span class="sub-note">Getting people to first use, in person</span></li>
+                <li>Retention and support <span class="dur">24 days</span><br /><span class="sub-note">Six months — check-ins, fixes, noticing when a group goes quiet</span></li>
+                <li>Interim in-app surveys <span class="dur">8 days</span><br /><span class="sub-note">Instrument, deployment, and reading what comes back</span></li>
+                <li>Maintenance engineering <span class="dur">9 days</span><br /><span class="sub-note">Six months of breakages — research-scale, tens of users per site</span></li>
+                <li>Project management <span class="dur">67 days</span><br /><span class="sub-note">Across the phase</span></li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="phase" data-open="true">
+          <button class="phase-head" type="button" aria-expanded="true">
+            <span class="phase-num">Phase 3</span>
+            <span class="phase-title">Assessment</span>
+            <span class="phase-dur">closing</span>
+            <span class="chev" aria-hidden="true"></span>
+          </button>
+          <div class="phase-body single">
+            <div>
+              <h3>Closing survey, analysis, written outputs.</h3>
+              <ul>
+                <li>Closing survey fieldwork <span class="dur">18 days</span><br /><span class="sub-note">Same respondents, plus the residents who built the tools</span></li>
+                <li>Participant incentives · wave 2<br /><span class="sub-note">300 respondents</span></li>
+                <li>Telemetry and comparative analysis <span class="dur">20 days</span><br /><span class="sub-note">Against each neighbourhood's own baseline, then across</span></li>
+                <li>Community engagement manual <span class="dur">12 days</span><br /><span class="sub-note">The deliverable the proposal promises to ministries</span></li>
+                <li>Policy briefs and publication support <span class="dur">12 days</span><br /><span class="sub-note">One or two briefs, plus support to the journal paper</span></li>
+                <li>Findings sessions <span class="dur">6 days</span><br /><span class="sub-note">Participants first, then citizens and policymakers</span></li>
+              </ul>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
 
     <!-- 4b · Argentina -->
-    <div class="panel" data-sub="2">
+    <div class="panel">
       <h1>Argentina Onchain Residency</h1>
 
       <article class="case">
@@ -1559,7 +1704,7 @@ p { line-height: 1.6; }
     </div>
 
     <!-- 4c · Australia -->
-    <div class="panel" data-sub="3">
+    <div class="panel">
       <h1>The Home Internet Project, Central Australia</h1>
 
       <article class="case">
@@ -1607,7 +1752,7 @@ p { line-height: 1.6; }
     </div>
 
     <!-- 4d · Japan -->
-    <div class="panel" data-sub="4">
+    <div class="panel">
       <h1>Kaeru-chan, Japan</h1>
 
       <article class="case">
@@ -2063,7 +2208,10 @@ let currentSub = 0;
 let items = [];
 let nextId = 1;
 
-const panelsFor = (i) => [...slides[i].querySelectorAll(".panel")];
+let version = "1";
+const forVersion = (el) => !el.dataset.version || el.dataset.version === version;
+const panelsFor = (i) => [...slides[i].querySelectorAll(".panel")].filter(forVersion);
+const tabsFor = (i) => [...slides[i].querySelectorAll(".subnav button")].filter(forVersion);
 
 const esc = (s) =>
   String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -2103,11 +2251,16 @@ function go(index, sub) {
   [...navItems.children].forEach((b, i) => b.setAttribute("aria-current", String(i === current)));
   panels.forEach((p, i) => p.setAttribute("data-active", String(i === currentSub)));
 
-  const tabs = slides[current].querySelectorAll(".subnav button");
+  slides.forEach((s) => {
+    s.querySelectorAll(".panel").forEach((p) => { if (!forVersion(p)) p.setAttribute("data-active", "false"); });
+    s.querySelectorAll(".subnav button").forEach((b) => { b.hidden = !forVersion(b); });
+  });
+
+  const tabs = tabsFor(current);
   tabs.forEach((t, i) => t.setAttribute("aria-selected", String(i === currentSub)));
 
   const label = tabs.length
-    ? slides[current].dataset.title + " · " + tabs[currentSub].textContent
+    ? slides[current].dataset.title + " · " + (tabs[currentSub] ? tabs[currentSub].textContent : "")
     : slides[current].dataset.title;
   navCurrent.textContent = "0" + (current + 1) + " · " + label;
 
@@ -2142,8 +2295,7 @@ document.querySelectorAll(".subnav").forEach((nav) => {
   nav.addEventListener("click", (e) => {
     const tab = e.target.closest("button");
     if (!tab) return;
-    const all = [...slides[current].querySelectorAll(".subnav button")];
-    go(current, all.indexOf(tab));
+    go(current, tabsFor(current).indexOf(tab));
   });
 });
 
@@ -2282,6 +2434,20 @@ resetBtn.addEventListener("click", () => {
   resetBtn.textContent = "Tap again to clear";
   clearArmed = setTimeout(() => { clearArmed = null; resetBtn.textContent = "Clear"; }, 3000);
 });
+
+// the global V1 / V2 control
+const navVersion = document.getElementById("nav-version");
+if (navVersion) {
+  navVersion.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn || btn.dataset.version === version) return;
+    version = btn.dataset.version;
+    navVersion.querySelectorAll("button").forEach((b) =>
+      b.setAttribute("aria-pressed", String(b.dataset.version === version))
+    );
+    go(current, 0);
+  });
+}
 
 window.deckGo = (slide, sub) => go(slide, sub);
 
