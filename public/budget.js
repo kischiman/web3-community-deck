@@ -47,15 +47,28 @@ function flash(msg) {
 
 // ---------------------------------------------------------------- rendering
 
+// Terms for a proposal or line: a fixed sum, a quantity at a rate, or — when no
+// rate was given — just the quantity, rather than "× $0".
+const terms = (x) =>
+  x.unit === "fixed" ? "fixed" : x.rate ? `${x.qty} ${esc(x.unit)} × ${money(x.rate)}` : `${x.qty} ${esc(x.unit)}`;
+
 function proposalHtml(t, p) {
   const isAssigned = t.assigned === p.id;
   return `<div class="proposal${isAssigned ? " on" : ""}">
     <span class="who">${isAssigned ? "◆ " : ""}${esc(p.name)}</span>
-    <span class="terms">${p.unit === "fixed" ? "fixed" : `${p.qty} ${esc(p.unit)} × ${money(p.rate)}`}</span>
+    <span class="terms">${terms(p)}</span>
     <span class="amt">${money(p.amount)}</span>
     ${isAssigned ? '<span class="on-tag">on the project</span>' : ""}
     ${p.notes ? `<p class="pnote">${esc(p.notes)}</p>` : ""}
   </div>`;
+}
+
+// A line only carries a suggestion if the admin marked it. With nothing to suggest
+// the column stays empty rather than announcing an absence.
+function suggestionHtml(t) {
+  if (t.suggestedQty === null || t.suggestedQty === undefined) return "";
+  const scope = t.unit === "fixed" ? "fixed" : `${t.suggestedQty} ${esc(t.unit || "days")}`;
+  return `${scope}<span class="scope-label">suggested</span>`;
 }
 
 function lineHtml(t) {
@@ -68,9 +81,7 @@ function lineHtml(t) {
       ${t.note ? `<div class="note">${esc(t.note)}</div>` : ""}
       ${t.proposals.length ? `<div class="proposals">${t.proposals.map((p) => proposalHtml(t, p)).join("")}</div>` : ""}
     </div>
-    <div class="num scope">${
-      t.unit === "fixed" ? "fixed" : `${t.suggestedQty} ${esc(t.unit || "days")}`
-    }<span class="scope-label">suggested</span></div>
+    <div class="num scope">${suggestionHtml(t)}</div>
     <div class="line-actions">
       <button class="btn ghost small" data-claim="${esc(t.id)}">${
         t.proposals.length ? `Add yours · ${t.proposals.length} so far` : "Propose yourself"
@@ -160,7 +171,7 @@ function openClaim(id) {
         .map(
           (p) => `<div class="other">
             <span class="who">${esc(p.name)}</span>
-            <span class="terms">${p.unit === "fixed" ? "fixed" : `${p.qty} ${esc(p.unit)} × ${money(p.rate)}`}</span>
+            <span class="terms">${terms(p)}</span>
             <span class="amt">${money(p.amount)}</span>
           </div>`
         )

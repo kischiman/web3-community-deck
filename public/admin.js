@@ -280,11 +280,16 @@ function renderPeople() {
     .join("");
 }
 
+// Terms for a proposal or line: a fixed sum, a quantity at a rate, or — when no
+// rate was given — just the quantity, rather than "× $0".
+const terms = (x) =>
+  x.unit === "fixed" ? "fixed" : x.rate ? `${x.qty} ${esc(x.unit)} × ${money(x.rate)}` : `${x.qty} ${esc(x.unit)}`;
+
 function proposalRow(t, p) {
   const on = t.assigned === p.id;
   return `<div class="proposal admin${on ? " on" : ""}">
     <span class="who">${esc(p.name)}</span>
-    <span class="terms">${p.unit === "fixed" ? "fixed" : `${p.qty} ${esc(p.unit)} × ${money(p.rate)}`}</span>
+    <span class="terms">${terms(p)}</span>
     <span class="amt">${money(p.amount)}</span>
     <button class="btn ${on ? "" : "ghost "}small" data-assign="${esc(t.id)}" data-pid="${esc(p.id)}">
       ${on ? "On the project" : "Put on project"}
@@ -308,7 +313,7 @@ function lineHtml(t) {
       }
     </div>
     <div class="num base">
-      <span class="terms">${t.unit === "fixed" ? "fixed" : `${t.qty} ${esc(t.unit)} × ${money(t.rate)}`}</span>
+      <span class="terms">${terms(t)}</span>
       ${money(t.base)}
       <button class="prefill-toggle${t.prefill ? " on" : ""}" data-prefill="${esc(t.id)}"
               title="${t.prefill ? "Public board suggests this rate" : "Public board shows no rate for this line"}">
