@@ -73,7 +73,7 @@ function lineHtml(t) {
     }<span class="scope-label">suggested</span></div>
     <div class="line-actions">
       <button class="btn ghost small" data-claim="${esc(t.id)}">${
-        t.proposals.length ? "Propose / edit" : "Propose yourself"
+        t.proposals.length ? `Add yours · ${t.proposals.length} so far` : "Propose yourself"
       }</button>
     </div>
   </div>`;
@@ -147,13 +147,46 @@ function openClaim(id) {
   myProposalId = mine?.id || null;
 
   $("claim-task").innerHTML = `<b>${esc(t.name)}</b>${t.note ? " — " + esc(t.note) : ""}`;
+
+  // Several people can propose for the same line. Show who already has, so it is
+  // clear you are adding to a list rather than overwriting someone.
+  const others = t.proposals.filter((p) => p.id !== mine?.id);
+  const box = $("claim-others");
+  if (others.length) {
+    box.hidden = false;
+    box.innerHTML =
+      `<span class="others-label">Already proposed</span>` +
+      others
+        .map(
+          (p) => `<div class="other">
+            <span class="who">${esc(p.name)}</span>
+            <span class="terms">${p.unit === "fixed" ? "fixed" : `${p.qty} ${esc(p.unit)} × ${money(p.rate)}`}</span>
+            <span class="amt">${money(p.amount)}</span>
+          </div>`
+        )
+        .join("") +
+      `<p class="others-note">Yours is added alongside these — it does not replace them.</p>`;
+  } else {
+    box.hidden = true;
+  }
+
+  // One browser remembers one name. Make that visible, so the next person to use
+  // this machine does not silently submit under someone else's identity.
+  const identity = $("claim-identity");
+  if (remembered) {
+    identity.hidden = false;
+    identity.innerHTML = `Proposing as <b>${esc(remembered)}</b> · <button type="button" class="linkish inline" id="switch-person">not you?</button>`;
+  } else {
+    identity.hidden = true;
+  }
+
   $("c-name").value = mine?.name || remembered;
   $("c-qty").value = mine?.qty ?? t.suggestedQty ?? "";
   unitOptions($("c-unit"), mine?.unit || t.unit || "days");
   // a rate only appears here if the admin chose to pre-fill it
   $("c-rate").value = mine?.rate ?? t.suggestedRate ?? "";
   $("c-notes").value = mine?.notes || "";
-  $("claim-submit").textContent = mine ? "Update proposal" : "Submit proposal";
+  $("claim-submit").textContent = mine ? "Update your proposal" : "Add your proposal";
   $("claim-release").hidden = !mine;
 
   calcClaim();
@@ -244,6 +277,19 @@ scrim.addEventListener("click", hideAll);
 document.addEventListener("keydown", (e) => e.key === "Escape" && hideAll());
 
 document.addEventListener("click", (e) => {
+  // hand the machine to someone else without clearing site data
+  if (e.target.id === "switch-person") {
+    localStorage.removeItem("budget-name");
+    myProposalId = null;
+    $("c-name").value = "";
+    $("c-notes").value = "";
+    $("claim-identity").hidden = true;
+    $("claim-submit").textContent = "Add your proposal";
+    $("claim-release").hidden = true;
+    $("c-name").focus();
+    return;
+  }
+
   const claimBtn = e.target.closest("[data-claim]");
   if (claimBtn) return openClaim(claimBtn.dataset.claim);
   const addBtn = e.target.closest("[data-add]");
