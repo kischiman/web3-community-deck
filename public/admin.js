@@ -245,7 +245,9 @@ function renderRates() {
       </div>`
     )
     .join("");
-  $("prefill").checked = !!state.settings.prefillRates;
+
+  const on = state.tasks.filter((t) => t.prefill).length;
+  $("prefill-count").textContent = `${on} of ${state.tasks.length} lines suggest a rate`;
 }
 
 function renderPeople() {
@@ -296,7 +298,13 @@ function lineHtml(t) {
           : `<p class="empty-note">No proposals yet</p>`
       }
     </div>
-    <div class="num base">${money(t.base)}<span class="scope-label">base</span></div>
+    <div class="num base">
+      ${money(t.base)}
+      <button class="prefill-toggle${t.prefill ? " on" : ""}" data-prefill="${esc(t.id)}"
+              title="${t.prefill ? "Public board suggests this rate" : "Public board shows no rate for this line"}">
+        ${t.prefill ? "suggested" : "hidden"}
+      </button>
+    </div>
     <div class="num amount">${money(t.effective)}</div>
     <div class="line-actions">
       <button class="remove" data-remove="${esc(t.id)}" title="Remove line" aria-label="Remove line">×</button>
@@ -356,6 +364,15 @@ document.addEventListener("click", (e) => {
     return mutate("assign", { id: a.dataset.assign, proposalId: already ? null : a.dataset.pid });
   }
 
+  const pf = e.target.closest("[data-prefill]");
+  if (pf) {
+    const t = state.tasks.find((x) => x.id === pf.dataset.prefill);
+    return mutate("prefill", { id: pf.dataset.prefill, value: !t.prefill });
+  }
+
+  const all = e.target.closest("[data-prefill-all]");
+  if (all) return mutate("prefill-all", { value: all.dataset.prefillAll === "1" });
+
   const rm = e.target.closest("[data-remove]");
   if (rm) {
     const t = state.tasks.find((x) => x.id === rm.dataset.remove);
@@ -366,7 +383,6 @@ document.addEventListener("click", (e) => {
 document.addEventListener("change", (e) => {
   const rate = e.target.closest("[data-rate]");
   if (rate) return mutate("rate", { key: rate.dataset.rate, value: rate.value });
-  if (e.target.id === "prefill") return mutate("setting", { key: "prefillRates", value: e.target.checked });
 });
 
 // ---------------------------------------------------------------- live sync

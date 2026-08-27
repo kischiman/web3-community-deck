@@ -52,14 +52,18 @@
       <h3>Base rate card · USD <span class="admin-only">admin only</span></h3>
       <div class="rate-grid" id="rate-grid"></div>
 
-      <label class="switch">
-        <input type="checkbox" id="prefill" />
+      <div class="prefill-bar">
         <span>
-          <b>Pre-fill these rates on the public dashboard</b>
-          <em>Off: collaborators enter their own rate with no anchor, and never see the card.
-          On: the claim form opens with the base rate already in it.</em>
+          <b>Suggested rates on the public board</b>
+          <em>Decide line by line, using the <code>suggest</code> control on each. A line
+          that is off gives collaborators no anchor and never reveals its base rate.</em>
         </span>
-      </label>
+        <span class="prefill-actions">
+          <span class="prefill-count" id="prefill-count"></span>
+          <button class="btn ghost small" data-prefill-all="1">Suggest all</button>
+          <button class="btn ghost small" data-prefill-all="0">None</button>
+        </span>
+      </div>
     </section>
 
     <section class="people-block">

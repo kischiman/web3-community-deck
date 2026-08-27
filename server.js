@@ -285,7 +285,8 @@ async function handle(req, res) {
       const action = pathname.slice("/api/admin/".length);
       const ok =
         action === "rate" ? budget.setRate(body.key, body.value)
-        : action === "setting" ? budget.setSetting(body.key, body.value)
+        : action === "prefill" ? budget.setPrefill(body.id, body.value)
+        : action === "prefill-all" ? budget.setPrefillAll(body.value)
         : action === "assign" ? budget.assign(body.id, body.proposalId)
         : action === "remove" ? budget.removeTask(body.id)
         : action === "import" ? budget.replaceState(body.state)
