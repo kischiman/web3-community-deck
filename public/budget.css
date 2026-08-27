@@ -477,6 +477,17 @@ h3 {
 
 .line .num.scope, .line .num.base { color: var(--muted); }
 
+.line .num.base .terms {
+  display: block;
+  font-size: 10.5px;
+  color: var(--muted);
+  margin-bottom: 3px;
+  white-space: nowrap;
+}
+
+.modal-body label:first-child { margin-top: 0; }
+.line.admin { grid-template-columns: 1fr 132px 104px auto; }
+
 /* five-column calculator (qty · unit · × · rate · = · total) */
 .calc.calc-5 { grid-template-columns: 0.8fr 0.9fr auto 1fr auto 1fr; }
 

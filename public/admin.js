@@ -236,15 +236,13 @@ $("export").addEventListener("click", async () => {
 // ---------------------------------------------------------------- rendering
 
 function renderRates() {
-  $("rate-grid").innerHTML = Object.keys(state.rates)
-    .map(
-      (key) => `<div class="rate">
-        <label for="r-${key}">${esc(RATE_LABELS[key] || key)}</label>
-        <input id="r-${key}" data-rate="${key}" type="number" min="0"
-               step="${key === "contingency" ? 1 : 25}" value="${state.rates[key]}" />
-      </div>`
-    )
-    .join("");
+  // Roles no longer drive any figure — each line carries its own rate — so the only
+  // project-wide number left is contingency.
+  $("rate-grid").innerHTML = `<div class="rate">
+      <label for="r-contingency">Contingency · %</label>
+      <input id="r-contingency" data-rate="contingency" type="number" min="0" step="1"
+             value="${state.rates.contingency}" />
+    </div>`;
 
   const on = state.tasks.filter((t) => t.prefill).length;
   $("prefill-count").textContent = `${on} of ${state.tasks.length} lines suggest a rate`;
@@ -299,6 +297,7 @@ function lineHtml(t) {
       }
     </div>
     <div class="num base">
+      <span class="terms">${t.unit === "fixed" ? "fixed" : `${t.qty} ${esc(t.unit)} × ${money(t.rate)}`}</span>
       ${money(t.base)}
       <button class="prefill-toggle${t.prefill ? " on" : ""}" data-prefill="${esc(t.id)}"
               title="${t.prefill ? "Public board suggests this rate" : "Public board shows no rate for this line"}">
@@ -307,6 +306,7 @@ function lineHtml(t) {
     </div>
     <div class="num amount">${money(t.effective)}</div>
     <div class="line-actions">
+      <button class="btn ghost small" data-edit="${esc(t.id)}">Edit</button>
       <button class="remove" data-remove="${esc(t.id)}" title="Remove line" aria-label="Remove line">×</button>
     </div>
   </div>`;
@@ -356,7 +356,66 @@ async function mutate(action, body) {
   render();
 }
 
+// ---------------------------------------------------------------- edit a line
+
+let editingId = null;
+
+function openEdit(id) {
+  const t = state.tasks.find((x) => x.id === id);
+  if (!t) return;
+  editingId = id;
+
+  $("e-name").value = t.name;
+  $("e-note").value = t.note || "";
+  $("e-qty").value = t.qty;
+  $("e-unit").innerHTML = state.units
+    .map((u) => `<option value="${u}"${u === t.unit ? " selected" : ""}>${u}</option>`)
+    .join("");
+  $("e-rate").value = t.rate ?? "";
+
+  calcEdit();
+  $("scrim").hidden = false;
+  $("edit-modal").hidden = false;
+  $("e-name").focus();
+}
+
+function calcEdit() {
+  const fixed = $("e-unit").value === "fixed";
+  $("e-rate").disabled = fixed;
+  $("e-qty").previousElementSibling.textContent = fixed ? "Amount · USD" : "Quantity";
+  const qty = Number($("e-qty").value) || 0;
+  $("e-total").textContent = money(fixed ? qty : qty * (Number($("e-rate").value) || 0));
+}
+
+["e-qty", "e-rate"].forEach((id) => $(id).addEventListener("input", calcEdit));
+$("e-unit").addEventListener("change", calcEdit);
+
+function closeEdit() {
+  $("scrim").hidden = true;
+  $("edit-modal").hidden = true;
+}
+
+$("edit-close").addEventListener("click", closeEdit);
+$("edit-cancel").addEventListener("click", closeEdit);
+$("scrim").addEventListener("click", closeEdit);
+document.addEventListener("keydown", (e) => e.key === "Escape" && closeEdit());
+
+$("edit-save").addEventListener("click", async () => {
+  await mutate("update", {
+    id: editingId,
+    name: $("e-name").value,
+    note: $("e-note").value,
+    qty: $("e-qty").value,
+    unit: $("e-unit").value,
+    rate: $("e-rate").disabled ? undefined : $("e-rate").value,
+  });
+  closeEdit();
+});
+
 document.addEventListener("click", (e) => {
+  const ed = e.target.closest("[data-edit]");
+  if (ed) return openEdit(ed.dataset.edit);
+
   const a = e.target.closest("[data-assign]");
   if (a) {
     const t = state.tasks.find((x) => x.id === a.dataset.assign);

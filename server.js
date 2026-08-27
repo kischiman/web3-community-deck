@@ -288,6 +288,8 @@ async function handle(req, res) {
         : action === "prefill" ? budget.setPrefill(body.id, body.value)
         : action === "prefill-all" ? budget.setPrefillAll(body.value)
         : action === "assign" ? budget.assign(body.id, body.proposalId)
+        : action === "update" ? budget.updateTask(body.id, body)
+        : action === "task" ? budget.addTask(body)
         : action === "remove" ? budget.removeTask(body.id)
         : action === "import" ? budget.replaceState(body.state)
         : action === "reset" ? (budget.reset(), true)
