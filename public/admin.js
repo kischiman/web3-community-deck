@@ -291,9 +291,13 @@ function proposalRow(t, p) {
     <span class="who">${esc(p.name)}</span>
     <span class="terms">${terms(p)}</span>
     <span class="amt">${money(p.amount)}</span>
-    <button class="btn ${on ? "" : "ghost "}small" data-assign="${esc(t.id)}" data-pid="${esc(p.id)}">
-      ${on ? "On the project" : "Put on project"}
-    </button>
+    <span class="prow-actions">
+      <button class="btn ${on ? "" : "ghost "}small" data-assign="${esc(t.id)}" data-pid="${esc(p.id)}">
+        ${on ? "On the project" : "Put on project"}
+      </button>
+      <button class="btn ghost small" data-pedit="${esc(t.id)}" data-pid="${esc(p.id)}">Edit</button>
+      <button class="remove" data-premove="${esc(t.id)}" data-pid="${esc(p.id)}" title="Remove proposal" aria-label="Remove proposal">×</button>
+    </span>
     ${p.notes ? `<p class="pnote">${esc(p.notes)}</p>` : ""}
   </div>`;
 }
@@ -414,8 +418,10 @@ function closeEdit() {
 
 $("edit-close").addEventListener("click", closeEdit);
 $("edit-cancel").addEventListener("click", closeEdit);
-$("scrim").addEventListener("click", closeEdit);
-document.addEventListener("keydown", (e) => e.key === "Escape" && closeEdit());
+$("scrim").addEventListener("click", () => { closeEdit(); closeProp(); });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") { closeEdit(); closeProp(); }
+});
 
 $("edit-save").addEventListener("click", async () => {
   await mutate("update", {
@@ -429,7 +435,87 @@ $("edit-save").addEventListener("click", async () => {
   closeEdit();
 });
 
+// ---------------------------------------------------------------- edit a proposal
+
+let propTask = null;
+let propId = null;
+
+function openProposal(taskId, proposalId) {
+  const t = state.tasks.find((x) => x.id === taskId);
+  const p = t?.proposals.find((x) => x.id === proposalId);
+  if (!p) return;
+  propTask = taskId;
+  propId = proposalId;
+
+  $("prop-task").innerHTML = `<b>${esc(p.name)}</b> on ${esc(t.name)}`;
+  $("pr-name").value = p.name;
+  $("pr-qty").value = p.qty;
+  $("pr-unit").innerHTML = state.units
+    .map((u) => `<option value="${u}"${u === p.unit ? " selected" : ""}>${u}</option>`)
+    .join("");
+  $("pr-rate").value = p.rate ?? "";
+  $("pr-notes").value = p.notes || "";
+
+  calcProp();
+  $("scrim").hidden = false;
+  $("prop-modal").hidden = false;
+  $("pr-name").focus();
+}
+
+function calcProp() {
+  const fixed = $("pr-unit").value === "fixed";
+  $("pr-rate").disabled = fixed;
+  const qty = Number($("pr-qty").value) || 0;
+  $("pr-total").textContent = money(fixed ? qty : qty * (Number($("pr-rate").value) || 0));
+}
+
+["pr-qty", "pr-rate"].forEach((id) => $(id).addEventListener("input", calcProp));
+$("pr-unit").addEventListener("change", calcProp);
+
+function closeProp() {
+  $("scrim").hidden = true;
+  $("prop-modal").hidden = true;
+}
+
+$("prop-close").addEventListener("click", closeProp);
+$("prop-cancel").addEventListener("click", closeProp);
+
+$("prop-save").addEventListener("click", async () => {
+  await mutate("proposal-update", {
+    id: propTask,
+    proposalId: propId,
+    name: $("pr-name").value,
+    qty: $("pr-qty").value,
+    unit: $("pr-unit").value,
+    rate: $("pr-rate").disabled ? undefined : $("pr-rate").value,
+    notes: $("pr-notes").value,
+  });
+  closeProp();
+});
+
+$("prop-remove").addEventListener("click", async () => {
+  const t = state.tasks.find((x) => x.id === propTask);
+  const p = t?.proposals.find((x) => x.id === propId);
+  if (p && confirm(`Remove ${p.name}'s proposal?`)) {
+    await mutate("proposal-remove", { id: propTask, proposalId: propId });
+    closeProp();
+  }
+});
+
 document.addEventListener("click", (e) => {
+  const pe = e.target.closest("[data-pedit]");
+  if (pe) return openProposal(pe.dataset.pedit, pe.dataset.pid);
+
+  const pr = e.target.closest("[data-premove]");
+  if (pr) {
+    const t = state.tasks.find((x) => x.id === pr.dataset.premove);
+    const p = t?.proposals.find((x) => x.id === pr.dataset.pid);
+    if (p && confirm(`Remove ${p.name}'s proposal?`)) {
+      return mutate("proposal-remove", { id: pr.dataset.premove, proposalId: pr.dataset.pid });
+    }
+    return;
+  }
+
   const ed = e.target.closest("[data-edit]");
   if (ed) return openEdit(ed.dataset.edit);
 

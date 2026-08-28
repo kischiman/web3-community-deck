@@ -489,6 +489,13 @@ h3 {
 
 /* detail · base terms · effective · [Edit ×] — the last column has to fit both */
 .line.admin { grid-template-columns: 1fr 136px 104px 116px; }
+
+.prow-actions { display: flex; align-items: center; gap: 5px; justify-content: flex-end; }
+.proposal.admin { grid-template-columns: minmax(80px, auto) 1fr auto auto; }
+
+.btn.ghost.danger { color: var(--accent); border-color: rgba(176, 58, 26, 0.3); }
+.btn.ghost.danger:hover { background: var(--accent-soft); }
+.modal-actions .danger { margin-left: auto; }
 .line.admin .line-actions { align-items: center; flex-wrap: nowrap; }
 .line.admin .line-actions .btn { white-space: nowrap; }
 
