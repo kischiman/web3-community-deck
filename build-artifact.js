@@ -35,6 +35,8 @@ const askJs = fs.readFileSync(path.join(PUB, "ask.js"), "utf8");
 html = html.replace(/^[\s\S]*?<body>\s*/, "").replace(/\s*<\/body>[\s\S]*$/, "");
 html = html.replace(/<script src="\/deck\.js"><\/script>/, "");
 html = html.replace(/<script src="\/ask\.js"><\/script>/, "");
+html = html.replace(/<script src="\/budget-core\.js"><\/script>\n?/, "");
+html = html.replace(/<script src="\/deck-budget\.js"><\/script>\n?/, "");
 
 // --- inline every image
 html = html.replace(/src="(\/img\/[^"]+)"/g, (_, p) => `src="${dataUri(p)}"`);
@@ -50,8 +52,9 @@ const replace = (pattern, replacement) => {
 // no phone to point at, and the page explains itself — drop the card entirely
 replace(/<div class="companion-card">[\s\S]*?<\/div>/, "");
 
-// the budget lives on the server; a static copy has nothing to link to
-replace(/\n *<a class="nav-budget"[\s\S]*?<\/a>\n/, "\n");
+// the budget is a live board — a static copy has no server to talk to, so the whole
+// slide goes. The nav is built from the slides that remain, so nothing renumbers.
+replace(/\n<!-- [═\s]*4 · BUDGET[═\s]*-->\n<section class="slide" data-slide="3"[\s\S]*?<\/section>\n/, "\n");
 
 // --- example marks, keyed by domain slug
 const marks = {};

@@ -512,15 +512,41 @@ p { line-height: 1.6; }
 
 /* ------------------------------------------------- what Web3 is, one table */
 
-/* ------------------------------------------------- Web3 reference fold */
+/* ------------------------------------------------------------ budget slide */
 
-.web3-fold {
-  margin-top: 28px;
+.budget-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.budget-lede {
+  max-width: 640px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0 0 26px;
+}
+
+.budget-board { display: flex; flex-direction: column; gap: 16px; }
+
+.budget-empty { font-size: 14px; color: var(--muted); font-style: italic; }
+
+/* The board's own summary sits under the phases, not beside them. */
+#deck-budget-summary { margin-top: 22px; max-width: 460px; }
+
+/* ----------------------------------------------------- reference folds */
+
+.fold {
+  margin-top: 22px;
   border-top: 1px solid var(--rule);
   padding-top: 4px;
 }
 
-.web3-fold summary {
+.fold + .fold { margin-top: 0; }
+
+.fold summary {
   display: flex;
   align-items: baseline;
   gap: 10px;
@@ -530,8 +556,8 @@ p { line-height: 1.6; }
   user-select: none;
 }
 
-.web3-fold summary::-webkit-details-marker { display: none; }
-.web3-fold summary:hover .fold-title { color: var(--accent); }
+.fold summary::-webkit-details-marker { display: none; }
+.fold summary:hover .fold-title { color: var(--accent); }
 
 .fold-mark {
   width: 7px;
@@ -545,12 +571,12 @@ p { line-height: 1.6; }
   top: -2px;
 }
 
-.web3-fold[open] .fold-mark { transform: rotate(45deg); }
+.fold[open] .fold-mark { transform: rotate(45deg); }
 
 .fold-title { font-family: var(--serif); font-size: 19px; }
 .fold-sub { font-size: 13px; color: var(--muted); }
 
-.web3-fold-body {
+.fold-body {
   padding: 6px 0 18px;
   overflow-x: auto;
 }
@@ -825,6 +851,11 @@ p { line-height: 1.6; }
 }
 
 .pline:last-child { border-bottom: 0; }
+
+/* Once the budget answers, the step list becomes the budget's own line items; the
+   frame stays, the rows come from budget-embed.css. */
+.plines-live { padding: 0; }
+.plines-live .line { padding: 12px 16px; }
 .pline-name { font-size: 14px; font-weight: 600; color: var(--ink); }
 .pline-note { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin-top: 3px; }
 
@@ -1315,7 +1346,7 @@ p { line-height: 1.6; }
       <div class="proposal-grid">
         <div class="col">
           <div class="map-wrap">
-            <svg viewBox="50 96 930 268" role="img" aria-label="Singapore, showing the three study neighbourhoods">
+            <svg viewBox="50 96 930 268" role="img" aria-label="Singapore, showing the two study neighbourhoods">
               <defs>
                 <clipPath id="landclip">
                   <path d="M 92 236 C 104 210, 128 190, 158 182 C 176 178, 190 186, 206 180 C 226 172, 240 156, 264 152 C 288 148, 306 160, 330 154 C 352 148, 370 134, 396 132 C 420 130, 438 142, 462 138 C 488 134, 508 120, 536 120 C 562 120, 580 132, 606 128 C 632 124, 652 112, 680 116 C 706 120, 722 132, 748 132 C 772 132, 790 124, 812 134 C 838 146, 858 162, 880 178 C 902 194, 922 210, 936 232 C 946 248, 944 262, 930 272 C 910 288, 884 296, 858 304 C 832 312, 806 316, 780 322 C 752 328, 726 336, 698 340 C 670 344, 642 344, 614 348 C 586 352, 560 358, 532 356 C 506 354, 484 344, 458 346 C 432 348, 410 358, 384 354 C 358 350, 336 338, 310 338 C 284 338, 262 344, 236 338 C 210 332, 188 320, 164 308 C 140 296, 118 282, 104 264 C 96 254, 88 246, 92 236 Z" />
@@ -1340,53 +1371,42 @@ p { line-height: 1.6; }
                 <path d="M 150 190 L 310 344" /><path d="M 690 118 L 860 300" />
               </g>
 
-              <g class="region" data-region="control">
-                <circle class="patch" cx="250" cy="246" r="52" />
-                <g class="pin" transform="translate(250 214)">
-                  <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
-                  <circle cx="0" cy="-24" r="4.5" />
-                </g>
-                <text class="maplabel" x="250" y="322">Control Group</text>
-              </g>
-
               <g class="region" data-region="web2">
-                <circle class="patch" cx="516" cy="252" r="52" />
-                <g class="pin" transform="translate(516 220)">
+                <circle class="patch" cx="330" cy="248" r="52" />
+                <g class="pin" transform="translate(330 216)">
                   <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
                   <circle cx="0" cy="-24" r="4.5" />
                 </g>
-                <text class="maplabel" x="516" y="328">Web 2.0</text>
+                <text class="maplabel" x="330" y="324">Web 2.0 · Control</text>
               </g>
 
               <g class="region" data-region="web3">
-                <circle class="patch" cx="782" cy="234" r="52" />
-                <g class="pin" transform="translate(782 202)">
+                <circle class="patch" cx="700" cy="240" r="52" />
+                <g class="pin" transform="translate(700 208)">
                   <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
                   <circle cx="0" cy="-24" r="4.5" />
                 </g>
-                <text class="maplabel" x="782" y="310">Web 3.0</text>
+                <text class="maplabel" x="700" y="316">Web 3.0</text>
               </g>
             </svg>
           </div>
 
           <div class="map-legend stacked">
-            <button data-region="control" aria-pressed="false">
-              <b>Control Group · A</b>
-              <span>Conventional communication only. No digital technology actively promoted — the baseline.</span>
-            </button>
             <button data-region="web2" aria-pressed="false">
-              <b>Web 2.0 · B</b>
-              <span>First-generation apps of the WhatsApp / WeChat / Facebook class, plus push messages and in-app surveys for some sub-groups.</span>
+              <b>Web 2.0 · A (Control Group)</b>
+              <span>First-generation apps of the WhatsApp / WeChat / Facebook class, plus push messages and in-app surveys for some sub-groups — the baseline against which Web 3.0 is read.</span>
             </button>
             <button data-region="web3" aria-pressed="false">
-              <b>Web 3.0 · C</b>
+              <b>Web 3.0 · B</b>
               <span>A targeted second-generation app, co-designed with residents and supported by technology experts.</span>
             </button>
           </div>
 
           <p class="note">
-            Three neighbourhoods in one planning district, matched on socio-demographic profile and built
+            Two neighbourhoods in one planning district, matched on socio-demographic profile and built
             environment. Baseline survey: 100 people each. Common theme — a <b>caring community</b>.
+            With both arms running apps, <b>H2 is read against each neighbourhood&rsquo;s baseline</b>,
+            which supplies the pre-digital comparison.
           </p>
         </div>
 
@@ -1448,8 +1468,8 @@ p { line-height: 1.6; }
       <h1>The process</h1>
 
       <div class="phases">
-        <article class="phase" data-open="false">
-          <button class="phase-head" type="button" aria-expanded="false">
+        <article class="phase" data-open="true">
+          <button class="phase-head" type="button" aria-expanded="true">
             <span class="phase-num">Phase 1</span>
             <span class="phase-title">Setup &amp; research</span>
             <span class="phase-dur">6 months</span>
@@ -1518,8 +1538,8 @@ p { line-height: 1.6; }
         </div>
       </article>
 
-        <article class="phase" data-open="false">
-          <button class="phase-head" type="button" aria-expanded="false">
+        <article class="phase" data-open="true">
+          <button class="phase-head" type="button" aria-expanded="true">
             <span class="phase-num">Phase 2</span>
             <span class="phase-title">App development &amp; usage</span>
             <span class="phase-dur">8 months</span>
@@ -1584,8 +1604,8 @@ p { line-height: 1.6; }
         </div>
       </article>
 
-        <article class="phase" data-open="false">
-          <button class="phase-head" type="button" aria-expanded="false">
+        <article class="phase" data-open="true">
+          <button class="phase-head" type="button" aria-expanded="true">
             <span class="phase-num">Phase 3</span>
             <span class="phase-title">Assessment</span>
             <span class="phase-dur">4 months</span>
@@ -1786,46 +1806,12 @@ p { line-height: 1.6; }
   </div>
 </section>
 
-<!-- ════════════════════════════════════════════════════════ 3 · PITFALLS ══ -->
-<section class="slide" data-slide="2" data-title="Practices">
-  <div class="inner">
-    <p class="eyebrow">03 · What works</p>
-    <h1>Practices</h1>
-
-    <div class="grid g3">
-      <div class="card">
-        <h2>Emergence</h2>
-        <ul>
-          <li><b>Observe.</b> Ethnographic research before design — spend time with the people and the place, and document what is actually happening before proposing anything.</li>
-          <li><b>Design for emergent behaviours</b> — set conditions and constraints, not outcomes. The system's job is to make good behaviour easy, not to prescribe it.</li>
-        </ul>
-      </div>
-
-      <div class="card">
-        <h2>Trust and education</h2>
-        <ul>
-          <li><b>Teach how it works</b> before asking anyone to use it. Comprehension is what turns interest into participation.</li>
-          <li><b>Earn trust.</b> Make people trust you — adoption follows trusted recommendations.</li>
-        </ul>
-      </div>
-
-      <div class="card">
-        <h2>Documentation</h2>
-        <ul>
-          <li><b>Test with users and research the market</b> — build against a real, observed user and a clear picture of the external environment.</li>
-          <li><b>Document the internal structure</b> — decision rights written down, and a shared understanding of what the team needs to function.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════ 4 · WORKSHOP ══ -->
-<section class="slide" data-slide="3" data-title="Practical examples">
+<!-- ═══════════════════════════════════════════════════════ 3 · WORKSHOP ══ -->
+<section class="slide" data-slide="2" data-title="Practical examples">
   <div class="inner">
     <div class="workshop-head">
       <div>
-        <p class="eyebrow">04 · Live</p>
+        <p class="eyebrow">03 · Live</p>
         <h1>Practical examples of Web3</h1>
       </div>
       
@@ -1857,13 +1843,13 @@ p { line-height: 1.6; }
       <p class="source-note" id="source-note"></p>
     </div>
 
-    <details class="web3-fold">
+    <details class="fold">
       <summary>
         <span class="fold-mark" aria-hidden="true"></span>
         <span class="fold-title">What is Web3</span>
         <span class="fold-sub">The eight uses and the primitives behind them</span>
       </summary>
-      <div class="web3-fold-body">
+      <div class="fold-body">
   <table class="web3-table">
         <thead>
           <tr>
@@ -1926,6 +1912,44 @@ p { line-height: 1.6; }
       </table>
       </div>
     </details>
+
+    <details class="fold">
+      <summary>
+        <span class="fold-mark" aria-hidden="true"></span>
+        <span class="fold-title">What works</span>
+        <span class="fold-sub">Practices the precedents agree on</span>
+      </summary>
+      <div class="fold-body">
+  <div class="grid g3">
+        <div class="card">
+          <h2>Emergence</h2>
+          <ul>
+            <li><b>Observe.</b> Ethnographic research before design — spend time with the people and the place, and document what is actually happening before proposing anything.</li>
+            <li><b>Design for emergent behaviours</b> — set conditions and constraints, not outcomes. The system's job is to make good behaviour easy, not to prescribe it.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h2>Trust and education</h2>
+          <ul>
+            <li><b>Teach how it works</b> before asking anyone to use it. Comprehension is what turns interest into participation.</li>
+            <li><b>Earn trust.</b> Make people trust you — adoption follows trusted recommendations.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h2>Documentation</h2>
+          <ul>
+            <li><b>Test with users and research the market</b> — build against a real, observed user and a clear picture of the external environment.</li>
+            <li><b>Document the internal structure</b> — decision rights written down, and a shared understanding of what the team needs to function.</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+    </div>
   </div>
 </section>
 

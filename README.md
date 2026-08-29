@@ -51,6 +51,9 @@ The startup banner tells you which provider is live, so you can confirm before a
 | **Deployed** (below) | ✅ | ✅ anywhere | ✅ |
 | **GitHub Pages** (`docs/index.html`) | ✅ | ❌ no server | ❌ offline fallbacks |
 
+The budget is a live board, so the deck's budget slide exists only where a server does:
+both static builds drop it, and the process steps fall back to the plain list in the markup.
+
 The companion is a remote control, not a page: it POSTs to the server and listens on an
 SSE stream to stay in step with the big screen. Static hosting can't provide that, which is
 why the Pages build is the deck only.
@@ -90,6 +93,8 @@ before a live session so the first request isn't a cold start.
 |---|---|
 | Slides 1–4 copy | `public/index.html` — search `PLACEHOLDER` |
 | Research-process steps | `public/index.html` slide 2 — each step is also a line in `lib/budget-store.js`, so change both together |
+| Budget lines, dialogs | `public/budget-core.js` — shared by `/budget` and the deck's slides 2 and 4 |
+| Budget styling | `public/budget.css`; then re-run `node build-budget-embed.mjs` so the deck's scoped copy keeps up |
 | The Singapore map | `public/index.html`, the `<svg>` on slide 1 (stylised — swap for real geography) |
 | Look and feel | `public/deck.css`, tokens at the top |
 | Model provider / model id | `lib/llm.js` |
