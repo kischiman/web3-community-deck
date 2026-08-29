@@ -476,22 +476,6 @@ p { line-height: 1.6; }
   gap: 24px;
 }
 
-.budget-lede {
-  max-width: 640px;
-  font-size: 14.5px;
-  line-height: 1.6;
-  color: var(--muted);
-  margin: 0 0 26px;
-}
-
-.budget-lede code {
-  font-family: var(--mono);
-  font-size: 12px;
-  background: var(--paper-2);
-  border-radius: 3px;
-  padding: 1px 5px;
-}
-
 /* The panel is the whole surface — it brings its own layout, so it gets a frame and
    room to breathe rather than being re-styled from out here. */
 .admin-frame {
