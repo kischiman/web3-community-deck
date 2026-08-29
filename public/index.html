@@ -17,6 +17,10 @@
   </button>
   <div class="nav-items" id="nav-items"></div>
 
+  <div class="nav-version" id="nav-version" role="group" aria-label="Proposal version">
+    <button type="button" data-version="1" aria-pressed="true">V1</button>
+    <button type="button" data-version="2" aria-pressed="false">V2</button>
+  </div>
 
   <div class="nav-ask" id="nav-ask">
     <button class="ask-toggle" id="ask-toggle" type="button" aria-label="Ask this document">
@@ -36,7 +40,7 @@
   <div class="inner">
     <p class="eyebrow">01 · Proposal</p>
     <h1>Digital technologies for community-building and social resilience</h1>
-    <div class="panel" data-active="true">
+    <div class="panel" data-version="1" data-active="true">
       <div class="proposal-grid">
         <div class="col">
           <div class="map-wrap">
@@ -147,6 +151,51 @@
       </div>
     </div>
 
+    <div class="panel" data-version="2">
+      <div class="proposal-grid">
+        <div class="col">
+          <div class="map-wrap">
+            <svg viewBox="50 96 930 268" role="img" aria-label="Singapore, showing the two study neighbourhoods">
+              <rect class="water" x="0" y="0" width="1000" height="500" />
+              <g class="graticule">
+                <line x1="0" y1="100" x2="1000" y2="100" /><line x1="0" y1="200" x2="1000" y2="200" />
+                <line x1="0" y1="300" x2="1000" y2="300" />
+                <line x1="200" y1="0" x2="200" y2="500" /><line x1="400" y1="0" x2="400" y2="500" />
+                <line x1="600" y1="0" x2="600" y2="500" /><line x1="800" y1="0" x2="800" y2="500" />
+              </g>
+
+              <path class="landmass" d="M 92 236 C 104 210, 128 190, 158 182 C 176 178, 190 186, 206 180 C 226 172, 240 156, 264 152 C 288 148, 306 160, 330 154 C 352 148, 370 134, 396 132 C 420 130, 438 142, 462 138 C 488 134, 508 120, 536 120 C 562 120, 580 132, 606 128 C 632 124, 652 112, 680 116 C 706 120, 722 132, 748 132 C 772 132, 790 124, 812 134 C 838 146, 858 162, 880 178 C 902 194, 922 210, 936 232 C 946 248, 944 262, 930 272 C 910 288, 884 296, 858 304 C 832 312, 806 316, 780 322 C 752 328, 726 336, 698 340 C 670 344, 642 344, 614 348 C 586 352, 560 358, 532 356 C 506 354, 484 344, 458 346 C 432 348, 410 358, 384 354 C 358 350, 336 338, 310 338 C 284 338, 262 344, 236 338 C 210 332, 188 320, 164 308 C 140 296, 118 282, 104 264 C 96 254, 88 246, 92 236 Z" />
+
+              <g class="region" data-region="control">
+                <circle class="patch" cx="330" cy="248" r="58" />
+                <g class="pin" transform="translate(330 212)">
+                  <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
+                  <circle cx="0" cy="-24" r="4.5" />
+                </g>
+                <text class="maplabel" x="330" y="330">Control Group</text>
+              </g>
+
+              <g class="region" data-region="web3">
+                <circle class="patch" cx="700" cy="240" r="58" />
+                <g class="pin" transform="translate(700 204)">
+                  <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
+                  <circle cx="0" cy="-24" r="4.5" />
+                </g>
+                <text class="maplabel" x="700" y="322">Web 3.0</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="map-legend stacked">
+            <button data-region="control" aria-pressed="false">
+              <b>Control Group · A</b>
+              <span>Conventional communication only. No digital technology actively promoted &mdash; the baseline against which the intervention is read.</span>
+            </button>
+            <button data-region="web3" aria-pressed="false">
+              <b>Web 3.0 · B</b>
+              <span>A targeted app co-designed with residents in the design sprint, supported by technology experts and kept in use for the length of the study.</span>
+            </button>
+          </div>
         </div>
 
         <div class="col">
@@ -301,7 +350,7 @@
     </div>
 
     <!-- 4a · the process -->
-    <div class="panel" data-active="true">
+    <div class="panel" data-version="1" data-active="true">
       <h1>The process</h1>
 
       <div class="phases">
@@ -421,6 +470,50 @@
     </div>
 
     <!-- ── Process V2 · from the budget document ── -->
+    <div class="panel" data-version="2">
+      <p class="v2-lede">
+        The work exactly as the budget costs it — same phases, same lines. If the plan
+        changes, it changes in one place and both documents follow.
+      </p>
+
+      <div class="phases">
+        <article class="phase" data-open="true">
+          <button class="phase-head" type="button" aria-expanded="true">
+            <span class="phase-num">Phase 1</span>
+            <span class="phase-title">Baseline</span>
+            <span class="phase-dur">3 months</span>
+            <span class="chev" aria-hidden="true"></span>
+          </button>
+          <div class="phase-body">
+            <div>
+              <h3>Objectives</h3>
+              <ul>
+                <li>Establish a credible <b>pre-evaluation baseline</b></li>
+                <li>Measure existing social resilience<br /><span class="sub-note">The survey creates the measures</span></li>
+                <li>Describe the neighbourhood context<br /><span class="sub-note">Ethnography alongside the survey</span></li>
+                <li>Select the neighbourhoods</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Outcomes</h3>
+              <ul>
+                <li><b>Two suitable neighbourhoods</b></li>
+                <li>Baseline datasets<br /><span class="sub-note">Each neighbourhood&rsquo;s starting level of resilience</span></li>
+                <li>A measurement protocol</li>
+                <li>Ethical and operational foundations</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Process</h3>
+              <ul>
+                <li>Specify the sampling and measurement plan<br /><span class="sub-note">Who counts as a resident; the social resilience questionnaire</span></li>
+                <li>Screen and identify neighbourhoods<br /><span class="sub-note">Gather what influences resilience or participation; document differences that cannot be eliminated</span></li>
+                <li>Select neighbourhoods and secure collaboration</li>
+                <li>Baseline data collection<br /><span class="sub-note">Survey, then interviews, focus groups, observation and available data</span></li>
+                <li>Map existing conditions and baseline profiles<br /><span class="sub-note">Existing community projects; vulnerabilities, needs and excluded groups; resilience indicators, opportunities, risks and contextual conditions; measures for future participation and interaction, including the quality and quantity of engagement</span></li>
+                <li>Review readiness<br /><span class="sub-note">Share an accessible baseline; confirm recruitment, consent, data governance and monitoring are ready</span></li>
+              </ul>
+            </div>
           </div>
         </article>
 
