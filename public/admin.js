@@ -257,6 +257,17 @@ function renderRates() {
 
   const on = state.tasks.filter((t) => t.prefill).length;
   $("prefill-count").textContent = `${on} of ${state.tasks.length} lines suggest a rate`;
+
+  // The public board is scope-only unless this is on. Say which state it is in
+  // rather than leaving the admin to infer it from a highlight.
+  const money = state.settings?.publicMoney === true;
+  const toggle = $("public-money");
+  toggle.classList.toggle("on", money);
+  toggle.setAttribute("aria-pressed", String(money));
+  toggle.textContent = money ? "public" : "hidden";
+  $("money-state").textContent = money
+    ? "rates, amounts and totals are public"
+    : "the board shows scope only";
 }
 
 function renderPeople() {
@@ -534,6 +545,10 @@ document.addEventListener("click", (e) => {
 
   const all = e.target.closest("[data-prefill-all]");
   if (all) return mutate("prefill-all", { value: all.dataset.prefillAll === "1" });
+
+  if (e.target.closest("#public-money")) {
+    return mutate("public-money", { value: !(state.settings?.publicMoney === true) });
+  }
 
   const rm = e.target.closest("[data-remove]");
   if (rm) {

@@ -9,7 +9,7 @@ const summaryEl = $("summary");
 const liveEl = $("live");
 const scrim = $("scrim");
 
-let state = { phases: [], units: [], tasks: [], prefillRates: false };
+let state = { phases: [], units: [], tasks: [], prefillRates: false, money: false };
 
 const esc = (s) =>
   String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -54,10 +54,10 @@ const terms = (x) =>
 
 function proposalHtml(t, p) {
   const isAssigned = t.assigned === p.id;
-  return `<div class="proposal${isAssigned ? " on" : ""}">
+  return `<div class="proposal${isAssigned ? " on" : ""}${state.money ? "" : " scope-only"}">
     <span class="who">${isAssigned ? "◆ " : ""}${esc(p.name)}</span>
     <span class="terms">${terms(p)}</span>
-    <span class="amt">${money(p.amount)}</span>
+    ${state.money ? `<span class="amt">${money(p.amount)}</span>` : ""}
     ${isAssigned ? '<span class="on-tag">on the project</span>' : ""}
     ${p.notes ? `<p class="pnote">${esc(p.notes)}</p>` : ""}
   </div>`;
@@ -105,7 +105,9 @@ function render() {
             <h2>${esc(p.title)}</h2>
             <p class="note">${esc(p.note)}</p>
           </div>
-          <span class="amount">${open} open${proposed ? ` · ${money(proposed)} committed` : ""}</span>
+          <span class="amount">${open} open${
+            state.money && proposed ? ` · ${money(proposed)} committed` : ""
+          }</span>
         </header>
         ${tasks.map(lineHtml).join("")}
         <div class="phase-foot">
@@ -126,14 +128,18 @@ function render() {
   const pct = Number(state.contingency) || 0;
   const contingency = committed * (pct / 100);
 
-  summaryEl.innerHTML = `
+  const scope = `
     <div class="row"><span>Lines</span><span class="v">${all.length}</span></div>
     <div class="row"><span>Proposals submitted</span><span class="v">${proposals}</span></div>
-    <div class="row"><span>Lines with someone on them</span><span class="v">${staffed}</span></div>
+    <div class="row"><span>Lines with someone on them</span><span class="v">${staffed}</span></div>`;
+
+  summaryEl.innerHTML = state.money
+    ? `${scope}
     <div class="row"><span>Committed so far</span><span class="v">${money(committed)}</span></div>
     <div class="row sub"><span>Contingency at ${pct}%</span><span class="v">${money(contingency)}</span></div>
     <div class="row total"><span>Committed incl. contingency</span><span class="v">${money(committed + contingency)}</span></div>
-    <div class="row sub"><span>Unstaffed lines are not costed here — that lives in the admin panel.</span><span class="v"></span></div>`;
+    <div class="row sub"><span>Unstaffed lines are not costed here — that lives in the admin panel.</span><span class="v"></span></div>`
+    : scope;
 }
 
 // ---------------------------------------------------------------- propose modal
@@ -169,10 +175,10 @@ function openClaim(id) {
       `<span class="others-label">Already proposed</span>` +
       others
         .map(
-          (p) => `<div class="other">
+          (p) => `<div class="other${state.money ? "" : " scope-only"}">
             <span class="who">${esc(p.name)}</span>
             <span class="terms">${terms(p)}</span>
-            <span class="amt">${money(p.amount)}</span>
+            ${state.money ? `<span class="amt">${money(p.amount)}</span>` : ""}
           </div>`
         )
         .join("") +
@@ -196,6 +202,9 @@ function openClaim(id) {
   unitOptions($("c-unit"), mine?.unit || t.unit || "days");
   // a rate only appears here if the admin chose to pre-fill it
   $("c-rate").value = mine?.rate ?? t.suggestedRate ?? "";
+  // With the budget hidden your own rate never reached this page. Leaving the field
+  // blank would read as "you have no rate"; it means "leave it as it was".
+  $("c-rate").placeholder = !state.money && mine ? "unchanged" : "";
   $("c-notes").value = mine?.notes || "";
   $("claim-submit").textContent = mine ? "Update your proposal" : "Add your proposal";
   $("claim-release").hidden = !mine;
@@ -208,6 +217,11 @@ function openClaim(id) {
 function calcClaim() {
   const qty = Number($("c-qty").value) || 0;
   const rate = Number($("c-rate").value) || 0;
+  // No rate in hand on a scope-only board means the total is unknown, not zero.
+  if (!state.money && !$("c-rate").value) {
+    $("c-total").textContent = "—";
+    return;
+  }
   $("c-total").textContent = money($("c-unit").value === "fixed" ? rate : qty * rate);
 }
 

@@ -751,3 +751,8 @@ h3 {
   max-height: 260px;
   overflow-y: auto;
 }
+
+/* Scope-only board: with the budget hidden there is no amount column, so the
+   terms take the space rather than leaving a gap where a figure used to be. */
+.proposal.scope-only { grid-template-columns: minmax(90px, auto) 1fr auto; }
+.other.scope-only { grid-template-columns: minmax(80px, auto) 1fr; }

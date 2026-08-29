@@ -287,6 +287,7 @@ async function handle(req, res) {
         action === "rate" ? budget.setRate(body.key, body.value)
         : action === "prefill" ? budget.setPrefill(body.id, body.value)
         : action === "prefill-all" ? budget.setPrefillAll(body.value)
+        : action === "public-money" ? budget.setPublicMoney(body.value)
         : action === "assign" ? budget.assign(body.id, body.proposalId)
         : action === "update" ? budget.updateTask(body.id, body)
         : action === "proposal-update" ? budget.updateProposal(body.id, body.proposalId, body)
