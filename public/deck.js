@@ -56,6 +56,39 @@ document.addEventListener("click", (e) => {
   if (navItems.dataset.open === "true" && !navItems.contains(e.target)) setMenu(false);
 });
 
+// ---------------------------------------------------------------- deep links
+//
+// Every slide — and every sub-panel that has its own tab — has an address, so a link
+// can be sent to one place in the deck: #/process, #/process/argentina, #/budget.
+// The address bar follows whatever is on screen, including moves the presenter makes.
+
+const slug = (s) =>
+  String(s).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+function addressFor(index, sub) {
+  const base = slug(slides[index].dataset.title);
+  const tabs = tabsFor(index);
+  const tab = tabs.length > 1 && tabs[sub] ? slug(tabs[sub].textContent) : "";
+  // a tab named after its own slide adds nothing — "#/process", not "#/process/process"
+  return tab && tab !== base ? `#/${base}/${tab}` : `#/${base}`;
+}
+
+/** Read the address bar. Returns false when it names nothing this deck has. */
+function applyAddress(push) {
+  const parts = (location.hash || "").replace(/^#\/?/, "").split("/").filter(Boolean);
+  if (!parts.length) return false;
+  const index = slides.findIndex((s) => slug(s.dataset.title) === parts[0]);
+  if (index < 0) return false;
+
+  let sub = 0;
+  if (parts[1]) {
+    const k = tabsFor(index).findIndex((t) => slug(t.textContent) === parts[1]);
+    if (k >= 0) sub = k;
+  }
+  go(index, sub, push);
+  return true;
+}
+
 function go(index, sub, push) {
   current = Math.max(0, Math.min(slides.length - 1, index));
   const panels = panelsFor(current);
@@ -81,6 +114,10 @@ function go(index, sub, push) {
 
   setMenu(false);
   window.scrollTo({ top: 0 });
+
+  const address = addressFor(current, currentSub);
+  if (location.hash !== address) history.replaceState(null, "", address);
+
   if (push) post("/api/slide", { slide: current, sub: currentSub });
 }
 
@@ -129,6 +166,10 @@ document.querySelectorAll(".phase-head").forEach((head) => {
 
 // let the ask-the-document box jump to a slide
 window.deckGo = (slide, sub) => go(slide, sub, true);
+
+// A link opens locally — it must not drag the presenter's screen with it.
+let arrivedOnLink = applyAddress(false);
+window.addEventListener("hashchange", () => applyAddress(false));
 
 // the global V1 / V2 control
 const navVersion = document.getElementById("nav-version");
@@ -186,7 +227,18 @@ stream.onmessage = (e) => render(JSON.parse(e.data));
 // ---------------------------------------------------------------- render
 
 function render(state) {
+  // Someone arriving on a link should land where the link points, not wherever the
+  // deck happens to be parked. Only the first state is overruled — after that the
+  // presenter moves everyone, this viewer included.
+  if (arrivedOnLink) {
+    arrivedOnLink = false;
+    return renderRest(state);
+  }
   if (state.slide !== current || state.sub !== currentSub) go(state.slide, state.sub, false);
+  renderRest(state);
+}
+
+function renderRest(state) {
   renderBottlenecks(state.bottlenecks);
   renderGeneration(state.generation);
 }

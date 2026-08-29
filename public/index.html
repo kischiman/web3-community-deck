@@ -46,7 +46,7 @@
       <div class="proposal-grid">
         <div class="col">
           <div class="map-wrap">
-            <svg viewBox="50 96 930 268" role="img" aria-label="Singapore, showing the two study neighbourhoods">
+            <svg viewBox="50 96 930 268" role="img" aria-label="Singapore, showing the three study neighbourhoods">
               <defs>
                 <clipPath id="landclip">
                   <path d="M 92 236 C 104 210, 128 190, 158 182 C 176 178, 190 186, 206 180 C 226 172, 240 156, 264 152 C 288 148, 306 160, 330 154 C 352 148, 370 134, 396 132 C 420 130, 438 142, 462 138 C 488 134, 508 120, 536 120 C 562 120, 580 132, 606 128 C 632 124, 652 112, 680 116 C 706 120, 722 132, 748 132 C 772 132, 790 124, 812 134 C 838 146, 858 162, 880 178 C 902 194, 922 210, 936 232 C 946 248, 944 262, 930 272 C 910 288, 884 296, 858 304 C 832 312, 806 316, 780 322 C 752 328, 726 336, 698 340 C 670 344, 642 344, 614 348 C 586 352, 560 358, 532 356 C 506 354, 484 344, 458 346 C 432 348, 410 358, 384 354 C 358 350, 336 338, 310 338 C 284 338, 262 344, 236 338 C 210 332, 188 320, 164 308 C 140 296, 118 282, 104 264 C 96 254, 88 246, 92 236 Z" />
@@ -71,42 +71,53 @@
                 <path d="M 150 190 L 310 344" /><path d="M 690 118 L 860 300" />
               </g>
 
-              <g class="region" data-region="web2">
-                <circle class="patch" cx="330" cy="248" r="52" />
-                <g class="pin" transform="translate(330 216)">
+              <g class="region" data-region="control">
+                <circle class="patch" cx="250" cy="246" r="52" />
+                <g class="pin" transform="translate(250 214)">
                   <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
                   <circle cx="0" cy="-24" r="4.5" />
                 </g>
-                <text class="maplabel" x="330" y="324">Web 2.0 · Control</text>
+                <text class="maplabel" x="250" y="322">Control Group</text>
+              </g>
+
+              <g class="region" data-region="web2">
+                <circle class="patch" cx="516" cy="252" r="52" />
+                <g class="pin" transform="translate(516 220)">
+                  <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
+                  <circle cx="0" cy="-24" r="4.5" />
+                </g>
+                <text class="maplabel" x="516" y="328">Web 2.0</text>
               </g>
 
               <g class="region" data-region="web3">
-                <circle class="patch" cx="700" cy="240" r="52" />
-                <g class="pin" transform="translate(700 208)">
+                <circle class="patch" cx="782" cy="234" r="52" />
+                <g class="pin" transform="translate(782 202)">
                   <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
                   <circle cx="0" cy="-24" r="4.5" />
                 </g>
-                <text class="maplabel" x="700" y="316">Web 3.0</text>
+                <text class="maplabel" x="782" y="310">Web 3.0</text>
               </g>
             </svg>
           </div>
 
           <div class="map-legend stacked">
+            <button data-region="control" aria-pressed="false">
+              <b>Control Group · A</b>
+              <span>Conventional communication only. No digital technology actively promoted — the baseline.</span>
+            </button>
             <button data-region="web2" aria-pressed="false">
-              <b>Web 2.0 · A (Control Group)</b>
-              <span>First-generation apps of the WhatsApp / WeChat / Facebook class, plus push messages and in-app surveys for some sub-groups — the baseline against which Web 3.0 is read.</span>
+              <b>Web 2.0 · B</b>
+              <span>First-generation apps of the WhatsApp / WeChat / Facebook class, plus push messages and in-app surveys for some sub-groups.</span>
             </button>
             <button data-region="web3" aria-pressed="false">
-              <b>Web 3.0 · B</b>
+              <b>Web 3.0 · C</b>
               <span>A targeted second-generation app, co-designed with residents and supported by technology experts.</span>
             </button>
           </div>
 
           <p class="note">
-            Two neighbourhoods in one planning district, matched on socio-demographic profile and built
+            Three neighbourhoods in one planning district, matched on socio-demographic profile and built
             environment. Baseline survey: 100 people each. Common theme — a <b>caring community</b>.
-            With both arms running apps, <b>H2 is read against each neighbourhood&rsquo;s baseline</b>,
-            which supplies the pre-digital comparison.
           </p>
         </div>
 
@@ -253,209 +264,123 @@
       <h1>The process</h1>
 
       <div class="phases">
-        <article class="phase" data-open="true">
-          <button class="phase-head" type="button" aria-expanded="true">
+        <article class="phase" data-open="false">
+          <button class="phase-head" type="button" aria-expanded="false">
             <span class="phase-num">Phase 1</span>
             <span class="phase-title">Setup &amp; research</span>
             <span class="phase-dur">6 months</span>
             <span class="chev" aria-hidden="true"></span>
           </button>
-        <div class="phase-body">
-          <div class="phase-top">
+          <div class="phase-body">
             <div>
               <h3>Objective</h3>
               <ul>
-                  <li>Identify three neighbourhoods</li>
-                  <li>Establish the baseline — including <b>what infrastructure each community already uses</b></li>
-                  <li>Generate community project ideas</li>
+                <li>Identify three neighbourhoods</li>
+                <li>Establish the baseline — including <b>what infrastructure each community already uses</b></li>
+                <li>Generate community project ideas</li>
               </ul>
             </div>
             <div>
               <h3>Outcomes</h3>
               <ul>
-                  <li>Initial survey data</li>
-                  <li>Infrastructure baseline per neighbourhood</li>
-                  <li>Summary of Web2 and Web3 primitives</li>
-                  <li>Project ideas</li>
+                <li>Initial survey data</li>
+                <li>Infrastructure baseline per neighbourhood</li>
+                <li>Summary of Web2 and Web3 primitives</li>
+                <li>Project ideas</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Process</h3>
+              <ul>
+                <li>Preparation — site selection and interviews <span class="dur">2–3 days</span></li>
+                <li>Ethnographic research <span class="dur">5–6 weeks</span></li>
+                <li><b>Infrastructure audit:</b> what they already use to coordinate and to pay — apps, devices, connectivity, and how money actually moves</li>
+                <li>Social resilience survey: social capital, rootedness, individual and community well-being</li>
+                <li>Ideation workshops <span class="dur">2–3 days</span></li>
+                <li>Synthesis <span class="dur">3 days</span></li>
               </ul>
             </div>
           </div>
+        </article>
 
-          <div class="phase-process">
-            <h3>Process</h3>
-            <div class="plines">
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name">Preparation — site selection and interviews</div>
-                <div class="pline-meta">2–3 days</div>
-                </div>
-              </div>
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name">Ethnographic research</div>
-                <div class="pline-meta">5–6 weeks</div>
-                </div>
-              </div>
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name"><b>Infrastructure audit:</b> what they already use to coordinate and to pay — apps, devices, connectivity, and how money actually moves</div>
-                </div>
-              </div>
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name">Social resilience survey: social capital, rootedness, individual and community well-being</div>
-                </div>
-              </div>
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name">Ideation workshops</div>
-                <div class="pline-meta">2–3 days</div>
-                </div>
-              </div>
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name">Synthesis</div>
-                <div class="pline-meta">3 days</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </article>
-
-        <article class="phase" data-open="true">
-          <button class="phase-head" type="button" aria-expanded="true">
+        <article class="phase" data-open="false">
+          <button class="phase-head" type="button" aria-expanded="false">
             <span class="phase-num">Phase 2</span>
             <span class="phase-title">App development &amp; usage</span>
             <span class="phase-dur">8 months</span>
             <span class="chev" aria-hidden="true"></span>
           </button>
-        <div class="phase-body">
-          <div class="phase-top">
+          <div class="phase-body">
             <div>
               <h3>Objective</h3>
               <ul>
-                  <li>Develop apps in Web2 and Web3</li>
-                  <li>Teams work on their own projects</li>
-                  <li>Data collection</li>
+                <li>Develop apps in Web2 and Web3</li>
+                <li>Teams work on their own projects</li>
+                <li>Data collection</li>
               </ul>
             </div>
             <div>
               <h3>Outcomes</h3>
               <ul>
-                  <li>Implemented apps</li>
-                  <li>Data collection pipeline</li>
-                  <li>Community project curation</li>
+                <li>Implemented apps</li>
+                <li>Data collection pipeline</li>
+                <li>Community project curation</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Process</h3>
+              <ul>
+                <li>Educational sessions</li>
+                <li>Design sprints <span class="dur">2 weeks</span></li>
+                <li>Implementation of apps and data pipeline</li>
+                <li>Deployment and onboarding</li>
+                <li>Interim in-app surveys</li>
+                <li>Completion survey, research and user testing</li>
               </ul>
             </div>
           </div>
+        </article>
 
-          <div class="phase-process">
-            <h3>Process</h3>
-            <div class="plines">
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name">Educational sessions</div>
-                </div>
-              </div>
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name">Design sprints</div>
-                <div class="pline-meta">2 weeks</div>
-                </div>
-              </div>
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name">Implementation of apps and data pipeline</div>
-                </div>
-              </div>
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name">Deployment and onboarding</div>
-                </div>
-              </div>
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name">Interim in-app surveys</div>
-                </div>
-              </div>
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name">Completion survey, research and user testing</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </article>
-
-        <article class="phase" data-open="true">
-          <button class="phase-head" type="button" aria-expanded="true">
+        <article class="phase" data-open="false">
+          <button class="phase-head" type="button" aria-expanded="false">
             <span class="phase-num">Phase 3</span>
             <span class="phase-title">Assessment</span>
             <span class="phase-dur">4 months</span>
             <span class="chev" aria-hidden="true"></span>
           </button>
-        <div class="phase-body">
-          <div class="phase-top">
+          <div class="phase-body">
             <div>
               <h3>Objective</h3>
               <ul>
-                  <li>Direct evidence of engagement and impact within communities</li>
-                  <li>Evaluation of surveys and documentation of findings</li>
+                <li>Direct evidence of engagement and impact within communities</li>
+                <li>Evaluation of surveys and documentation of findings</li>
               </ul>
             </div>
             <div>
               <h3>Outcomes</h3>
               <ul>
-                  <li>Community engagement manual</li>
-                  <li>One or two policy briefs</li>
-                  <li>Journal publications</li>
+                <li>Community engagement manual</li>
+                <li>One or two policy briefs</li>
+                <li>Journal publications</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Process</h3>
+              <ul>
+                <li>Repeat the Phase One survey with the same respondents, plus the residents who built the apps</li>
+                <li>App telemetry</li>
+                <li>Compare results across the three neighbourhoods against their own baselines</li>
+                <li>Share findings with participants first, then citizens and policymakers</li>
+                <li>Mitigate confounding factors</li>
               </ul>
             </div>
           </div>
-
-          <div class="phase-process">
-            <h3>Process</h3>
-            <div class="plines">
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name">Repeat the Phase One survey with the same respondents, plus the residents who built the apps</div>
-                </div>
-              </div>
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name">App telemetry</div>
-                </div>
-              </div>
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name">Compare results across the three neighbourhoods against their own baselines</div>
-                </div>
-              </div>
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name">Share findings with participants first, then citizens and policymakers</div>
-                </div>
-              </div>
-              <div class="pline">
-                <div class="pline-detail">
-                  <div class="pline-name">Mitigate confounding factors</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </article>
+        </article>
       </div>
     </div>
 
     <!-- ── Process V2 · from the budget document ── -->
     <div class="panel" data-version="2">
-      <p class="v2-lede">
-        Phase by phase — what it is for, what it should produce, and how it runs.
-        The costing lives in the budget.
-      </p>
 
       <div class="phases">
         <article class="phase" data-open="true">
@@ -963,21 +888,16 @@
         <p class="eyebrow">04 · Working document</p>
         <h1>Residency budget</h1>
       </div>
-      <span class="live" id="deck-budget-live">connecting…</span>
     </div>
 
     <p class="budget-lede">
-      Propose yourself for anything you could take on — quantity, unit and your rate.
-      State lives on the server, so everyone sees the same board. Who ends up on the
-      project is decided separately.
+      The rate card, every proposal that has come in, and who goes on the project.
+      Sign in to work on it — without <code>ADMIN_PASSWORD</code> set on the server the
+      panel is unavailable rather than open.
     </p>
 
-    <div class="budget-scope budget-board" id="deck-budget-board">
-      <p class="budget-empty">Loading the board…</p>
-    </div>
-
-    <div class="budget-scope">
-      <section class="summary" id="deck-budget-summary"></section>
+    <div class="admin-frame">
+      <iframe src="/admin" title="Residency budget — admin panel"></iframe>
     </div>
   </div>
 </section>

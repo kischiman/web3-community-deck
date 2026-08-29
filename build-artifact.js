@@ -121,6 +121,32 @@ document.addEventListener("click", (e) => {
   if (navItems.dataset.open === "true" && !navItems.contains(e.target)) setMenu(false);
 });
 
+// Every slide, and every sub-panel with a tab, has an address: #/process/argentina.
+const slug = (s) =>
+  String(s).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+function addressFor(index, sub) {
+  const base = slug(slides[index].dataset.title);
+  const tabs = tabsFor(index);
+  const tab = tabs.length > 1 && tabs[sub] ? slug(tabs[sub].textContent) : "";
+  // a tab named after its own slide adds nothing — "#/process", not "#/process/process"
+  return tab && tab !== base ? "#/" + base + "/" + tab : "#/" + base;
+}
+
+function applyAddress() {
+  const parts = (location.hash || "").replace(/^#\/?/, "").split("/").filter(Boolean);
+  if (!parts.length) return false;
+  const index = slides.findIndex((s) => slug(s.dataset.title) === parts[0]);
+  if (index < 0) return false;
+  let sub = 0;
+  if (parts[1]) {
+    const k = tabsFor(index).findIndex((t) => slug(t.textContent) === parts[1]);
+    if (k >= 0) sub = k;
+  }
+  go(index, sub);
+  return true;
+}
+
 function go(index, sub) {
   current = Math.max(0, Math.min(slides.length - 1, index));
   const panels = panelsFor(current);
@@ -149,6 +175,9 @@ function go(index, sub) {
 
   setMenu(false);
   window.scrollTo({ top: 0 });
+
+  const address = addressFor(current, currentSub);
+  if (location.hash !== address) history.replaceState(null, "", address);
 }
 
 function step(dir) {
@@ -333,6 +362,9 @@ if (navVersion) {
 }
 
 window.deckGo = (slide, sub) => go(slide, sub);
+
+applyAddress();
+window.addEventListener("hashchange", applyAddress);
 
 ${askJs}
 `;

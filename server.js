@@ -22,18 +22,20 @@ const PORT = Number(process.env.PORT) || 4400;
 // ---------------------------------------------------------------- state
 
 // The deck's shape, so the phone remote can walk panels as well as slides.
+// Mirrors the slides in public/index.html, in order — the phone reads its labels from
+// here and /api/slide clamps against it, so a slide added or moved there must be moved
+// here too. Both process versions are listed; the client shows whichever is selected.
 const DECK = [
   { title: "Proposal", panels: ["Proposal"] },
-  { title: "Web3", panels: ["Web3"] },
-  { title: "Practices", panels: ["Practices"] },
   { title: "Process", panels: ["Process V1", "Process V2", "Argentina", "Australia", "Japan"] },
   { title: "Practical examples", panels: ["Practical examples"] },
+  { title: "Budget", panels: ["Budget"] },
 ];
 
 const STEPS = DECK.flatMap((s, slide) => s.panels.map((panel, sub) => ({ slide, sub, panel, title: s.title })));
 
 const state = {
-  slide: 0, // 0..4, mirrored between screen and phone
+  slide: 0, // index into DECK, mirrored between screen and phone
   sub: 0, // panel within the slide
   bottlenecks: [], // { id, text }
   generation: {

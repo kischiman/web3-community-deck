@@ -51,8 +51,9 @@ The startup banner tells you which provider is live, so you can confirm before a
 | **Deployed** (below) | ✅ | ✅ anywhere | ✅ |
 | **GitHub Pages** (`docs/index.html`) | ✅ | ❌ no server | ❌ offline fallbacks |
 
-The budget is a live board, so the deck's budget slide exists only where a server does:
-both static builds drop it, and the process steps fall back to the plain list in the markup.
+The deck's budget slide frames the admin panel, which needs a server and `ADMIN_PASSWORD`:
+both static builds drop the slide, and the process steps fall back to the plain list in the markup.
+The public propose-yourself board stays at `/budget`.
 
 The companion is a remote control, not a page: it POSTs to the server and listens on an
 SSE stream to stay in step with the big screen. Static hosting can't provide that, which is
@@ -83,6 +84,7 @@ before a live session so the first request isn't a cold start.
 | | |
 |---|---|
 | Big screen | `←` `→` to move, `1`–`4` to jump, or the top nav |
+| Any slide | Has its own address — `#/proposal`, `#/process`, `#/process/argentina`, `#/budget`. Opening one lands you there without moving the presenter's screen; after that you follow along as usual. |
 | Phone | `←` `→` at the bottom moves the big screen too |
 | Slide 1 | Click a region of the map (or a legend card) to highlight it |
 | Slide 4 | Type on the phone → appears on screen · drag rows on screen, or `↑`/`↓` on the phone, to prioritise · **Generate solutions** from either surface |
@@ -93,7 +95,8 @@ before a live session so the first request isn't a cold start.
 |---|---|
 | Slides 1–4 copy | `public/index.html` — search `PLACEHOLDER` |
 | Research-process steps | `public/index.html` slide 2 — each step is also a line in `lib/budget-store.js`, so change both together |
-| Budget lines, dialogs | `public/budget-core.js` — shared by `/budget` and the deck's slides 2 and 4 |
+| Budget lines, dialogs | `public/budget-core.js` — shared by `/budget` and the deck's process slide |
+| Slide list | `public/index.html` **and** `DECK` in `server.js` — the phone reads its labels from the server, so both must agree |
 | Budget styling | `public/budget.css`; then re-run `node build-budget-embed.mjs` so the deck's scoped copy keeps up |
 | The Singapore map | `public/index.html`, the `<svg>` on slide 1 (stylised — swap for real geography) |
 | Look and feel | `public/deck.css`, tokens at the top |
