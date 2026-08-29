@@ -16,13 +16,8 @@ let currentSub = 0;
 let lastRenderedIds = "";
 let lastGenStamp = "";
 
-// Which proposal version is on screen. Panels and tabs may be tagged for one
-// version; anything untagged (the precedents) shows in both.
-let version = "1";
-
-const forVersion = (el) => !el.dataset.version || el.dataset.version === version;
-const panelsFor = (i) => [...slides[i].querySelectorAll(".panel")].filter(forVersion);
-const tabsFor = (i) => [...slides[i].querySelectorAll(".subnav button")].filter(forVersion);
+const panelsFor = (i) => [...slides[i].querySelectorAll(".panel")];
+const tabsFor = (i) => [...slides[i].querySelectorAll(".subnav button")];
 
 const esc = (s) =>
   String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -98,12 +93,6 @@ function go(index, sub, push) {
   [...navItems.children].forEach((b, i) => b.setAttribute("aria-current", String(i === current)));
   panels.forEach((p, i) => p.setAttribute("data-active", String(i === currentSub)));
 
-  // hide any panel or tab belonging to the other version outright
-  slides.forEach((s) => {
-    s.querySelectorAll(".panel").forEach((p) => { if (!forVersion(p)) p.setAttribute("data-active", "false"); });
-    s.querySelectorAll(".subnav button").forEach((b) => { b.hidden = !forVersion(b); });
-  });
-
   const tabs = tabsFor(current);
   tabs.forEach((t, i) => t.setAttribute("aria-selected", String(i === currentSub)));
 
@@ -171,18 +160,6 @@ window.deckGo = (slide, sub) => go(slide, sub, true);
 let arrivedOnLink = applyAddress(false);
 window.addEventListener("hashchange", () => applyAddress(false));
 
-// the global V1 / V2 control
-const navVersion = document.getElementById("nav-version");
-
-navVersion.addEventListener("click", (e) => {
-  const btn = e.target.closest("button");
-  if (!btn || btn.dataset.version === version) return;
-  version = btn.dataset.version;
-  navVersion.querySelectorAll("button").forEach((b) =>
-    b.setAttribute("aria-pressed", String(b.dataset.version === version))
-  );
-  go(current, 0, true); // land on the first panel this version actually has
-});
 
 go(0, 0, false);
 

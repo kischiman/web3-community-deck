@@ -51,6 +51,9 @@ The startup banner tells you which provider is live, so you can confirm before a
 | **Deployed** (below) | ✅ | ✅ anywhere | ✅ |
 | **GitHub Pages** (`docs/index.html`) | ✅ | ❌ no server | ❌ offline fallbacks |
 
+The Pages copy carries `noindex`: the link works for anyone who has it, search engines
+leave it alone.
+
 The deck's budget slide frames the admin panel, which needs a server and `ADMIN_PASSWORD`:
 both static builds drop the slide, and the process steps fall back to the plain list in the markup.
 The public propose-yourself board stays at `/budget`.

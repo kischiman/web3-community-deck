@@ -24,10 +24,10 @@ const PORT = Number(process.env.PORT) || 4400;
 // The deck's shape, so the phone remote can walk panels as well as slides.
 // Mirrors the slides in public/index.html, in order — the phone reads its labels from
 // here and /api/slide clamps against it, so a slide added or moved there must be moved
-// here too. Both process versions are listed; the client shows whichever is selected.
+// here too.
 const DECK = [
   { title: "Proposal", panels: ["Proposal"] },
-  { title: "Process", panels: ["Process V1", "Process V2", "Argentina", "Australia", "Japan"] },
+  { title: "Process", panels: ["Process", "Argentina", "Australia", "Japan"] },
   { title: "Practical examples", panels: ["Practical examples"] },
   { title: "Budget", panels: ["Budget"] },
 ];

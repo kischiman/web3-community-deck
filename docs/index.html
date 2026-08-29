@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="description" content="Web3 for community building and social resilience — a proposal, its precedents, and a live workshop." />
+<meta name="robots" content="noindex, nofollow" />
 <meta name="color-scheme" content="light" />
 <title>Web3 for Social Resilience</title>
 <style>
@@ -160,42 +161,6 @@ body { overflow-x: hidden; }
   line-height: 1.6;
   color: var(--muted);
   max-width: 78ch;
-}
-
-/* --------------------------------------------------- global proposal version */
-
-.nav-version {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  flex: 0 0 auto;
-  margin-left: 14px;
-  padding: 3px;
-  background: var(--paper-2);
-  border: 1px solid var(--rule);
-  border-radius: 7px;
-  align-self: center;
-}
-
-.nav-version button {
-  border: 0;
-  background: none;
-  font: inherit;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
-  padding: 5px 11px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.nav-version button:hover { color: var(--ink); }
-
-.nav-version button[aria-pressed="true"] {
-  background: #fff;
-  color: var(--accent);
-  box-shadow: 0 1px 2px rgba(23, 21, 15, 0.09);
 }
 
 /* the budget's line list, shown as the process in V2 */
@@ -1255,7 +1220,6 @@ p { line-height: 1.6; }
   }
 
   .nav-toggle { display: grid; }
-  .nav-version { margin-left: 8px; }
 
   /* the field would crowd the bar — it opens as a full-width row beneath it */
   .nav-ask { position: static; margin-left: 0; }
@@ -1360,17 +1324,12 @@ p { line-height: 1.6; }
   <div class="inner">
     <p class="eyebrow">01 · Proposal</p>
     <h1>Digital technologies for community-building and social resilience</h1>
+
     <div class="panel" data-active="true">
       <div class="proposal-grid">
         <div class="col">
           <div class="map-wrap">
-            <svg viewBox="50 96 930 268" role="img" aria-label="Singapore, showing the three study neighbourhoods">
-              <defs>
-                <clipPath id="landclip">
-                  <path d="M 92 236 C 104 210, 128 190, 158 182 C 176 178, 190 186, 206 180 C 226 172, 240 156, 264 152 C 288 148, 306 160, 330 154 C 352 148, 370 134, 396 132 C 420 130, 438 142, 462 138 C 488 134, 508 120, 536 120 C 562 120, 580 132, 606 128 C 632 124, 652 112, 680 116 C 706 120, 722 132, 748 132 C 772 132, 790 124, 812 134 C 838 146, 858 162, 880 178 C 902 194, 922 210, 936 232 C 946 248, 944 262, 930 272 C 910 288, 884 296, 858 304 C 832 312, 806 316, 780 322 C 752 328, 726 336, 698 340 C 670 344, 642 344, 614 348 C 586 352, 560 358, 532 356 C 506 354, 484 344, 458 346 C 432 348, 410 358, 384 354 C 358 350, 336 338, 310 338 C 284 338, 262 344, 236 338 C 210 332, 188 320, 164 308 C 140 296, 118 282, 104 264 C 96 254, 88 246, 92 236 Z" />
-                </clipPath>
-              </defs>
-
+            <svg viewBox="50 96 930 268" role="img" aria-label="Singapore, showing the two study neighbourhoods">
               <rect class="water" x="0" y="0" width="1000" height="500" />
               <g class="graticule">
                 <line x1="0" y1="100" x2="1000" y2="100" /><line x1="0" y1="200" x2="1000" y2="200" />
@@ -1381,61 +1340,42 @@ p { line-height: 1.6; }
 
               <path class="landmass" d="M 92 236 C 104 210, 128 190, 158 182 C 176 178, 190 186, 206 180 C 226 172, 240 156, 264 152 C 288 148, 306 160, 330 154 C 352 148, 370 134, 396 132 C 420 130, 438 142, 462 138 C 488 134, 508 120, 536 120 C 562 120, 580 132, 606 128 C 632 124, 652 112, 680 116 C 706 120, 722 132, 748 132 C 772 132, 790 124, 812 134 C 838 146, 858 162, 880 178 C 902 194, 922 210, 936 232 C 946 248, 944 262, 930 272 C 910 288, 884 296, 858 304 C 832 312, 806 316, 780 322 C 752 328, 726 336, 698 340 C 670 344, 642 344, 614 348 C 586 352, 560 358, 532 356 C 506 354, 484 344, 458 346 C 432 348, 410 358, 384 354 C 358 350, 336 338, 310 338 C 284 338, 262 344, 236 338 C 210 332, 188 320, 164 308 C 140 296, 118 282, 104 264 C 96 254, 88 246, 92 236 Z" />
 
-              <g class="roads" clip-path="url(#landclip)">
-                <path d="M 90 268 C 260 240, 420 268, 560 246 C 700 224, 830 246, 950 226" />
-                <path d="M 100 214 C 280 206, 430 232, 600 210 C 740 192, 860 210, 960 250" />
-                <path d="M 240 140 L 268 360" /><path d="M 430 124 L 452 358" />
-                <path d="M 610 124 L 630 352" /><path d="M 790 128 L 800 322" />
-                <path d="M 150 190 L 310 344" /><path d="M 690 118 L 860 300" />
-              </g>
-
               <g class="region" data-region="control">
-                <circle class="patch" cx="250" cy="246" r="52" />
-                <g class="pin" transform="translate(250 214)">
+                <circle class="patch" cx="330" cy="248" r="58" />
+                <g class="pin" transform="translate(330 212)">
                   <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
                   <circle cx="0" cy="-24" r="4.5" />
                 </g>
-                <text class="maplabel" x="250" y="322">Control Group</text>
-              </g>
-
-              <g class="region" data-region="web2">
-                <circle class="patch" cx="516" cy="252" r="52" />
-                <g class="pin" transform="translate(516 220)">
-                  <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
-                  <circle cx="0" cy="-24" r="4.5" />
-                </g>
-                <text class="maplabel" x="516" y="328">Web 2.0</text>
+                <text class="maplabel" x="330" y="330">Web 2.0 · Control</text>
               </g>
 
               <g class="region" data-region="web3">
-                <circle class="patch" cx="782" cy="234" r="52" />
-                <g class="pin" transform="translate(782 202)">
+                <circle class="patch" cx="700" cy="240" r="58" />
+                <g class="pin" transform="translate(700 204)">
                   <path d="M0 0 C -6 -10 -12 -17 -12 -24 A 12 12 0 1 1 12 -24 C 12 -17 6 -10 0 0 Z" />
                   <circle cx="0" cy="-24" r="4.5" />
                 </g>
-                <text class="maplabel" x="782" y="310">Web 3.0</text>
+                <text class="maplabel" x="700" y="322">Web 3.0</text>
               </g>
             </svg>
           </div>
 
           <div class="map-legend stacked">
             <button data-region="control" aria-pressed="false">
-              <b>Control Group · A</b>
-              <span>Conventional communication only. No digital technology actively promoted — the baseline.</span>
-            </button>
-            <button data-region="web2" aria-pressed="false">
-              <b>Web 2.0 · B</b>
-              <span>First-generation apps of the WhatsApp / WeChat / Facebook class, plus push messages and in-app surveys for some sub-groups.</span>
+              <b>Web 2.0 · A (Control Group)</b>
+              <span>First-generation apps of the WhatsApp / WeChat / Facebook class, plus push messages and in-app surveys for some sub-groups &mdash; the baseline against which Web 3.0 is read.</span>
             </button>
             <button data-region="web3" aria-pressed="false">
-              <b>Web 3.0 · C</b>
-              <span>A targeted second-generation app, co-designed with residents and supported by technology experts.</span>
+              <b>Web 3.0 · B</b>
+              <span>A targeted app co-designed with residents in the design sprint, supported by technology experts and kept in use for the length of the study.</span>
             </button>
           </div>
 
           <p class="note">
-            Three neighbourhoods in one planning district, matched on socio-demographic profile and built
-            environment. Baseline survey: 100 people each. Common theme — a <b>caring community</b>.
+            Two neighbourhoods in one planning district, matched on socio-demographic profile and built
+            environment. Common theme &mdash; a <b>caring community</b>. With both arms running apps,
+            <b>H2 is read against each neighbourhood&rsquo;s Phase&nbsp;1 baseline</b>, which supplies the
+            pre-digital comparison.
           </p>
         </div>
 
@@ -1444,7 +1384,7 @@ p { line-height: 1.6; }
             <h3>Goals</h3>
             <ul>
               <li>Understand how <b>ground-up community-building initiatives</b> that build social resilience can be facilitated through digital apps.</li>
-              <li>Answer the core question: <b>which of the two generations — Web 2.0 or Web 3.0 — is more effective</b> at letting citizens address a common issue together, and <b>which features make the difference</b>.</li>
+              <li>Test whether <b>Web 3.0 changes what a neighbourhood can do together</b> &mdash; permissionless membership, co-creation, norm-setting, verified pro-social behaviour &mdash; against a Web&nbsp;2.0 baseline.</li>
               <li>Define effectiveness twice over: how quickly and sustainably a project is realised, and how strongly trust, social capital and social beliefs improve.</li>
               <li>Produce a report and journal publications, a <b>community engagement manual</b>, and a policy brief for MCCY, MCI and IMDA.</li>
             </ul>
@@ -1455,7 +1395,7 @@ p { line-height: 1.6; }
             <dl class="hyp">
               <div>
                 <dt>H1</dt>
-                <dd>Social resilience is strengthened when people work together, ground-up, to identify and address common needs — with spillover onto the wider neighbourhood. Without physical contact, collaboration rarely extends past a small group of trusted initiators.</dd>
+                <dd>Social resilience is strengthened when people work together, ground-up, to identify and address common needs &mdash; with spillover onto the wider neighbourhood.</dd>
               </div>
               <div>
                 <dt>H2</dt>
@@ -1463,14 +1403,13 @@ p { line-height: 1.6; }
               </div>
               <div>
                 <dt>H3</dt>
-                <dd>Web 3.0 creates conditions for deeper connection — permissionless membership, co-creation, norm-setting, verified pro-social behaviour — and so enhances resilience and delivery more than any other form of digital engagement.</dd>
+                <dd>Web 3.0 creates conditions for deeper connection &mdash; permissionless membership, co-creation, norm-setting, verified pro-social behaviour &mdash; and so enhances resilience and delivery more than first-generation apps alone.</dd>
               </div>
             </dl>
           </div>
         </div>
       </div>
     </div>
-
 
   </div>
 </section>
@@ -1493,125 +1432,220 @@ p { line-height: 1.6; }
     </div>
 
     <!-- 4a · the process -->
+
+    <!-- ── Process V2 · from the budget document ── -->
     <div class="panel" data-active="true">
-      <h1>The process</h1>
 
       <div class="phases">
-        <article class="phase" data-open="false">
-          <button class="phase-head" type="button" aria-expanded="false">
+        <article class="phase" data-open="true">
+          <button class="phase-head" type="button" aria-expanded="true">
             <span class="phase-num">Phase 1</span>
-            <span class="phase-title">Setup &amp; research</span>
-            <span class="phase-dur">6 months</span>
+            <span class="phase-title">Establish a credible pre-evaluation baseline</span>
+            <span class="phase-dur">3 months</span>
             <span class="chev" aria-hidden="true"></span>
           </button>
-          <div class="phase-body">
+        <div class="phase-body">
+          <div class="phase-top">
             <div>
-              <h3>Objective</h3>
+              <h3>Objectives</h3>
               <ul>
-                <li>Identify three neighbourhoods</li>
-                <li>Establish the baseline — including <b>what infrastructure each community already uses</b></li>
-                <li>Generate community project ideas</li>
+                  <li>Measure existing social resilience<br /><span class="sub-note">The survey creates the measures</span></li>
+                  <li>Describe the neighbourhood context<br /><span class="sub-note">Ethnography alongside the survey</span></li>
+                  <li>Select the neighbourhoods</li>
               </ul>
             </div>
             <div>
               <h3>Outcomes</h3>
               <ul>
-                <li>Initial survey data</li>
-                <li>Infrastructure baseline per neighbourhood</li>
-                <li>Summary of Web2 and Web3 primitives</li>
-                <li>Project ideas</li>
-              </ul>
-            </div>
-            <div>
-              <h3>Process</h3>
-              <ul>
-                <li>Preparation — site selection and interviews <span class="dur">2–3 days</span></li>
-                <li>Ethnographic research <span class="dur">5–6 weeks</span></li>
-                <li><b>Infrastructure audit:</b> what they already use to coordinate and to pay — apps, devices, connectivity, and how money actually moves</li>
-                <li>Social resilience survey: social capital, rootedness, individual and community well-being</li>
-                <li>Ideation workshops <span class="dur">2–3 days</span></li>
-                <li>Synthesis <span class="dur">3 days</span></li>
+                  <li><b>Two suitable neighbourhoods</b></li>
+                  <li>Baseline datasets<br /><span class="sub-note">Each neighbourhood&rsquo;s starting level of resilience</span></li>
+                  <li>A measurement protocol</li>
+                  <li>Ethical and operational foundations</li>
               </ul>
             </div>
           </div>
-        </article>
 
-        <article class="phase" data-open="false">
-          <button class="phase-head" type="button" aria-expanded="false">
+          <div class="phase-process">
+            <h3>Process</h3>
+            <div class="plines" data-budget-phases="p1">
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Specify the sampling and measurement plan</div>
+                  <div class="pline-note">Who counts as a resident; the social resilience questionnaire</div>
+                </div>
+              </div>
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Screen and identify neighbourhoods</div>
+                  <div class="pline-note">Gather what influences resilience or participation; document differences that cannot be eliminated</div>
+                </div>
+              </div>
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Select neighbourhoods and secure collaboration</div>
+                </div>
+              </div>
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Baseline data collection</div>
+                  <div class="pline-note">Survey, then interviews, focus groups, observation and available data</div>
+                </div>
+              </div>
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Map existing conditions and baseline profiles</div>
+                  <div class="pline-note">Existing community projects; vulnerabilities, needs and excluded groups; resilience indicators, opportunities, risks and contextual conditions; measures for future participation and interaction, including the quality and quantity of engagement</div>
+                </div>
+              </div>
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Review readiness</div>
+                  <div class="pline-note">Share an accessible baseline; confirm recruitment, consent, data governance and monitoring are ready</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+        <article class="phase" data-open="true">
+          <button class="phase-head" type="button" aria-expanded="true">
             <span class="phase-num">Phase 2</span>
-            <span class="phase-title">App development &amp; usage</span>
+            <span class="phase-title">Design, intervention, implementation</span>
             <span class="phase-dur">8 months</span>
             <span class="chev" aria-hidden="true"></span>
           </button>
-          <div class="phase-body">
+        <div class="phase-body">
+          <div class="phase-top">
             <div>
-              <h3>Objective</h3>
+              <h3>Objectives</h3>
               <ul>
-                <li>Develop apps in Web2 and Web3</li>
-                <li>Teams work on their own projects</li>
-                <li>Data collection</li>
+                  <li>Turn baseline findings into meaningful action<br /><span class="sub-note">Through workshops with residents</span></li>
+                  <li>Test the technology conditions<br /><span class="sub-note">While ensuring offline inclusion</span></li>
+                  <li>Gather evidence<br /><span class="sub-note">Quality of engagement &mdash; who took part, and how many</span></li>
+                  <li>Prepare for evaluation</li>
               </ul>
             </div>
             <div>
               <h3>Outcomes</h3>
               <ul>
-                <li>Implemented apps</li>
-                <li>Data collection pipeline</li>
-                <li>Community project curation</li>
-              </ul>
-            </div>
-            <div>
-              <h3>Process</h3>
-              <ul>
-                <li>Educational sessions</li>
-                <li>Design sprints <span class="dur">2 weeks</span></li>
-                <li>Implementation of apps and data pipeline</li>
-                <li>Deployment and onboarding</li>
-                <li>Interim in-app surveys</li>
-                <li>Completion survey, research and user testing</li>
+                  <li>Feasible community projects</li>
+                  <li>Broad and diverse participation</li>
+                  <li>Evidence of collaboration</li>
+                  <li>Effective use of the tooling</li>
+                  <li><b>Sufficient contrast between the technology approaches</b></li>
               </ul>
             </div>
           </div>
-        </article>
 
-        <article class="phase" data-open="false">
-          <button class="phase-head" type="button" aria-expanded="false">
+          <div class="phase-process">
+            <h3>Process</h3>
+            <div class="plines" data-budget-phases="p2a p2b p2c">
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Present the findings from Phase 1</div>
+                  <div class="pline-note">Invite residents to validate and prioritise them; recruit the core groups</div>
+                </div>
+              </div>
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Project identification</div>
+                  <div class="pline-note">Workshops to prioritise and select projects; optionally neighbourhood walks, online discussions and meetings</div>
+                </div>
+              </div>
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Co-design the intervention</div>
+                  <div class="pline-note">Educational sessions and training, then a design sprint for each group</div>
+                </div>
+              </div>
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Monitor and maintain engagement</div>
+                  <div class="pline-note">The data collection pipeline; sustaining usage momentum across both groups</div>
+                </div>
+              </div>
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Complete the projects and prepare Phase 3</div>
+                  <div class="pline-note">Encourage completion; compile the records and gather feedback</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+        <article class="phase" data-open="true">
+          <button class="phase-head" type="button" aria-expanded="true">
             <span class="phase-num">Phase 3</span>
-            <span class="phase-title">Assessment</span>
+            <span class="phase-title">Assessment and second survey</span>
             <span class="phase-dur">4 months</span>
             <span class="chev" aria-hidden="true"></span>
           </button>
-          <div class="phase-body">
+        <div class="phase-body">
+          <div class="phase-top">
             <div>
-              <h3>Objective</h3>
+              <h3>Objectives</h3>
               <ul>
-                <li>Direct evidence of engagement and impact within communities</li>
-                <li>Evaluation of surveys and documentation of findings</li>
+                  <li>Measure changes in social resilience<br /><span class="sub-note">Assess the community project experience; evaluate the role of the technology</span></li>
+                  <li>Compare the intervention approaches</li>
+                  <li>Document lessons and produce recommendations</li>
               </ul>
             </div>
             <div>
               <h3>Outcomes</h3>
               <ul>
-                <li>Community engagement manual</li>
-                <li>One or two policy briefs</li>
-                <li>Journal publications</li>
-              </ul>
-            </div>
-            <div>
-              <h3>Process</h3>
-              <ul>
-                <li>Repeat the Phase One survey with the same respondents, plus the residents who built the apps</li>
-                <li>App telemetry</li>
-                <li>Compare results across the three neighbourhoods against their own baselines</li>
-                <li>Share findings with participants first, then citizens and policymakers</li>
-                <li>Mitigate confounding factors</li>
+                  <li>Completion of the follow-up survey</li>
+                  <li>A clear picture of changes in social resilience<br /><span class="sub-note">Evidence for changes in the projects; differences linked to the technology; the likely confounding factors</span></li>
+                  <li>Rich qualitative feedback, and an account of unintended consequences</li>
+                  <li><b>Clear, actionable recommendations</b></li>
               </ul>
             </div>
           </div>
-        </article>
+
+          <div class="phase-process">
+            <h3>Process</h3>
+            <div class="plines" data-budget-phases="p3">
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Re-use the Phase 1 survey</div>
+                  <div class="pline-note">Conducted with the original participants where possible</div>
+                </div>
+              </div>
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Gather qualitative explanations</div>
+                </div>
+              </div>
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Compile the records from Phase 2</div>
+                </div>
+              </div>
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Analyse change and compare neighbourhoods</div>
+                  <div class="pline-note">Phase 1 and Phase 3 surveys against each other</div>
+                </div>
+              </div>
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Validate the findings with the communities</div>
+                </div>
+              </div>
+              <div class="pline">
+                <div class="pline-detail">
+                  <div class="pline-name">Report and maintenance</div>
+                  <div class="pline-note">Outcomes, limitations and recommendations; a handover plan to maintain the community projects</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
       </div>
     </div>
-
 
     <!-- 4b · Argentina -->
     <div class="panel">
@@ -2269,10 +2303,8 @@ let currentSub = 0;
 let items = [];
 let nextId = 1;
 
-let version = document.querySelector('[data-version="2"]') ? "2" : "1";
-const forVersion = (el) => !el.dataset.version || el.dataset.version === version;
-const panelsFor = (i) => [...slides[i].querySelectorAll(".panel")].filter(forVersion);
-const tabsFor = (i) => [...slides[i].querySelectorAll(".subnav button")].filter(forVersion);
+const panelsFor = (i) => [...slides[i].querySelectorAll(".panel")];
+const tabsFor = (i) => [...slides[i].querySelectorAll(".subnav button")];
 
 const esc = (s) =>
   String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -2338,14 +2370,6 @@ function go(index, sub) {
   [...navItems.children].forEach((b, i) => b.setAttribute("aria-current", String(i === current)));
   panels.forEach((p, i) => p.setAttribute("data-active", String(i === currentSub)));
 
-  slides.forEach((s) => {
-    s.querySelectorAll(".panel").forEach((p) => { if (!forVersion(p)) p.setAttribute("data-active", "false"); });
-    s.querySelectorAll(".subnav button").forEach((b) => { b.hidden = !forVersion(b); });
-  });
-
-  document.querySelectorAll("#nav-version button").forEach((b) =>
-    b.setAttribute("aria-pressed", String(b.dataset.version === version))
-  );
 
   const tabs = tabsFor(current);
   tabs.forEach((t, i) => t.setAttribute("aria-selected", String(i === currentSub)));
@@ -2529,19 +2553,6 @@ resetBtn.addEventListener("click", () => {
   clearArmed = setTimeout(() => { clearArmed = null; resetBtn.textContent = "Clear"; }, 3000);
 });
 
-// the global V1 / V2 control
-const navVersion = document.getElementById("nav-version");
-if (navVersion) {
-  navVersion.addEventListener("click", (e) => {
-    const btn = e.target.closest("button");
-    if (!btn || btn.dataset.version === version) return;
-    version = btn.dataset.version;
-    navVersion.querySelectorAll("button").forEach((b) =>
-      b.setAttribute("aria-pressed", String(b.dataset.version === version))
-    );
-    go(current, 0);
-  });
-}
 
 window.deckGo = (slide, sub) => go(slide, sub);
 

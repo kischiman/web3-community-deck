@@ -14,10 +14,6 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PUB = path.join(HERE, "public");
 const OUT = path.join(HERE, "dist", "deck.html");
 
-// The artifact carries both versions. GitHub Pages is world-readable and indexed,
-// so V2 is stripped from that build unless --with-v2 says otherwise.
-const PUBLISH_V2 = process.argv.includes("--with-v2");
-
 const MIME = { ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml" };
 
 function dataUri(relPath) {
@@ -87,10 +83,8 @@ let currentSub = 0;
 let items = [];
 let nextId = 1;
 
-let version = document.querySelector('[data-version="2"]') ? "2" : "1";
-const forVersion = (el) => !el.dataset.version || el.dataset.version === version;
-const panelsFor = (i) => [...slides[i].querySelectorAll(".panel")].filter(forVersion);
-const tabsFor = (i) => [...slides[i].querySelectorAll(".subnav button")].filter(forVersion);
+const panelsFor = (i) => [...slides[i].querySelectorAll(".panel")];
+const tabsFor = (i) => [...slides[i].querySelectorAll(".subnav button")];
 
 const esc = (s) =>
   String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -156,14 +150,6 @@ function go(index, sub) {
   [...navItems.children].forEach((b, i) => b.setAttribute("aria-current", String(i === current)));
   panels.forEach((p, i) => p.setAttribute("data-active", String(i === currentSub)));
 
-  slides.forEach((s) => {
-    s.querySelectorAll(".panel").forEach((p) => { if (!forVersion(p)) p.setAttribute("data-active", "false"); });
-    s.querySelectorAll(".subnav button").forEach((b) => { b.hidden = !forVersion(b); });
-  });
-
-  document.querySelectorAll("#nav-version button").forEach((b) =>
-    b.setAttribute("aria-pressed", String(b.dataset.version === version))
-  );
 
   const tabs = tabsFor(current);
   tabs.forEach((t, i) => t.setAttribute("aria-selected", String(i === currentSub)));
@@ -347,19 +333,6 @@ resetBtn.addEventListener("click", () => {
   clearArmed = setTimeout(() => { clearArmed = null; resetBtn.textContent = "Clear"; }, 3000);
 });
 
-// the global V1 / V2 control
-const navVersion = document.getElementById("nav-version");
-if (navVersion) {
-  navVersion.addEventListener("click", (e) => {
-    const btn = e.target.closest("button");
-    if (!btn || btn.dataset.version === version) return;
-    version = btn.dataset.version;
-    navVersion.querySelectorAll("button").forEach((b) =>
-      b.setAttribute("aria-pressed", String(b.dataset.version === version))
-    );
-    go(current, 0);
-  });
-}
 
 window.deckGo = (slide, sub) => go(slide, sub);
 
@@ -392,73 +365,15 @@ fs.mkdirSync(path.dirname(OUT), { recursive: true });
 // GitHub Pages does not — so emit a complete standalone document for it too.
 const PAGES = path.join(HERE, "docs", "index.html");
 
-// Strip V2 from the public build. Removing the panel alone would leave the toggle
-// pointing at nothing, so the nav control goes with it.
-//
-// This has to count nesting. The earlier version used a non-greedy regex that ended
-// at the first </div> which happened to be followed by another one — inside the first
-// article, not at the end of the panel. Everything after that point stayed in a build
-// whose entire purpose is to not contain it, and the leak check passed because the
-// opening tag had in fact been removed.
-function cutBalancedDiv(src, open) {
-  const tag = /<\/?div\b/g;
-  tag.lastIndex = open;
-  let depth = 0;
-  let m;
-  while ((m = tag.exec(src))) {
-    depth += m[0] === "</div" ? -1 : 1;
-    if (depth === 0) {
-      const close = src.indexOf(">", m.index) + 1;
-      let from = open;
-      while (from > 0 && (src[from - 1] === " " || src[from - 1] === "\t")) from--;
-      if (src[from - 1] === "\n") from--;
-      return src.slice(0, from) + src.slice(close);
-    }
-  }
-  throw new Error("build: unbalanced <div> while stripping V2 — refusing to write");
-}
-
-function stripEvery(src, marker) {
-  let out = src;
-  for (let i = out.indexOf(marker); i !== -1; i = out.indexOf(marker)) out = cutBalancedDiv(out, i);
-  return out;
-}
-
-function stripV2(src) {
-  let out = stripEvery(src, '<div class="panel" data-version="2">');
-  out = stripEvery(out, '<div class="nav-version"');
-  out = out.replace(/ data-version="1"/g, "");
-  out = out.replace(/\n *<!--(?:(?!-->)[\s\S])*?V2(?:(?!-->)[\s\S])*?-->/g, "");
-
-  // Probe the content, not just the wrappers. The wrapper-only check reported a
-  // clean build while whole V2 articles were sitting in it.
-  // V1 has a map of its own, so map markup is not a V2 tell. Probe only what
-  // exists in V2 and nowhere else — including the article markup, since it was
-  // whole V2 articles that survived last time.
-  const leaks = [
-    '<div class="panel" data-version="2"',
-    '<div class="nav-version"',
-    'class="v2-lede"',
-    'phase-title">Design, intervention',
-    'phase-title">Keeping it in use',
-    'phase-title">The two weeks',
-    'phase-title">Build',
-    'pre-evaluation baseline',
-    'Process V2',
-  ].filter((x) => out.includes(x));
-  if (leaks.length) {
-    throw new Error(`build: V2 leaked into the public build (${leaks.join(", ")}) — refusing to write`);
-  }
-  return out;
-}
-
-
-const pagesHtml = PUBLISH_V2 ? page : stripV2(page);
+// There is one proposal now, so the public build is the deck as it stands. It is a
+// world-readable, indexed URL, which is what the V2 strip used to protect against —
+// noindex keeps that protection without keeping a second version around to strip.
+const pagesHtml = page;
 
 
 // the artifact sent to the client — both versions, switched in the nav
 fs.writeFileSync(OUT, page);
-console.log(`wrote ${OUT} — ${(fs.statSync(OUT).size / 1e6).toFixed(2)} MB  (client copy — V1 + V2)`);
+console.log(`wrote ${OUT} — ${(fs.statSync(OUT).size / 1e6).toFixed(2)} MB  (client copy)`);
 
 const standalone = `<!doctype html>
 <html lang="en">
@@ -466,6 +381,7 @@ const standalone = `<!doctype html>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="description" content="Web3 for community building and social resilience — a proposal, its precedents, and a live workshop." />
+<meta name="robots" content="noindex, nofollow" />
 <meta name="color-scheme" content="light" />
 ${pagesHtml.slice(0, pagesHtml.indexOf("</style>") + "</style>".length)}
 </head>
@@ -477,7 +393,4 @@ ${pagesHtml.slice(pagesHtml.indexOf("</style>") + "</style>".length)}
 
 fs.mkdirSync(path.dirname(PAGES), { recursive: true });
 fs.writeFileSync(PAGES, standalone);
-console.log(
-  `wrote ${PAGES} — ${(fs.statSync(PAGES).size / 1e6).toFixed(2)} MB` +
-    (PUBLISH_V2 ? "  ⚠ INCLUDING proposal V2" : "  (proposal V2 stripped)")
-);
+console.log(`wrote ${PAGES} — ${(fs.statSync(PAGES).size / 1e6).toFixed(2)} MB  (public copy — noindex)`);
