@@ -99,6 +99,7 @@ before a live session so the first request isn't a cold start.
 | Slides 1–4 copy | `public/index.html` — search `PLACEHOLDER` |
 | Research-process steps | `public/index.html` slide 2 — each step is also a line in `lib/budget-store.js`, so change both together |
 | Budget lines, dialogs | `public/budget-core.js` — shared by `/budget` and the deck's process slide |
+| Add-task button | On the process slide it asks which budget phase, since the deck's Phase 2 covers three of them; tasks added there are marked `fromProcess` so they show up in both places |
 | Slide list | `public/index.html` **and** `DECK` in `server.js` — the phone reads its labels from the server, so both must agree |
 | Budget styling | `public/budget.css`; then re-run `node build-budget-embed.mjs` so the deck's scoped copy keeps up |
 | The Singapore map | `public/index.html`, the `<svg>` on slide 1 (stylised — swap for real geography) |

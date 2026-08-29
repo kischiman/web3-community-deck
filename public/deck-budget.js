@@ -31,7 +31,13 @@
       // No process lines for this phase yet — leave the static list alone rather than
       // replacing a readable fallback with an empty box.
       if (!lines.length) continue;
-      host.innerHTML = lines.map(lineHtml).join("");
+      host.innerHTML =
+        lines.map(lineHtml).join("") +
+        `<div class="plines-add">
+          <button class="btn ghost small" data-add="${phases[0]}" data-add-choices="${phases.join(" ")}" data-add-process="1">
+            + Add task
+          </button>
+        </div>`;
       host.classList.add("budget-scope", "plines-live");
     }
   }

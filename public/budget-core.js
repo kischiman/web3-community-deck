@@ -223,12 +223,33 @@ window.Budget = (function () {
   }
 
   let addingPhase = null;
+  let addingFromProcess = false;
 
-  function openAdd(phaseId) {
+  /**
+   * `choices` is for callers whose own idea of a phase covers several of the budget's —
+   * the deck's process slide folds the budget's three Phase 2 buckets into one section,
+   * and a task added there could belong to any of them. Rather than guess, ask.
+   */
+  function openAdd(phaseId, choices) {
     const p = state.phases.find((x) => x.id === phaseId);
     if (!p) return;
     addingPhase = phaseId;
-    $("task-phase").innerHTML = `Adding to <b>${esc(p.title)}</b>`;
+
+    const options = (choices || []).filter((id) => state.phases.some((x) => x.id === id));
+    if (options.length > 1) {
+      $("task-phase").innerHTML =
+        `Which part of the budget does it belong to?` +
+        `<select id="t-phase">` +
+        options
+          .map((id) => {
+            const ph = state.phases.find((x) => x.id === id);
+            return `<option value="${esc(id)}"${id === phaseId ? " selected" : ""}>${esc(ph.title)}</option>`;
+          })
+          .join("") +
+        `</select>`;
+    } else {
+      $("task-phase").innerHTML = `Adding to <b>${esc(p.title)}</b>`;
+    }
     $("t-name").value = "";
     $("t-note").value = "";
     $("t-qty").value = 1;
@@ -282,8 +303,10 @@ window.Budget = (function () {
 
     $("task-form").addEventListener("submit", async (e) => {
       e.preventDefault();
+      const chosen = $("t-phase");
       const ok = await send("task", {
-        phase: addingPhase,
+        phase: chosen ? chosen.value : addingPhase,
+        fromProcess: addingFromProcess,
         name: $("t-name").value,
         note: $("t-note").value,
         qty: $("t-qty").value,
@@ -324,7 +347,10 @@ window.Budget = (function () {
     const claimBtn = e.target.closest("[data-claim]");
     if (claimBtn) return openClaim(claimBtn.dataset.claim);
     const addBtn = e.target.closest("[data-add]");
-    if (addBtn) return openAdd(addBtn.dataset.add);
+    if (addBtn) {
+      addingFromProcess = addBtn.dataset.addProcess === "1";
+      return openAdd(addBtn.dataset.add, (addBtn.dataset.addChoices || "").split(/\s+/).filter(Boolean));
+    }
   });
 
   document.addEventListener("keydown", keyGuard, true);
@@ -362,6 +388,7 @@ window.Budget = (function () {
     send,
     load,
     openClaim,
+    openAdd,
     onRender(fn) {
       renderers.push(fn);
       if (loaded) fn(state);

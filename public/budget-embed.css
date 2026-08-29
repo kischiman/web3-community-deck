@@ -226,6 +226,8 @@
 
 .modal-task b { color: var(--ink); }
 
+.modal-task select { margin-top: 9px; }
+
 .modal label {
   display: block;
   font-size: 11px;

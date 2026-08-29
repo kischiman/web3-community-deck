@@ -350,6 +350,7 @@ h3 {
 
 .modal-task { font-size: 13.5px; color: var(--muted); line-height: 1.55; margin: 0 0 18px; }
 .modal-task b { color: var(--ink); }
+.modal-task select { margin-top: 9px; }
 
 .modal label {
   display: block;
