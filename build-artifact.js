@@ -356,19 +356,58 @@ const PAGES = path.join(HERE, "docs", "index.html");
 
 // Strip V2 from the public build. Removing the panel alone would leave the toggle
 // pointing at nothing, so the nav control goes with it.
-function stripV2(src) {
-  // every V2 panel, plus the nav control that would otherwise point at nothing
-  let out = src.replace(
-    /\n *<div class="panel" data-version="2">[\s\S]*?\n *<\/div>(?=\n\s*(<\/div>|<!--))/g,
-    ""
-  );
-  out = out.replace(/\n *<div class="nav-version"[\s\S]*?<\/div>\n/, "\n");
-  out = out.replace(/ data-version="1"/g, "");
+//
+// This has to count nesting. The earlier version used a non-greedy regex that ended
+// at the first </div> which happened to be followed by another one — inside the first
+// article, not at the end of the panel. Everything after that point stayed in a build
+// whose entire purpose is to not contain it, and the leak check passed because the
+// opening tag had in fact been removed.
+function cutBalancedDiv(src, open) {
+  const tag = /<\/?div\b/g;
+  tag.lastIndex = open;
+  let depth = 0;
+  let m;
+  while ((m = tag.exec(src))) {
+    depth += m[0] === "</div" ? -1 : 1;
+    if (depth === 0) {
+      const close = src.indexOf(">", m.index) + 1;
+      let from = open;
+      while (from > 0 && (src[from - 1] === " " || src[from - 1] === "\t")) from--;
+      if (src[from - 1] === "\n") from--;
+      return src.slice(0, from) + src.slice(close);
+    }
+  }
+  throw new Error("build: unbalanced <div> while stripping V2 — refusing to write");
+}
 
-  // Match markup, not the selector string the script uses to detect a V2 panel.
-  const leaks = ['<div class="panel" data-version="2"', '<div class="nav-version"'].filter((x) =>
-    out.includes(x)
-  );
+function stripEvery(src, marker) {
+  let out = src;
+  for (let i = out.indexOf(marker); i !== -1; i = out.indexOf(marker)) out = cutBalancedDiv(out, i);
+  return out;
+}
+
+function stripV2(src) {
+  let out = stripEvery(src, '<div class="panel" data-version="2">');
+  out = stripEvery(out, '<div class="nav-version"');
+  out = out.replace(/ data-version="1"/g, "");
+  out = out.replace(/\n *<!--(?:(?!-->)[\s\S])*?V2(?:(?!-->)[\s\S])*?-->/g, "");
+
+  // Probe the content, not just the wrappers. The wrapper-only check reported a
+  // clean build while whole V2 articles were sitting in it.
+  // V1 has a map of its own, so map markup is not a V2 tell. Probe only what
+  // exists in V2 and nowhere else — including the article markup, since it was
+  // whole V2 articles that survived last time.
+  const leaks = [
+    '<div class="panel" data-version="2"',
+    '<div class="nav-version"',
+    'class="v2-lede"',
+    'phase-title">Design, intervention',
+    'phase-title">Keeping it in use',
+    'phase-title">The two weeks',
+    'phase-title">Build',
+    'pre-evaluation baseline',
+    'Process V2',
+  ].filter((x) => out.includes(x));
   if (leaks.length) {
     throw new Error(`build: V2 leaked into the public build (${leaks.join(", ")}) — refusing to write`);
   }
