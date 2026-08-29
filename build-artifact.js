@@ -1,7 +1,7 @@
 // Builds the shareable single-file version of the deck.
 //
 // Same content and same design as the local deck, but self-contained: CSS and images
-// inlined, and slide 5 driven by the bundled library instead of the server. Re-run this
+// inlined, and slide 4 driven by the bundled library instead of the server. Re-run this
 // after editing public/index.html so the shared copy stays in step.
 //
 //   node build-artifact.js   →   dist/deck.html
@@ -49,6 +49,9 @@ const replace = (pattern, replacement) => {
 
 // no phone to point at, and the page explains itself — drop the card entirely
 replace(/<div class="companion-card">[\s\S]*?<\/div>/, "");
+
+// the budget lives on the server; a static copy has nothing to link to
+replace(/\n *<a class="nav-budget"[\s\S]*?<\/a>\n/, "\n");
 
 // --- example marks, keyed by domain slug
 const marks = {};
@@ -164,7 +167,7 @@ document.addEventListener("keydown", (e) => {
   if (e.target.matches("input, textarea")) return;
   if (e.key === "ArrowRight" || e.key === "PageDown") step(1);
   else if (e.key === "ArrowLeft" || e.key === "PageUp") step(-1);
-  else if (/^[1-5]$/.test(e.key)) go(Number(e.key) - 1, 0);
+  else if (/^[1-4]$/.test(e.key)) go(Number(e.key) - 1, 0);
 });
 
 // keyed on position, so a stripped panel needs no renumbering

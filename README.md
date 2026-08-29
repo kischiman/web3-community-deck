@@ -25,7 +25,7 @@ Two things call a model. Both work without one — they just aren't live.
 | Feature | With a key | Without |
 |---|---|---|
 | **Ask this document** (nav bar) | Answers your question from the deck's own text | Shows the matching passages, click to jump |
-| **Slide 5 table** | Generated with web search, so examples are real and current | A curated library of 14 common bottlenecks (`lib/library.js`) |
+| **Slide 4 table** | Generated with web search, so examples are real and current | A curated library of 14 common bottlenecks (`lib/library.js`) |
 
 **Nothing ever shows an error in front of a client** — if a call fails mid-talk, it falls back
 silently and a footnote says which source produced what you're looking at.
@@ -39,7 +39,7 @@ npm start
 Works with **Gemini**, **OpenAI** or **Anthropic** — set whichever key you have and the provider
 layer in `lib/llm.js` picks it up. First one found wins, in that order. Defaults are
 `gemini-2.5-flash`, `gpt-5.5` and `claude-opus-5`, each overridable (`GEMINI_MODEL=…`). Web search
-is on for slide 5 in all three: Google Search grounding, the OpenAI web-search tool, or Anthropic's.
+is on for slide 4 in all three: Google Search grounding, the OpenAI web-search tool, or Anthropic's.
 
 The startup banner tells you which provider is live, so you can confirm before a session.
 
@@ -79,16 +79,17 @@ before a live session so the first request isn't a cold start.
 
 | | |
 |---|---|
-| Big screen | `←` `→` to move, `1`–`5` to jump, or the top nav |
+| Big screen | `←` `→` to move, `1`–`4` to jump, or the top nav |
 | Phone | `←` `→` at the bottom moves the big screen too |
 | Slide 1 | Click a region of the map (or a legend card) to highlight it |
-| Slide 5 | Type on the phone → appears on screen · drag rows on screen, or `↑`/`↓` on the phone, to prioritise · **Generate solutions** from either surface |
+| Slide 4 | Type on the phone → appears on screen · drag rows on screen, or `↑`/`↓` on the phone, to prioritise · **Generate solutions** from either surface |
 
 ## Where to edit
 
 | What | Where |
 |---|---|
 | Slides 1–4 copy | `public/index.html` — search `PLACEHOLDER` |
+| Research-process steps | `public/index.html` slide 2 — each step is also a line in `lib/budget-store.js`, so change both together |
 | The Singapore map | `public/index.html`, the `<svg>` on slide 1 (stylised — swap for real geography) |
 | Look and feel | `public/deck.css`, tokens at the top |
 | Model provider / model id | `lib/llm.js` |
@@ -102,10 +103,10 @@ Slides 1 and 4 are drawn from three documents:
 
 | Slide | Source |
 |---|---|
-| 1 · goals, hypotheses, three neighbourhoods | *Research Proposal: Digital Technologies for Community-Building and Social Resilience* (NUS) |
-| 4 · process | The same proposal, following the **green-annotated revisions** on its Phase 1 and Phase 2 pages |
-| 4 · Argentina | *Participatory Unblocking of Blockchain Use Cases* — Cossar, Björna & Shimony, BlockchainGov |
-| 4 · Australia | *Policy experiments and the digital divide*, Ch. 16 — Ellie Rennie |
+| 1 · goals, hypotheses, the neighbourhoods | *Research Proposal: Digital Technologies for Community-Building and Social Resilience* (NUS) |
+| 2 · process | The same proposal, following the **green-annotated revisions** on its Phase 1 and Phase 2 pages |
+| 2 · Argentina | *Participatory Unblocking of Blockchain Use Cases* — Cossar, Björna & Shimony, BlockchainGov |
+| 2 · Australia | *Policy experiments and the digital divide*, Ch. 16 — Ellie Rennie |
 
 ## Images
 
@@ -117,7 +118,7 @@ Slides 1 and 4 are drawn from three documents:
 | `ethereum/tether/zcash/discord.svg` | Simple Icons (CC0 icon data; marks remain the trademarks of their owners) |
 | `usdc.svg`, `dao.svg` | Drawn for this deck |
 | `hypercerts.png` | hypercerts.org site icon |
-| `img/ex/*` | Site icons for 29 of the 51 example domains in the library, fetched once so slide 5 works offline. Missing ones fall back to the live site icon, then to no icon. |
+| `img/ex/*` | Site icons for 29 of the 51 example domains in the library, fetched once so slide 4 works offline. Missing ones fall back to the live site icon, then to no icon. |
 
 ## Still open
 

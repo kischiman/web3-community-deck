@@ -201,6 +201,26 @@ body { overflow-x: hidden; }
 
 /* ---------------------------------------------------------------- ask box */
 
+.nav-budget {
+  flex: 0 0 auto;
+  margin-left: 14px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+
+.nav-budget:hover { color: var(--accent); border-color: var(--accent); }
+
+@media (max-width: 900px) {
+  .nav-budget { display: none; }
+}
+
 .nav-ask { position: relative; display: flex; align-items: center; flex: 0 0 auto; margin-left: 16px; }
 
 .ask-toggle { display: none; }
@@ -483,6 +503,53 @@ p { line-height: 1.6; }
 
 /* ------------------------------------------------- what Web3 is, one table */
 
+/* ------------------------------------------------- Web3 reference fold */
+
+.web3-fold {
+  margin-top: 28px;
+  border-top: 1px solid var(--rule);
+  padding-top: 4px;
+}
+
+.web3-fold summary {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 14px 2px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.web3-fold summary::-webkit-details-marker { display: none; }
+.web3-fold summary:hover .fold-title { color: var(--accent); }
+
+.fold-mark {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-right: 1.5px solid var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  transform: rotate(-45deg);
+  transition: transform 0.18s ease;
+  position: relative;
+  top: -2px;
+}
+
+.web3-fold[open] .fold-mark { transform: rotate(45deg); }
+
+.fold-title { font-family: var(--serif); font-size: 19px; }
+.fold-sub { font-size: 13px; color: var(--muted); }
+
+.web3-fold-body {
+  padding: 6px 0 18px;
+  overflow-x: auto;
+}
+
+@media (max-width: 900px) {
+  .fold-sub { display: none; }
+}
+
 .web3-table {
   width: 100%;
   border-collapse: collapse;
@@ -725,7 +792,43 @@ p { line-height: 1.6; }
 
 .phase[data-open="false"] .phase-body { display: none; }
 
-.phase-body { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; padding: 22px 24px 26px; }
+.phase-body { padding: 22px 24px 26px; }
+
+.phase-top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px; }
+
+.phase-process { margin-top: 22px; border-top: 1px solid var(--rule); padding-top: 18px; }
+
+/* The steps are the residency budget's line items, in the same shape. */
+.plines {
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.pline {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: baseline;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.pline:last-child { border-bottom: 0; }
+.pline-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+.pline-note { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin-top: 3px; }
+
+.pline-meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .phase-top { grid-template-columns: 1fr; gap: 18px; }
+}
 .phase-body h3 { margin-bottom: 10px; }
 .phase-body ul { margin: 0; padding-left: 17px; font-size: 14px; color: var(--muted); line-height: 1.6; }
 .phase-body li + li { margin-top: 7px; }
