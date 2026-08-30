@@ -1,6 +1,7 @@
 # Web3 · Community & Social Resilience
 
-A five-slide, semi-interactive client presentation with a phone companion app. Runs entirely on
+A four-slide, semi-interactive client proposal with a phone capture companion. Several people
+can be on it at once from anywhere, each browsing on their own. Runs entirely on
 your machine — no hosting, no accounts, no build step.
 
 ## Run it
@@ -58,9 +59,13 @@ The deck's budget slide frames the admin panel, which needs a server and `ADMIN_
 both static builds drop the slide, and the process steps fall back to the plain list in the markup.
 The public propose-yourself board stays at `/budget`.
 
-The companion is a remote control, not a page: it POSTs to the server and listens on an
-SSE stream to stay in step with the big screen. Static hosting can't provide that, which is
-why the Pages build is the deck only.
+Everyone browses independently — opening a slide moves nobody else's screen. What *is*
+shared is the content: budget lines and proposals, and the bottlenecks captured on
+slide 4. Those arrive live on every open device over SSE, which static hosting cannot
+provide, so the Pages build is the deck alone.
+
+The phone companion is for adding to slide 4 from a phone while you read the deck on
+something larger. It is no longer a remote: there is no screen to drive.
 
 ## Deploying
 
@@ -86,9 +91,9 @@ before a live session so the first request isn't a cold start.
 
 | | |
 |---|---|
-| Big screen | `←` `→` to move, `1`–`4` to jump, or the top nav |
+| Any device | `←` `→` to move, `1`–`4` to jump, or the top nav — your own view only |
 | Any slide | Has its own address — `#/proposal`, `#/process`, `#/process/argentina`, `#/budget`. Opening one lands you there without moving the presenter's screen; after that you follow along as usual. |
-| Phone | `←` `→` at the bottom moves the big screen too |
+| Phone (`/m`) | Capture bottlenecks and reorder them; they appear for everyone |
 | Slide 1 | Click a region of the map (or a legend card) to highlight it |
 | Slide 4 | Type on the phone → appears on screen · drag rows on screen, or `↑`/`↓` on the phone, to prioritise · **Generate solutions** from either surface |
 

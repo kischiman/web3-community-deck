@@ -21,22 +21,9 @@ const PORT = Number(process.env.PORT) || 4400;
 
 // ---------------------------------------------------------------- state
 
-// The deck's shape, so the phone remote can walk panels as well as slides.
-// Mirrors the slides in public/index.html, in order — the phone reads its labels from
-// here and /api/slide clamps against it, so a slide added or moved there must be moved
-// here too.
-const DECK = [
-  { title: "Proposal", panels: ["Proposal"] },
-  { title: "Process", panels: ["Process", "Argentina", "Australia", "Japan"] },
-  { title: "Practical examples", panels: ["Practical examples"] },
-  { title: "Budget", panels: ["Budget"] },
-];
-
-const STEPS = DECK.flatMap((s, slide) => s.panels.map((panel, sub) => ({ slide, sub, panel, title: s.title })));
-
+// Shared content, not a shared screen: everyone browses on their own and sees the
+// same material as each other's changes land.
 const state = {
-  slide: 0, // index into DECK, mirrored between screen and phone
-  sub: 0, // panel within the slide
   bottlenecks: [], // { id, text }
   generation: {
     status: "idle", // idle | running | done | error
@@ -235,7 +222,6 @@ async function handle(req, res) {
     return json(res, 200, {
       companionUrl: companionUrl(req),
       provider: providerLabel(),
-      steps: STEPS,
     });
   }
 
@@ -248,25 +234,7 @@ async function handle(req, res) {
       return json(res, 400, { error: err.message });
     }
 
-    if (pathname === "/api/slide") {
-      const n = Number(body.slide);
-      if (Number.isInteger(n) && n >= 0 && n < DECK.length) {
-        const sub = Number(body.sub) || 0;
-        state.slide = n;
-        state.sub = Math.max(0, Math.min(DECK[n].panels.length - 1, sub));
-        broadcast();
-      }
-      return json(res, 200, { ok: true, slide: state.slide, sub: state.sub });
-    }
 
-    if (pathname === "/api/step") {
-      const at = STEPS.findIndex((s) => s.slide === state.slide && s.sub === state.sub);
-      const next = STEPS[Math.max(0, Math.min(STEPS.length - 1, at + (body.dir < 0 ? -1 : 1)))];
-      state.slide = next.slide;
-      state.sub = next.sub;
-      broadcast();
-      return json(res, 200, { ok: true, slide: state.slide, sub: state.sub });
-    }
 
     // --- admin sign-in
     if (pathname === "/api/admin/login") {

@@ -1,5 +1,5 @@
-// Phone companion: capture bottlenecks, reorder them, trigger generation,
-// and step the big screen through the slides.
+// Phone companion: capture bottlenecks, reorder them and trigger generation.
+// Everyone browses the deck on their own device, so there is no screen to step.
 
 const form = document.getElementById("capture");
 const entry = document.getElementById("entry");
@@ -8,27 +8,9 @@ const empty = document.getElementById("empty");
 const generateBtn = document.getElementById("generate");
 const statusEl = document.getElementById("status");
 const conn = document.getElementById("conn");
-const slideLabel = document.getElementById("slide-label");
 
 let items = [];
-let slide = 0;
 let sub = 0;
-let steps = [];
-
-fetch("/api/info")
-  .then((r) => r.json())
-  .then((info) => {
-    steps = info.steps || [];
-    paintSlideLabel();
-  })
-  .catch(() => {});
-
-function paintSlideLabel() {
-  const step = steps.find((s) => s.slide === slide && s.sub === sub);
-  if (!step) return;
-  slideLabel.textContent =
-    step.panel === step.title ? `${slide + 1} · ${step.title}` : `${slide + 1} · ${step.panel}`;
-}
 
 const esc = (s) =>
   String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -61,9 +43,7 @@ form.addEventListener("submit", (e) => {
 
 function render(state) {
   items = state.bottlenecks;
-  slide = state.slide;
   sub = state.sub || 0;
-  paintSlideLabel();
 
   empty.hidden = items.length > 0;
   generateBtn.disabled = items.length === 0 || state.generation.status === "running";
@@ -110,9 +90,6 @@ list.addEventListener("click", (e) => {
 generateBtn.addEventListener("click", () => post("/api/generate", {}));
 
 // ---------------------------------------------------------------- remote
-
-document.getElementById("prev").addEventListener("click", () => post("/api/step", { dir: -1 }));
-document.getElementById("next").addEventListener("click", () => post("/api/step", { dir: 1 }));
 
 // ---------------------------------------------------------------- stream
 

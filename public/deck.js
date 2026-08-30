@@ -30,7 +30,7 @@ slides.forEach((slide, i) => {
   const btn = document.createElement("button");
   btn.className = "nav-item";
   btn.innerHTML = `<b>0${i + 1}</b>${esc(slide.dataset.title)}`;
-  btn.addEventListener("click", () => go(i, 0, true));
+  btn.addEventListener("click", () => go(i, 0));
   navItems.appendChild(btn);
 });
 
@@ -69,7 +69,7 @@ function addressFor(index, sub) {
 }
 
 /** Read the address bar. Returns false when it names nothing this deck has. */
-function applyAddress(push) {
+function applyAddress() {
   const parts = (location.hash || "").replace(/^#\/?/, "").split("/").filter(Boolean);
   if (!parts.length) return false;
   const index = slides.findIndex((s) => slug(s.dataset.title) === parts[0]);
@@ -80,11 +80,11 @@ function applyAddress(push) {
     const k = tabsFor(index).findIndex((t) => slug(t.textContent) === parts[1]);
     if (k >= 0) sub = k;
   }
-  go(index, sub, push);
+  go(index, sub);
   return true;
 }
 
-function go(index, sub, push) {
+function go(index, sub) {
   current = Math.max(0, Math.min(slides.length - 1, index));
   const panels = panelsFor(current);
   currentSub = Math.max(0, Math.min(Math.max(panels.length - 1, 0), sub || 0));
@@ -107,7 +107,6 @@ function go(index, sub, push) {
   const address = addressFor(current, currentSub);
   if (location.hash !== address) history.replaceState(null, "", address);
 
-  if (push) post("/api/slide", { slide: current, sub: currentSub });
 }
 
 // One flat sequence across slides and panels, so ← → and the phone never skip a panel.
@@ -122,7 +121,7 @@ function step(dir) {
     sub = 0;
   }
   if (slide < 0 || slide >= slides.length) return;
-  go(slide, sub, true);
+  go(slide, sub);
 }
 
 document.addEventListener("keydown", (e) => {
@@ -130,7 +129,7 @@ document.addEventListener("keydown", (e) => {
   if (e.target.matches("input, textarea")) return;
   if (e.key === "ArrowRight" || e.key === "PageDown") step(1);
   else if (e.key === "ArrowLeft" || e.key === "PageUp") step(-1);
-  else if (/^[1-4]$/.test(e.key)) go(Number(e.key) - 1, 0, true);
+  else if (/^[1-4]$/.test(e.key)) go(Number(e.key) - 1, 0);
 });
 
 // Sub-slide tabs. Keyed on position rather than data-sub, so a panel can be
@@ -139,7 +138,7 @@ document.querySelectorAll(".subnav").forEach((nav) => {
   nav.addEventListener("click", (e) => {
     const tab = e.target.closest("button");
     if (!tab) return;
-    go(current, tabsFor(current).indexOf(tab), true);
+    go(current, tabsFor(current).indexOf(tab));
   });
 });
 
@@ -154,14 +153,11 @@ document.querySelectorAll(".phase-head").forEach((head) => {
 });
 
 // let the ask-the-document box jump to a slide
-window.deckGo = (slide, sub) => go(slide, sub, true);
+window.deckGo = (slide, sub) => go(slide, sub);
 
-// A link opens locally — it must not drag the presenter's screen with it.
-let arrivedOnLink = applyAddress(false);
-window.addEventListener("hashchange", () => applyAddress(false));
-
-
-go(0, 0, false);
+// Open where the address points, or at the beginning when it points nowhere.
+if (!applyAddress()) go(0, 0);
+window.addEventListener("hashchange", applyAddress);
 
 // ---------------------------------------------------------------- map
 
@@ -203,19 +199,9 @@ stream.onmessage = (e) => render(JSON.parse(e.data));
 
 // ---------------------------------------------------------------- render
 
+// The stream carries shared content, not a shared screen: what other people add
+// arrives here, and where this viewer happens to be is their own business.
 function render(state) {
-  // Someone arriving on a link should land where the link points, not wherever the
-  // deck happens to be parked. Only the first state is overruled — after that the
-  // presenter moves everyone, this viewer included.
-  if (arrivedOnLink) {
-    arrivedOnLink = false;
-    return renderRest(state);
-  }
-  if (state.slide !== current || state.sub !== currentSub) go(state.slide, state.sub, false);
-  renderRest(state);
-}
-
-function renderRest(state) {
   renderBottlenecks(state.bottlenecks);
   renderGeneration(state.generation);
 }
