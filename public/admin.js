@@ -328,9 +328,14 @@ function lineHtml(t) {
   const on = t.proposals.find((p) => p.id === t.assigned);
   return `<div class="line admin" data-claimed="${!!on}" data-id="${esc(t.id)}" draggable="true">
     <div class="detail">
-      <div class="name">${esc(t.name)}${t.kind === "expense" ? '<span class="tag">expense</span>' : ""}${
-        t.added ? '<span class="tag">added</span>' : ""
-      }</div>
+      <div class="name">${esc(t.name)}${t.added ? '<span class="tag">added</span>' : ""}
+        <button class="kind-toggle${t.kind === "expense" ? " on" : ""}" data-expense="${esc(t.id)}"
+                title="${
+                  t.kind === "expense"
+                    ? "An expense — money out, shown on the budget sheet only"
+                    : "Work someone can take on — shown on the process page too"
+                }">${t.kind === "expense" ? "expense" : "work"}</button>
+      </div>
       ${t.note ? `<div class="note">${esc(t.note)}</div>` : ""}
       ${t.memo ? `<div class="memo"><span class="only-here">admin only</span>${esc(t.memo)}</div>` : ""}
       ${
@@ -637,6 +642,11 @@ document.addEventListener("click", (e) => {
     return mutate("assign", { id: a.dataset.assign, proposalId: already ? null : a.dataset.pid });
   }
 
+  const ex = e.target.closest("[data-expense]");
+  if (ex) {
+    const t = state.tasks.find((x) => x.id === ex.dataset.expense);
+    return mutate("expense", { id: ex.dataset.expense, value: t?.kind !== "expense" });
+  }
   const pf = e.target.closest("[data-prefill]");
   if (pf) {
     const t = state.tasks.find((x) => x.id === pf.dataset.prefill);

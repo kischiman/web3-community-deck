@@ -469,6 +469,29 @@
 
 .calc.calc-5 { grid-template-columns: 0.8fr 0.9fr auto 1fr auto 1fr; }
 
+.budget-scope .kind-toggle {
+  margin-left: 8px;
+  vertical-align: 1px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  border-radius: 4px;
+  padding: 1px 7px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.budget-scope .kind-toggle:hover { border-color: var(--muted); color: var(--ink); }
+
+.budget-scope .kind-toggle.on {
+  color: var(--accent);
+  border-color: rgba(176, 58, 26, 0.35);
+  background: var(--accent-soft);
+}
+
 @media (max-width: 820px) {
   .proposal { grid-template-columns: 1fr auto; }
   

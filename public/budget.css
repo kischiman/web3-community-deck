@@ -717,6 +717,30 @@ h3 {
 .prefill-count { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-right: 4px; white-space: nowrap; }
 
 /* per-line control, sitting under the base figure */
+/* Sits inline with the name — what a line *is*, rather than a setting about it. */
+.kind-toggle {
+  margin-left: 8px;
+  vertical-align: 1px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  border-radius: 4px;
+  padding: 1px 7px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.kind-toggle:hover { border-color: var(--muted); color: var(--ink); }
+
+.kind-toggle.on {
+  color: var(--accent);
+  border-color: rgba(176, 58, 26, 0.35);
+  background: var(--accent-soft);
+}
+
 .prefill-toggle {
   display: block;
   margin: 5px 0 0 auto;
