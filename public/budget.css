@@ -201,6 +201,27 @@ h3 {
 
 /* Only the admin panel arranges lines; the public board renders the same markup and
    must not offer a grab handle it cannot act on. */
+.line.admin .memo {
+  margin-top: 8px;
+  padding: 8px 11px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--paper-2);
+  border-left: 2px solid var(--muted);
+  border-radius: 0 5px 5px 0;
+  white-space: pre-wrap;
+}
+
+.only-here {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: 8px;
+}
+
 .line.admin { cursor: grab; }
 .line.admin[data-dragging="true"] { opacity: 0.45; cursor: grabbing; }
 

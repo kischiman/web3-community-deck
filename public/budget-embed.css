@@ -112,6 +112,15 @@
 
 .budget-scope .line[data-claimed="true"] { background: var(--claimed-soft); }
 
+.budget-scope .only-here {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: 8px;
+}
+
 .budget-scope .line .name { font-size: 14.5px; font-weight: 600; }
 
 .budget-scope .line .note { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin-top: 3px; }

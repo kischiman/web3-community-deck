@@ -321,6 +321,7 @@ function lineHtml(t) {
         t.added ? '<span class="tag">added</span>' : ""
       }</div>
       ${t.note ? `<div class="note">${esc(t.note)}</div>` : ""}
+      ${t.memo ? `<div class="memo"><span class="only-here">admin only</span>${esc(t.memo)}</div>` : ""}
       ${
         t.proposals.length
           ? `<div class="proposals">${t.proposals.map((p) => proposalRow(t, p)).join("")}</div>`
@@ -441,6 +442,7 @@ function openNewLine(phaseId) {
     .map((u) => `<option value="${u}"${u === "days" ? " selected" : ""}>${u}</option>`)
     .join("");
   $("e-rate").value = "";
+  $("e-memo").value = "";
 
   calcEdit();
   $("scrim").hidden = false;
@@ -462,6 +464,7 @@ function openEdit(id) {
     .map((u) => `<option value="${u}"${u === t.unit ? " selected" : ""}>${u}</option>`)
     .join("");
   $("e-rate").value = t.rate ?? "";
+  $("e-memo").value = t.memo || "";
 
   calcEdit();
   $("scrim").hidden = false;
@@ -503,6 +506,7 @@ $("edit-save").addEventListener("click", async () => {
     qty: $("e-qty").value,
     unit: $("e-unit").value,
     rate: $("e-rate").disabled ? undefined : $("e-rate").value,
+    memo: $("e-memo").value,
   });
   if (saved) closeEdit();
 });
