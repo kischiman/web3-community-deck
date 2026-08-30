@@ -1,7 +1,8 @@
 // The budget, mounted into the deck in two places.
 //
-//  · slide 2 — each research-process step is the budget line for that step, with its
-//    scope, whoever has proposed themselves so far, and the propose button
+//  · slide 2 — the budget lines for each phase, steps first and the folded and expense
+//    lines under them, each with its scope, whoever has proposed themselves, and the
+//    propose button
 //  · slide 4 — the whole board
 //
 // Both come from budget-core.js, so a proposal made on either slide, on the phone, or
@@ -27,7 +28,14 @@
   function renderSteps(state) {
     for (const host of stepHosts) {
       const phases = host.dataset.budgetPhases.split(/\s+/);
-      const lines = state.tasks.filter((t) => t.fromProcess && phases.includes(t.phase));
+      // Every line the board holds for this phase, not only the steps. The fold moved
+      // proposals onto Delivery lines, and expenses were never steps to begin with —
+      // filtering to steps alone left people's submissions invisible here.
+      const lines = state.tasks
+        .filter((t) => phases.includes(t.phase))
+        // Steps read first; the folded and expense lines complete the picture under
+        // them. Sort is stable, so each group keeps the board's own order.
+        .sort((a, b) => (b.fromProcess ? 1 : 0) - (a.fromProcess ? 1 : 0));
       // No process lines for this phase yet — leave the static list alone rather than
       // replacing a readable fallback with an empty box.
       if (!lines.length) continue;

@@ -381,11 +381,41 @@ function render() {
 
 // ---------------------------------------------------------------- actions
 
+/** Report a failed call. Nothing here may throw: these run from click handlers, and
+ *  a rejected handler is a button that does nothing at all. */
+function reportFailure(err) {
+  const message = (err && err.message) || "That did not save.";
+
+  // api() clears the token whenever the server rejects it. Admin sessions live in a
+  // Map in the server's memory, so every restart — every deploy — empties them; a tab
+  // left open across one is the ordinary way this happens, and the way back is the
+  // gate, not an error on a panel that can no longer do anything.
+  if (!token) return showGate(message);
+
+  alert(message);
+
+  // A refusal usually means this page is describing something the server no longer
+  // has. Re-read, so the stale line goes rather than sitting there to be clicked again.
+  api("/api/admin/state")
+    .then((fresh) => {
+      state = fresh;
+      render();
+    })
+    .catch(() => {});
+}
+
+/** True when the change went through; callers close their dialog on that, not before. */
 async function mutate(action, body) {
-  const out = await api(`/api/admin/${action}`, body);
-  if (out.error) return alert(out.error);
-  state = await api("/api/admin/state");
-  render();
+  try {
+    await api(`/api/admin/${action}`, body);
+    state = await api("/api/admin/state");
+    render();
+    return true;
+  } catch (err) {
+    console.error(`[admin] ${action} failed:`, err);
+    reportFailure(err);
+    return false;
+  }
 }
 
 // ---------------------------------------------------------------- edit a line
@@ -435,7 +465,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 $("edit-save").addEventListener("click", async () => {
-  await mutate("update", {
+  const saved = await mutate("update", {
     id: editingId,
     name: $("e-name").value,
     note: $("e-note").value,
@@ -443,7 +473,7 @@ $("edit-save").addEventListener("click", async () => {
     unit: $("e-unit").value,
     rate: $("e-rate").disabled ? undefined : $("e-rate").value,
   });
-  closeEdit();
+  if (saved) closeEdit();
 });
 
 // ---------------------------------------------------------------- edit a proposal
@@ -492,7 +522,7 @@ $("prop-close").addEventListener("click", closeProp);
 $("prop-cancel").addEventListener("click", closeProp);
 
 $("prop-save").addEventListener("click", async () => {
-  await mutate("proposal-update", {
+  const saved = await mutate("proposal-update", {
     id: propTask,
     proposalId: propId,
     name: $("pr-name").value,
@@ -501,15 +531,14 @@ $("prop-save").addEventListener("click", async () => {
     rate: $("pr-rate").disabled ? undefined : $("pr-rate").value,
     notes: $("pr-notes").value,
   });
-  closeProp();
+  if (saved) closeProp();
 });
 
 $("prop-remove").addEventListener("click", async () => {
   const t = state.tasks.find((x) => x.id === propTask);
   const p = t?.proposals.find((x) => x.id === propId);
   if (p && confirm(`Remove ${p.name}'s proposal?`)) {
-    await mutate("proposal-remove", { id: propTask, proposalId: propId });
-    closeProp();
+    if (await mutate("proposal-remove", { id: propTask, proposalId: propId })) closeProp();
   }
 });
 
@@ -570,8 +599,15 @@ function connect() {
   stream.onmessage = async (e) => {
     const { updatedAt } = JSON.parse(e.data);
     if (seen && updatedAt !== state.updatedAt) {
-      state = await api("/api/admin/state");
-      render();
+      try {
+        state = await api("/api/admin/state");
+        render();
+      } catch (err) {
+        // Most often the server restarted under us, which also ended the session.
+        console.error("[admin] could not refresh:", err);
+        reportFailure(err);
+        return;
+      }
     }
     seen = updatedAt;
   };
