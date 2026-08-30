@@ -112,6 +112,33 @@
 
 .budget-scope .line[data-claimed="true"] { background: var(--claimed-soft); }
 
+.budget-scope .line.divider {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  grid-template-columns: none;
+  padding: 9px 22px;
+  background: var(--paper-2);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.budget-scope .divider-name {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.budget-scope .divider-span {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
 .budget-scope .only-here {
   font-family: var(--mono);
   font-size: 9.5px;

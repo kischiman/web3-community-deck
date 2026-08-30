@@ -69,7 +69,18 @@ window.Budget = (function () {
     return `${scope}<span class="scope-label">suggested</span>`;
   }
 
+  // A divider is a marker in the list: it names a stretch of the work and how long it
+  // runs. Nothing to propose for, nothing to cost — so it carries neither control.
+  function dividerHtml(t) {
+    const span = t.span && Number(t.span.qty) ? `${t.span.qty} ${esc(t.span.unit || "months")}` : "";
+    return `<div class="line divider" data-id="${esc(t.id)}">
+      <span class="divider-name">${esc(t.name)}</span>
+      ${span ? `<span class="divider-span">${span}</span>` : ""}
+    </div>`;
+  }
+
   function lineHtml(t) {
+    if (t.kind === "divider") return dividerHtml(t);
     const assigned = t.proposals.find((p) => p.id === t.assigned);
     return `<div class="line" data-id="${esc(t.id)}" data-claimed="${!!assigned}">
       <div class="detail">

@@ -108,6 +108,7 @@ before a live session so the first request isn't a cold start.
 | Budget shape | The process steps are the board: on first boot after this change, every other fee line is folded into a per-phase **Delivery** line by `foldIntoProcess` in `lib/budget-store.js`. Expenses are untouched, phase totals are unchanged, and proposals move onto the folded line. It runs once and records that it has. |
 | Line order | Drag lines in the admin panel; the order is stored and the process slide renders in it. A line only moves within its own budget phase. |
 | Private notes | Each line has a `memo`, edited in the admin panel only. `publicView` names the fields it exposes, so a memo cannot reach `/budget`, the process slide or the static builds. |
+| Dividers | `+ Add divider` in a phase makes a marker rather than a line of work: it carries a span, never a price, is excluded from every total, and shows on the process page to delineate a stretch mid-phase. |
 | Slide list | `public/index.html` **and** `DECK` in `server.js` — the phone reads its labels from the server, so both must agree |
 | Budget styling | `public/budget.css`; then re-run `node build-budget-embed.mjs` so the deck's scoped copy keeps up |
 | The Singapore map | `public/index.html`, the `<svg>` on slide 1 (stylised — swap for real geography) |

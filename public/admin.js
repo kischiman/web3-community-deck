@@ -314,6 +314,17 @@ function proposalRow(t, p) {
 }
 
 function lineHtml(t) {
+  if (t.kind === "divider") {
+    const span = Number(t.qty) ? `${t.qty} ${esc(t.unit || "months")}` : "";
+    return `<div class="line divider admin" data-id="${esc(t.id)}" draggable="true">
+      <span class="divider-name">${esc(t.name)}</span>
+      ${span ? `<span class="divider-span">${span}</span>` : ""}
+      <span class="line-actions">
+        <button class="btn ghost small" data-edit="${esc(t.id)}">Edit</button>
+        <button class="remove" data-remove="${esc(t.id)}" title="Remove divider" aria-label="Remove divider">&times;</button>
+      </span>
+    </div>`;
+  }
   const on = t.proposals.find((p) => p.id === t.assigned);
   return `<div class="line admin" data-claimed="${!!on}" data-id="${esc(t.id)}" draggable="true">
     <div class="detail">
@@ -363,6 +374,7 @@ function render() {
         ${tasks.map(lineHtml).join("")}
         <div class="phase-foot">
           <button class="btn ghost small" data-newline="${esc(p.id)}">+ Add task</button>
+          <button class="btn ghost small" data-newdivider="${esc(p.id)}">+ Add divider</button>
         </div>
       </section>`;
     })
@@ -427,14 +439,18 @@ async function mutate(action, body) {
 let editingId = null;
 // Set when the dialog is adding rather than editing; the fields are the same either way.
 let newLinePhase = null;
+let newLineKind = null;
 
-function openNewLine(phaseId) {
+function openNewLine(phaseId, kind) {
   const p = state.phases.find((x) => x.id === phaseId);
   if (!p) return;
   editingId = null;
   newLinePhase = phaseId;
+  newLineKind = kind || null;
 
-  $("edit-title").textContent = `Add a line to ${p.title}`;
+  // A divider has no price; calcEdit keeps the rate field out of the way.
+  $("edit-title").textContent =
+    kind === "divider" ? `Add a divider to ${p.title}` : `Add a line to ${p.title}`;
   $("e-name").value = "";
   $("e-note").value = "";
   $("e-qty").value = "";
@@ -455,7 +471,8 @@ function openEdit(id) {
   if (!t) return;
   editingId = id;
   newLinePhase = null;
-  $("edit-title").textContent = "Edit line";
+  newLineKind = null;
+  $("edit-title").textContent = t.kind === "divider" ? "Edit divider" : "Edit line";
 
   $("e-name").value = t.name;
   $("e-note").value = t.note || "";
@@ -472,12 +489,25 @@ function openEdit(id) {
   $("e-name").focus();
 }
 
+/** True while the dialog is on a divider, whether adding one or editing one. */
+function editingDivider() {
+  if (newLineKind === "divider") return true;
+  return !!editingId && state.tasks.find((t) => t.id === editingId)?.kind === "divider";
+}
+
 function calcEdit() {
-  const fixed = $("e-unit").value === "fixed";
-  $("e-rate").disabled = fixed;
-  $("e-qty").previousElementSibling.textContent = fixed ? "Amount · USD" : "Quantity";
+  const divider = editingDivider();
+  const fixed = !divider && $("e-unit").value === "fixed";
+  // Runs on every keystroke, so it has to re-assert the divider case or the rate
+  // field would come back the moment anything was typed.
+  $("e-rate").disabled = fixed || divider;
+  $("e-qty").previousElementSibling.textContent = divider
+    ? "How long"
+    : fixed
+      ? "Amount · USD"
+      : "Quantity";
   const qty = Number($("e-qty").value) || 0;
-  $("e-total").textContent = money(fixed ? qty : qty * (Number($("e-rate").value) || 0));
+  $("e-total").textContent = divider ? "—" : money(fixed ? qty : qty * (Number($("e-rate").value) || 0));
 }
 
 ["e-qty", "e-rate"].forEach((id) => $(id).addEventListener("input", calcEdit));
@@ -488,6 +518,7 @@ function closeEdit() {
   $("edit-modal").hidden = true;
   // Leaving the mode set would send the next Edit through the add path.
   newLinePhase = null;
+  newLineKind = null;
 }
 
 $("edit-close").addEventListener("click", closeEdit);
@@ -500,6 +531,7 @@ document.addEventListener("keydown", (e) => {
 $("edit-save").addEventListener("click", async () => {
   const saved = await mutate(newLinePhase ? "task" : "update", {
     phase: newLinePhase,
+    kind: newLineKind,
     id: editingId,
     name: $("e-name").value,
     note: $("e-note").value,
@@ -591,6 +623,8 @@ document.addEventListener("click", (e) => {
     return;
   }
 
+  const nd = e.target.closest("[data-newdivider]");
+  if (nd) return openNewLine(nd.dataset.newdivider, "divider");
   const nl = e.target.closest("[data-newline]");
   if (nl) return openNewLine(nl.dataset.newline);
   const ed = e.target.closest("[data-edit]");
