@@ -31,11 +31,9 @@
       // The work for this phase: the steps, and the Delivery line the fold put the rest
       // of the effort into. Expenses are the budget sheet's business — an apartment or
       // a translation bill is not a step anyone carries out.
-      const lines = state.tasks
-        .filter((t) => phases.includes(t.phase) && t.kind !== "expense")
-        // Steps read first; the folded and expense lines complete the picture under
-        // them. Sort is stable, so each group keeps the board's own order.
-        .sort((a, b) => (b.fromProcess ? 1 : 0) - (a.fromProcess ? 1 : 0));
+      // Board order, as arranged in the admin panel — no sorting of our own, or
+      // re-arranging there would have no visible effect here.
+      const lines = state.tasks.filter((t) => phases.includes(t.phase) && t.kind !== "expense");
       // No process lines for this phase yet — leave the static list alone rather than
       // replacing a readable fallback with an empty box.
       if (!lines.length) continue;

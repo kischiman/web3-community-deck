@@ -315,7 +315,7 @@ function proposalRow(t, p) {
 
 function lineHtml(t) {
   const on = t.proposals.find((p) => p.id === t.assigned);
-  return `<div class="line admin" data-claimed="${!!on}">
+  return `<div class="line admin" data-claimed="${!!on}" data-id="${esc(t.id)}" draggable="true">
     <div class="detail">
       <div class="name">${esc(t.name)}${t.kind === "expense" ? '<span class="tag">expense</span>' : ""}${
         t.added ? '<span class="tag">added</span>' : ""
@@ -351,7 +351,7 @@ function render() {
   $("phases").innerHTML = state.phases
     .map((p) => {
       const tasks = state.tasks.filter((t) => t.phase === p.id);
-      return `<section class="phase">
+      return `<section class="phase" data-phase="${esc(p.id)}">
         <header>
           <div>
             <h2>${esc(p.title)}</h2>
@@ -622,6 +622,43 @@ document.addEventListener("click", (e) => {
 document.addEventListener("change", (e) => {
   const rate = e.target.closest("[data-rate]");
   if (rate) return mutate("rate", { key: rate.dataset.rate, value: rate.value });
+});
+
+// ---------------------------------------------------------------- re-arrange
+//
+// The order set here is the order the process page shows, so this is arranging the
+// plan, not just tidying a table. A line only moves within its own phase — dropping
+// Phase 1 work into Phase 3 would change what it means, not merely where it sits.
+
+let dragged = null;
+
+$("phases").addEventListener("dragstart", (e) => {
+  dragged = e.target.closest(".line");
+  if (!dragged) return;
+  dragged.dataset.dragging = "true";
+  e.dataTransfer.effectAllowed = "move";
+});
+
+$("phases").addEventListener("dragover", (e) => {
+  const over = e.target.closest(".line");
+  if (!over || !dragged || over === dragged) return;
+  if (over.closest("section.phase") !== dragged.closest("section.phase")) return;
+  e.preventDefault();
+  const { top, height } = over.getBoundingClientRect();
+  const after = e.clientY > top + height / 2;
+  over.parentNode.insertBefore(dragged, after ? over.nextSibling : over);
+});
+
+$("phases").addEventListener("dragend", async () => {
+  if (!dragged) return;
+  const section = dragged.closest("section.phase");
+  delete dragged.dataset.dragging;
+  dragged = null;
+  if (!section) return;
+  const ids = [...section.querySelectorAll(".line")].map((el) => el.dataset.id);
+  // A refused reorder would otherwise leave the screen showing an order the server
+  // never accepted; mutate() re-reads on failure, which puts it back.
+  await mutate("reorder", { phase: section.dataset.phase, ids });
 });
 
 // ---------------------------------------------------------------- live sync

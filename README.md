@@ -101,6 +101,7 @@ before a live session so the first request isn't a cold start.
 | Budget lines, dialogs | `public/budget-core.js` — shared by `/budget` and the deck's process slide |
 | Add-task button | On the process slide it asks which budget phase, since the deck's Phase 2 covers three of them; tasks added there are marked `fromProcess` so they show up in both places |
 | Budget shape | The process steps are the board: on first boot after this change, every other fee line is folded into a per-phase **Delivery** line by `foldIntoProcess` in `lib/budget-store.js`. Expenses are untouched, phase totals are unchanged, and proposals move onto the folded line. It runs once and records that it has. |
+| Line order | Drag lines in the admin panel; the order is stored and the process slide renders in it. A line only moves within its own budget phase. |
 | Slide list | `public/index.html` **and** `DECK` in `server.js` — the phone reads its labels from the server, so both must agree |
 | Budget styling | `public/budget.css`; then re-run `node build-budget-embed.mjs` so the deck's scoped copy keeps up |
 | The Singapore map | `public/index.html`, the `<svg>` on slide 1 (stylised — swap for real geography) |

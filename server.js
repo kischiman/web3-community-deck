@@ -296,6 +296,7 @@ async function handle(req, res) {
         : action === "proposal-remove" ? budget.withdraw(body.id, body.proposalId)
         : action === "task" ? budget.addTask(body)
         : action === "remove" ? budget.removeTask(body.id)
+        : action === "reorder" ? budget.reorderTasks(body.phase, body.ids)
         : action === "import" ? budget.replaceState(body.state)
         : action === "reset" ? (budget.reset(), true)
         : null;
