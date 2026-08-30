@@ -779,6 +779,16 @@ p { line-height: 1.6; }
 .phase-title { font-family: var(--serif); font-size: 20px; flex: 1; }
 .phase-dur { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
+/* Whoever is carrying the phase, filled in from the board. */
+.phase-owner {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.phase-owner:empty { display: none; }
+
 .chev {
   width: 9px;
   height: 9px;
@@ -1434,6 +1444,7 @@ p { line-height: 1.6; }
             <span class="phase-num">Phase 1</span>
             <span class="phase-title">Establish a credible pre-evaluation baseline</span>
             <span class="phase-dur">3 months</span>
+            <span class="phase-owner"></span>
             <span class="chev" aria-hidden="true"></span>
           </button>
         <div class="phase-body">
@@ -1449,7 +1460,7 @@ p { line-height: 1.6; }
             <div>
               <h3>Outcomes</h3>
               <ul>
-                  <li><b>Two suitable neighbourhoods</b></li>
+                  <li>Two suitable neighbourhoods</li>
                   <li>Baseline datasets<br /><span class="sub-note">Each neighbourhood&rsquo;s starting level of resilience</span></li>
                   <li>A measurement protocol</li>
                   <li>Ethical and operational foundations</li>
@@ -1505,6 +1516,7 @@ p { line-height: 1.6; }
             <span class="phase-num">Phase 2</span>
             <span class="phase-title">Design, intervention, implementation</span>
             <span class="phase-dur">8 months</span>
+            <span class="phase-owner"></span>
             <span class="chev" aria-hidden="true"></span>
           </button>
         <div class="phase-body">
@@ -1525,7 +1537,7 @@ p { line-height: 1.6; }
                   <li>Broad and diverse participation</li>
                   <li>Evidence of collaboration</li>
                   <li>Effective use of the tooling</li>
-                  <li><b>Sufficient contrast between the technology approaches</b></li>
+                  <li>Sufficient contrast between the technology approaches</li>
               </ul>
             </div>
           </div>
@@ -1573,6 +1585,7 @@ p { line-height: 1.6; }
             <span class="phase-num">Phase 3</span>
             <span class="phase-title">Assessment and second survey</span>
             <span class="phase-dur">4 months</span>
+            <span class="phase-owner"></span>
             <span class="chev" aria-hidden="true"></span>
           </button>
         <div class="phase-body">
@@ -1591,7 +1604,7 @@ p { line-height: 1.6; }
                   <li>Completion of the follow-up survey</li>
                   <li>A clear picture of changes in social resilience<br /><span class="sub-note">Evidence for changes in the projects; differences linked to the technology; the likely confounding factors</span></li>
                   <li>Rich qualitative feedback, and an account of unintended consequences</li>
-                  <li><b>Clear, actionable recommendations</b></li>
+                  <li>Clear, actionable recommendations</li>
               </ul>
             </div>
           </div>

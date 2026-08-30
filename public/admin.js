@@ -373,6 +373,11 @@ function render() {
           <div>
             <h2>${esc(p.title)}</h2>
             <p class="note">${esc(p.note)}</p>
+            <label class="owner">
+              <span>Owner</span>
+              <input type="text" maxlength="60" data-owner="${esc(p.id)}"
+                     value="${esc(p.owner || "")}" placeholder="Nobody yet" />
+            </label>
           </div>
           <span class="amount">${money(state.totals.effective.byPhase[p.id])}</span>
         </header>
@@ -642,6 +647,8 @@ document.addEventListener("click", (e) => {
     return mutate("assign", { id: a.dataset.assign, proposalId: already ? null : a.dataset.pid });
   }
 
+  const ow = e.target.closest("[data-owner]");
+  if (ow) return; // typing in the owner field, not a click to act on
   const ex = e.target.closest("[data-expense]");
   if (ex) {
     const t = state.tasks.find((x) => x.id === ex.dataset.expense);
@@ -679,6 +686,11 @@ document.addEventListener("change", (e) => {
 // Phase 1 work into Phase 3 would change what it means, not merely where it sits.
 
 let dragged = null;
+
+$("phases").addEventListener("change", (e) => {
+  const field = e.target.closest("[data-owner]");
+  if (field) mutate("phase-owner", { phase: field.dataset.owner, name: field.value });
+});
 
 $("phases").addEventListener("dragstart", (e) => {
   dragged = e.target.closest(".line");

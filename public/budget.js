@@ -29,6 +29,7 @@ function render(state) {
           <div>
             <h2>${esc(p.title)}</h2>
             <p class="note">${esc(p.note)}</p>
+            ${p.owner ? `<p class="owner-name">Owner · <b>${esc(p.owner)}</b></p>` : ""}
           </div>
           <span class="amount">${open} open${
             state.money && proposed ? ` · ${money(proposed)} committed` : ""

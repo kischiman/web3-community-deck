@@ -45,6 +45,12 @@
           </button>
         </div>`;
       host.classList.add("budget-scope", "plines-live");
+
+      // The phase headers on this slide are written by hand, not rendered from the
+      // board, so the owner has to be placed into the one above this list.
+      const owner = state.phases.find((p) => phases.includes(p.id))?.owner || "";
+      const slot = host.closest(".phase")?.querySelector(".phase-owner");
+      if (slot) slot.textContent = owner ? `${owner}` : "";
     }
   }
 

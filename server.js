@@ -255,6 +255,7 @@ async function handle(req, res) {
       const action = pathname.slice("/api/admin/".length);
       const ok =
         action === "rate" ? budget.setRate(body.key, body.value)
+        : action === "phase-owner" ? budget.setPhaseOwner(body.phase, body.name)
         : action === "expense" ? budget.setExpense(body.id, body.value)
         : action === "prefill" ? budget.setPrefill(body.id, body.value)
         : action === "prefill-all" ? budget.setPrefillAll(body.value)

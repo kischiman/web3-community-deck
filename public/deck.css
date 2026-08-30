@@ -769,6 +769,16 @@ p { line-height: 1.6; }
 .phase-title { font-family: var(--serif); font-size: 20px; flex: 1; }
 .phase-dur { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
+/* Whoever is carrying the phase, filled in from the board. */
+.phase-owner {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.phase-owner:empty { display: none; }
+
 .chev {
   width: 9px;
   height: 9px;
