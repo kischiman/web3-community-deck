@@ -360,6 +360,9 @@ function render() {
           <span class="amount">${money(state.totals.effective.byPhase[p.id])}</span>
         </header>
         ${tasks.map(lineHtml).join("")}
+        <div class="phase-foot">
+          <button class="btn ghost small" data-newline="${esc(p.id)}">+ Add task</button>
+        </div>
       </section>`;
     })
     .join("");
@@ -421,11 +424,36 @@ async function mutate(action, body) {
 // ---------------------------------------------------------------- edit a line
 
 let editingId = null;
+// Set when the dialog is adding rather than editing; the fields are the same either way.
+let newLinePhase = null;
+
+function openNewLine(phaseId) {
+  const p = state.phases.find((x) => x.id === phaseId);
+  if (!p) return;
+  editingId = null;
+  newLinePhase = phaseId;
+
+  $("edit-title").textContent = `Add a line to ${p.title}`;
+  $("e-name").value = "";
+  $("e-note").value = "";
+  $("e-qty").value = "";
+  $("e-unit").innerHTML = state.units
+    .map((u) => `<option value="${u}"${u === "days" ? " selected" : ""}>${u}</option>`)
+    .join("");
+  $("e-rate").value = "";
+
+  calcEdit();
+  $("scrim").hidden = false;
+  $("edit-modal").hidden = false;
+  $("e-name").focus();
+}
 
 function openEdit(id) {
   const t = state.tasks.find((x) => x.id === id);
   if (!t) return;
   editingId = id;
+  newLinePhase = null;
+  $("edit-title").textContent = "Edit line";
 
   $("e-name").value = t.name;
   $("e-note").value = t.note || "";
@@ -455,6 +483,8 @@ $("e-unit").addEventListener("change", calcEdit);
 function closeEdit() {
   $("scrim").hidden = true;
   $("edit-modal").hidden = true;
+  // Leaving the mode set would send the next Edit through the add path.
+  newLinePhase = null;
 }
 
 $("edit-close").addEventListener("click", closeEdit);
@@ -465,7 +495,8 @@ document.addEventListener("keydown", (e) => {
 });
 
 $("edit-save").addEventListener("click", async () => {
-  const saved = await mutate("update", {
+  const saved = await mutate(newLinePhase ? "task" : "update", {
+    phase: newLinePhase,
     id: editingId,
     name: $("e-name").value,
     note: $("e-note").value,
@@ -556,6 +587,8 @@ document.addEventListener("click", (e) => {
     return;
   }
 
+  const nl = e.target.closest("[data-newline]");
+  if (nl) return openNewLine(nl.dataset.newline);
   const ed = e.target.closest("[data-edit]");
   if (ed) return openEdit(ed.dataset.edit);
 
