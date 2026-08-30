@@ -1,8 +1,8 @@
 // The budget, mounted into the deck in two places.
 //
-//  · slide 2 — the budget lines for each phase, steps first and the folded and expense
-//    lines under them, each with its scope, whoever has proposed themselves, and the
-//    propose button
+//  · slide 2 — the work lines for each phase, steps first and the folded Delivery line
+//    under them, each with its scope, whoever has proposed themselves, and the propose
+//    button. Expenses stay on the budget sheet.
 //  · slide 4 — the whole board
 //
 // Both come from budget-core.js, so a proposal made on either slide, on the phone, or
@@ -28,11 +28,11 @@
   function renderSteps(state) {
     for (const host of stepHosts) {
       const phases = host.dataset.budgetPhases.split(/\s+/);
-      // Every line the board holds for this phase, not only the steps. The fold moved
-      // proposals onto Delivery lines, and expenses were never steps to begin with —
-      // filtering to steps alone left people's submissions invisible here.
+      // The work for this phase: the steps, and the Delivery line the fold put the rest
+      // of the effort into. Expenses are the budget sheet's business — an apartment or
+      // a translation bill is not a step anyone carries out.
       const lines = state.tasks
-        .filter((t) => phases.includes(t.phase))
+        .filter((t) => phases.includes(t.phase) && t.kind !== "expense")
         // Steps read first; the folded and expense lines complete the picture under
         // them. Sort is stable, so each group keeps the board's own order.
         .sort((a, b) => (b.fromProcess ? 1 : 0) - (a.fromProcess ? 1 : 0));
