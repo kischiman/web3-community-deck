@@ -22,7 +22,8 @@ function render(state) {
         (a, t) => a + t.proposals.reduce((b, x) => b + (t.assigned === x.id ? x.amount : 0), 0),
         0
       );
-      const open = tasks.filter((t) => !t.assigned).length;
+      // A divider is a separator, not something anyone can be put on.
+      const open = tasks.filter((t) => !t.assigned && t.kind !== "divider").length;
       return `<section class="phase">
         <header>
           <div>
@@ -41,7 +42,7 @@ function render(state) {
     })
     .join("");
 
-  const all = state.tasks;
+  const all = state.tasks.filter((t) => t.kind !== "divider");
   const committed = all.reduce((a, t) => {
     const p = t.proposals.find((x) => x.id === t.assigned);
     return a + (p ? p.amount : 0);

@@ -57,7 +57,7 @@
       .map((p) => {
         const tasks = state.tasks.filter((t) => t.phase === p.id);
         if (!tasks.length) return "";
-        const open = tasks.filter((t) => !t.assigned).length;
+        const open = tasks.filter((t) => !t.assigned && t.kind !== "divider").length;
         const proposed = tasks.reduce(
           (a, t) => a + t.proposals.reduce((b, x) => b + (t.assigned === x.id ? x.amount : 0), 0),
           0
@@ -78,7 +78,7 @@
       .join("");
 
     if (!summary) return;
-    const all = state.tasks;
+    const all = state.tasks.filter((t) => t.kind !== "divider");
     const proposals = all.reduce((a, t) => a + t.proposals.length, 0);
     const staffed = all.filter((t) => t.assigned).length;
     const committed = all.reduce((a, t) => {
