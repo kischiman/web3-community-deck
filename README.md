@@ -130,6 +130,7 @@ Slides 1 and 4 are drawn from three documents:
 | 2 · process | The same proposal, following the **green-annotated revisions** on its Phase 1 and Phase 2 pages |
 | 2 · Argentina | *Participatory Unblocking of Blockchain Use Cases* — Cossar, Björna & Shimony, BlockchainGov |
 | 2 · Australia | *Policy experiments and the digital divide*, Ch. 16 — Ellie Rennie |
+| 2 · Singapore | *LumiHealth programme to conclude on 31 May*, Health Promotion Board newsroom — all figures in that panel come from this release |
 
 ## Images
 

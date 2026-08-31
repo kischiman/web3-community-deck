@@ -944,6 +944,11 @@ p { line-height: 1.6; }
 .case-source a:hover { border-bottom-color: var(--accent); }
 
 .case-body { grid-column: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+
+/* A case with no photograph is one column, not an empty one and a full one. */
+.case.no-photo { grid-template-columns: minmax(0, 1fr); }
+.case.no-photo > header,
+.case.no-photo .case-body { grid-column: 1; }
 .case-body p { margin: 0 0 12px; font-size: 14.5px; color: var(--muted); line-height: 1.65; }
 .case-body b { color: var(--ink); font-weight: 600; }
 .case-body ul { margin: 0; padding-left: 18px; font-size: 14.5px; color: var(--muted); line-height: 1.65; }

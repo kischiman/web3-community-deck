@@ -954,6 +954,11 @@ p { line-height: 1.6; }
 .case-source a:hover { border-bottom-color: var(--accent); }
 
 .case-body { grid-column: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+
+/* A case with no photograph is one column, not an empty one and a full one. */
+.case.no-photo { grid-template-columns: minmax(0, 1fr); }
+.case.no-photo > header,
+.case.no-photo .case-body { grid-column: 1; }
 .case-body p { margin: 0 0 12px; font-size: 14.5px; color: var(--muted); line-height: 1.65; }
 .case-body b { color: var(--ink); font-weight: 600; }
 .case-body ul { margin: 0; padding-left: 18px; font-size: 14.5px; color: var(--muted); line-height: 1.65; }
@@ -1430,6 +1435,7 @@ p { line-height: 1.6; }
         <button type="button" role="tab">Argentina</button>
         <button type="button" role="tab">Australia</button>
         <button type="button" role="tab">Japan</button>
+        <button type="button" role="tab">Singapore</button>
       </div>
     </div>
 
@@ -1783,6 +1789,46 @@ p { line-height: 1.6; }
             </ul>
             <h3 class="spaced">Why it is here</h3>
             <p>Phase two will require data collection.</p>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- 2e · Singapore -->
+    <div class="panel">
+      <h1>LumiHealth, Singapore</h1>
+
+      <article class="case no-photo">
+        <header>
+          <p class="case-meta">Singapore · October 2020 – 31 May 2026 · six years · Health Promotion Board with Apple · <b>377,000+ participants</b>, on their own iPhones and Apple Watches</p>
+          <p class="case-source">
+            <a href="https://www.hpb.gov.sg/newsroom/lumihealth-programme-to-conclude-on-31-may-after-successfully-helping-377-000-singaporeans-in-their-health-journey/" target="_blank" rel="noreferrer">HPB&rsquo;s closing announcement</a>
+          </p>
+        </header>
+        <div class="case-body">
+          <div>
+            <h3>How it ran</h3>
+            <p>A national behaviour-change programme run as multi-week <b>quests</b> designed with health experts, across physical activity, sleep, nutrition and mental well-being. Phones and watches people already owned did the measuring.</p>
+            <ol class="steps">
+              <li>Personalised quests, set and refreshed over weeks rather than one-off challenges</li>
+              <li>Activity, sleep and heart rate tracked passively from the participant&rsquo;s own device</li>
+              <li>Completing a quest earned coins</li>
+              <li>Coins converted to eVouchers — the reward was money off real purchases, not points</li>
+              <li>From May 2024, clinical quests for hypertension and diabetes, engaging <b>6,300+</b> participants</li>
+            </ol>
+          </div>
+          <div>
+            <h3>What came out</h3>
+            <p><b>86% of users took part in the quests</b> — participation, not just installation. Among the least active users, weekly exercise rose by about <b>54%</b>; among participants with a BMI of 23 or above, by <b>26%</b>.</p>
+            <p>HPB&rsquo;s own modelling put the mortality reduction at <b>3–13% across different segments</b>, were those gains sustained.</p>
+
+            <h3 class="spaced">Why it is here</h3>
+            <ul>
+              <li>A Singapore precedent at national scale for the thing this proposal tests: whether a digital layer changes what people actually do, measured against their own baseline rather than against nothing.</li>
+              <li><b>The incentive was the product.</b> Coins redeemable for real value, not badges — worth noting before designing any engagement mechanic for a neighbourhood.</li>
+              <li><b>It ended, and the ending was designed.</b> Six years in, participants were given staged deadlines to earn, convert and spend, then moved to <a href="https://www.healthhub.sg/programmes/healthy-365" target="_blank" rel="noreferrer">Healthy 365</a>, which about 885,000 residents already use monthly. HPB gave no public reason for concluding.</li>
+              <li>The closest lesson for Phase 2: <b>what happens after the study stops is a design question</b>, not an afterthought — which is why adoption here has an owner and a handover plan rather than a hope.</li>
+            </ul>
           </div>
         </div>
       </article>
