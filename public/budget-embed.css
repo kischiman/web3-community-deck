@@ -110,6 +110,12 @@
 
 .budget-scope .line:last-of-type { border-bottom: 0; }
 
+.budget-scope .line:not(.admin) { grid-template-columns: minmax(0, 1fr) 88px 92px 100px 132px; }
+
+.budget-scope .line:not(.admin) .num { text-align: right; }
+
+.budget-scope .line:not(.admin) .line-actions { justify-content: flex-end; }
+
 .budget-scope .line .num.time,
 .budget-scope .line .num.rate { font-family: var(--mono); font-size: 12px; color: var(--muted); }
 

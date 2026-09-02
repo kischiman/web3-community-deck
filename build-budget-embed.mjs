@@ -32,7 +32,13 @@ const SKIP = [
 // Dialog surfaces live on <body>, outside .budget-scope, and clash with nothing.
 const UNSCOPED = /(^|\s|\.)(scrim|modal|modal-task|modal-actions|x|calc|calc-total|others|others-label|others-note|other|identity|linkish|proposal|proposals|on-tag|pnote|scope-label)\b/;
 
-const skip = (sel) => SKIP.some((re) => re.test(sel.trim()));
+// `.line:not(.admin)` is a rule *for* the board, phrased by excluding the admin panel.
+// Testing the raw selector would see ".admin" and drop it — losing the very rule the
+// board needs. Strip :not(...) before deciding.
+const skip = (sel) => {
+  const bare = sel.replace(/:not\([^)]*\)/g, "").trim();
+  return SKIP.some((re) => re.test(bare));
+};
 
 function rewrite(selectorList) {
   const kept = selectorList
