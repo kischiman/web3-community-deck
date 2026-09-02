@@ -10,28 +10,9 @@
 <body>
 
 <!-- gate -->
-<!--
-  Deliberately not a <form>. Password managers commonly submit via form.submit(),
-  which bypasses submit handlers and triggers a native page reload — the field
-  clears, no error appears, and everything resets. With no form there is nothing
-  to submit; the button and the Enter key are handled directly.
--->
-<div class="gate" id="gate">
-  <div class="gate-card">
-    <p class="eyebrow">Residency budget</p>
-    <h1>Admin</h1>
-    <p class="gate-note" id="gate-note">The rate card and staffing decisions live here.</p>
-    <label for="pw">Password</label>
-    <input id="pw" type="password" autocomplete="current-password" name="password" />
-    <button class="btn" id="signin" type="button">Sign in</button>
-    <p class="gate-error" id="gate-error" hidden></p>
-    <button class="linkish" id="diagnose" type="button">Trouble signing in? Run a check</button>
-    <pre class="diag" id="diag" hidden></pre>
-  </div>
-</div>
 
 <!-- panel -->
-<div id="panel" hidden>
+<div id="panel">
   <header class="top">
     <div class="top-inner">
       <div>
@@ -40,11 +21,9 @@
       </div>
       <div class="top-actions">
         <span class="live" id="live">live</span>
-        <a class="btn ghost" href="https://claude.ai/code/artifact/852d56f0-0c46-4cff-8014-b568c4df1ec9"
-           target="_blank" rel="noreferrer">Proposal ↗</a>
+        <a class="btn ghost" href="/">Proposal</a>
         <a class="btn ghost" href="/budget">Public view</a>
         <button class="btn ghost" id="export">Export</button>
-        <button class="btn ghost" id="signout">Sign out</button>
       </div>
     </div>
   </header>

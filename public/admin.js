@@ -1,11 +1,9 @@
 // Admin panel. The only place the base rate card exists, and the only place a proposal
-// becomes a staffing decision. The token lives in sessionStorage, so closing the tab
-// signs you out.
+// becomes a staffing decision. It is deliberately open: anyone who can reach this page
+// can change anything on the board, including resetting it.
 
 const $ = (id) => document.getElementById(id);
-const KEY = "budget-admin-token";
 
-let token = sessionStorage.getItem(KEY) || "";
 let state = null;
 
 const esc = (s) =>
@@ -27,23 +25,6 @@ const RATE_LABELS = {
 
 // ---------------------------------------------------------------- auth
 
-async function signIn(password) {
-  const res = await timedFetch("/api/admin/login", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ password }),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "Could not sign in");
-  token = data.token;
-  // private-mode browsers can refuse storage; the token still works for this page
-  try {
-    sessionStorage.setItem(KEY, token);
-  } catch {
-    console.warn("[admin] sessionStorage unavailable — you'll sign in again on reload");
-  }
-}
-
 /** fetch that gives up rather than hanging forever — a hang is invisible otherwise. */
 async function timedFetch(path, options = {}, ms = 15000) {
   const stop = new AbortController();
@@ -63,15 +44,9 @@ async function timedFetch(path, options = {}, ms = 15000) {
 async function api(path, body) {
   const res = await timedFetch(path, {
     method: body ? "POST" : "GET",
-    headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+    headers: { "content-type": "application/json" },
     body: body ? JSON.stringify(body) : undefined,
   });
-
-  if (res.status === 401) {
-    sessionStorage.removeItem(KEY);
-    token = "";
-    throw new Error("Session expired — sign in again.");
-  }
 
   // Anything else non-OK must throw too. Returning the error body as if it were
   // data poisons the caller's state and the failure surfaces somewhere unrelated.
@@ -87,144 +62,20 @@ async function api(path, body) {
   }
 }
 
-function showGate(message) {
-  $("panel").hidden = true;
-  $("gate").hidden = false;
-  if (message) {
-    $("gate-error").textContent = message;
-    $("gate-error").hidden = false;
-  }
-}
-
-// Load and draw first, and only then dismiss the gate. Hiding it up front means a
-// failure halfway through leaves you staring at an empty panel with no way back.
+// Draw before revealing, so a failure halfway through does not leave an empty panel.
 async function enter() {
   state = await api("/api/admin/state");
   render();
-  $("gate").hidden = true;
   $("panel").hidden = false;
   connect();
-}
-
-async function attemptSignIn() {
-  const button = $("signin");
-  const say = (msg, isError) => {
-    $("gate-error").textContent = msg;
-    $("gate-error").hidden = !msg;
-    $("gate-error").style.color = isError ? "" : "var(--muted)";
-  };
-
-  say("");
-  button.disabled = true;
-  const original = button.textContent;
-  button.textContent = "Signing in…";
-
-  // A hung request is otherwise indistinguishable from a dead button.
-  const slow = setTimeout(() => say("Still waiting on the server…", false), 4000);
-
-  try {
-    await signIn($("pw").value);
-    $("pw").value = "";
-    say("Loading the panel…", false);
-    await enter();
-    say("");
-  } catch (err) {
-    console.error("[admin] sign-in failed:", err);
-    say(err.message || "Something went wrong — see the console.", true);
-  } finally {
-    clearTimeout(slow);
-    button.disabled = false;
-    button.textContent = original;
-  }
 }
 
 $("signin").addEventListener("click", attemptSignIn);
 
 // Enter in the password field, since there is no form to do it for us
-$("pw").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    attemptSignIn();
-  }
-});
-
-// If a password manager ever managed a native GET submit, the password landed in
-// the URL and therefore in browser history. Clear it and say so plainly.
-if (location.search.includes("password=") || location.search.includes("pw=")) {
-  history.replaceState(null, "", location.pathname);
-  $("gate-error").textContent =
-    "Your password may have been placed in this page's URL by a form submission — it has been cleared here, but consider changing it.";
-  $("gate-error").hidden = false;
-}
-
-// Walk the same three steps the sign-in does, reporting each on screen. The password
-// is read from the field and never echoed.
-$("diagnose").addEventListener("click", async () => {
-  const out = $("diag");
-  out.hidden = false;
-  const lines = [];
-  const show = (s) => {
-    lines.push(s);
-    out.textContent = lines.join("\n");
-  };
-
-  show("1. is admin configured on the server?");
-  try {
-    const { enabled } = await (await timedFetch("/api/admin/enabled", {}, 10000)).json();
-    show(`   → ${enabled ? "yes" : "NO — ADMIN_PASSWORD is not set on the server"}`);
-    if (!enabled) return;
-  } catch (err) {
-    return show(`   → failed: ${err.message}`);
-  }
-
-  const pw = $("pw").value;
-  if (!pw) return show("\n2. type your password into the field above, then run this again");
-
-  show(`\n2. signing in (password length ${pw.length})…`);
-  let tok;
-  try {
-    const res = await timedFetch(
-      "/api/admin/login",
-      { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ password: pw }) },
-      10000
-    );
-    const data = await res.json().catch(() => ({}));
-    show(`   → HTTP ${res.status}${data.error ? " · " + data.error : ""}`);
-    if (!res.ok) return show("\n   The password is being rejected. Check it in your host's dashboard.");
-    tok = data.token;
-    show(`   → token received (${tok.length} chars)`);
-  } catch (err) {
-    return show(`   → failed: ${err.message}`);
-  }
-
-  show("\n3. loading the panel data…");
-  try {
-    const res = await timedFetch("/api/admin/state", { headers: { authorization: `Bearer ${tok}` } }, 15000);
-    show(`   → HTTP ${res.status}`);
-    const data = await res.json().catch(() => null);
-    if (!res.ok) return show(`   → ${data?.error || "server error"}`);
-    show(`   → ${data.tasks?.length ?? 0} lines, ${Object.keys(data.rates ?? {}).length} rates`);
-    show("\nAll three steps passed — signing you in now.");
-    token = tok;
-    state = data;
-    render();
-    $("gate").hidden = true;
-    $("panel").hidden = false;
-    connect();
-  } catch (err) {
-    show(`   → failed: ${err.message}`);
-  }
-});
-
-$("signout").addEventListener("click", async () => {
-  await api("/api/admin/logout", {}).catch(() => {});
-  sessionStorage.removeItem(KEY);
-  token = "";
-  location.reload();
-});
 
 $("export").addEventListener("click", async () => {
-  const res = await fetch("/api/budget/export", { headers: { authorization: `Bearer ${token}` } });
+  const res = await fetch("/api/budget/export");
   const blob = await res.blob();
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
@@ -411,12 +262,6 @@ function render() {
  *  a rejected handler is a button that does nothing at all. */
 function reportFailure(err) {
   const message = (err && err.message) || "That did not save.";
-
-  // api() clears the token whenever the server rejects it. Admin sessions live in a
-  // Map in the server's memory, so every restart — every deploy — empties them; a tab
-  // left open across one is the ordinary way this happens, and the way back is the
-  // gate, not an error on a panel that can no longer do anything.
-  if (!token) return showGate(message);
 
   alert(message);
 
@@ -753,20 +598,10 @@ function connect() {
 // ---------------------------------------------------------------- start
 
 (async () => {
-  const { enabled } = await (await fetch("/api/admin/enabled")).json();
-  if (!enabled) {
-    $("gate-note").textContent =
-      "Admin is not configured on this server. Set ADMIN_PASSWORD in the environment and restart.";
-    $("signin").disabled = true;
-    $("pw").disabled = true;
-    return;
+  try {
+    await enter();
+  } catch (err) {
+    console.error("[admin] could not load:", err);
+    alert(err.message || "Could not load the panel.");
   }
-  if (token) {
-    try {
-      return await enter();
-    } catch {
-      // token no longer valid — fall through to the gate
-    }
-  }
-  showGate();
 })();

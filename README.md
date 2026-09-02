@@ -55,7 +55,7 @@ The startup banner tells you which provider is live, so you can confirm before a
 The Pages copy carries `noindex`: the link works for anyone who has it, search engines
 leave it alone.
 
-The deck's budget slide frames the admin panel, which needs a server and `ADMIN_PASSWORD`:
+The deck's budget slide frames the admin panel, which needs a server:
 both static builds drop the slide, and the process steps fall back to the plain list in the markup.
 The public propose-yourself board stays at `/budget`.
 
@@ -108,6 +108,7 @@ before a live session so the first request isn't a cold start.
 | Budget shape | The process steps are the board: on first boot after this change, every other fee line is folded into a per-phase **Delivery** line by `foldIntoProcess` in `lib/budget-store.js`. Expenses are untouched, phase totals are unchanged, and proposals move onto the folded line. It runs once and records that it has. |
 | Line order | Drag lines in the admin panel; the order is stored and the process slide renders in it. A line only moves within its own budget phase. |
 | Private notes | Each line has a `memo`, edited in the admin panel only. `publicView` names the fields it exposes, so a memo cannot reach `/budget`, the process slide or the static builds. |
+| Admin access | **The panel is open.** Anyone who can reach `/admin` can read the rate card and private notes, edit or remove any line or proposal, export the budget, and reset it. The URL is the only thing between the board and the internet. |
 | Dividers | `+ Add divider` in a phase makes a marker rather than a line of work: it carries a span, never a price, is excluded from every total, and shows on the process page to delineate a stretch mid-phase. |
 | Work / expense | A switcher on every line in the admin panel. Expenses stay on the budget sheet; work also appears on the process page. It is a decision now, not derived from the unit, and editing a line no longer overrules it. |
 | Phase owners | A name per phase, set in the admin panel, shown on the budget sheet and in the phase header on the process slide. Stored in `state.owners` — `PHASES` is a constant and cannot carry it. |

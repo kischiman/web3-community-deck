@@ -13,7 +13,6 @@ import { generateSolutions } from "./lib/generate.js";
 import { answerFromDeck } from "./lib/ask.js";
 import { providerLabel } from "./lib/llm.js";
 import * as budget from "./lib/budget-store.js";
-import * as auth from "./lib/admin-auth.js";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC = path.join(HERE, "public");
@@ -161,12 +160,7 @@ async function handle(req, res) {
   if (pathname === "/api/budget") return json(res, 200, budget.publicView());
 
   if (pathname === "/api/admin/state") {
-    if (!auth.authed(req)) return json(res, 401, { error: "not signed in" });
     return json(res, 200, { ...budget.adminView(), storage: budget.storageInfo() });
-  }
-
-  if (pathname === "/api/admin/enabled") {
-    return json(res, 200, { enabled: auth.enabled() });
   }
 
   if (pathname === "/api/budget/events") {
@@ -187,8 +181,6 @@ async function handle(req, res) {
   }
 
   if (pathname === "/api/budget/export") {
-    // the export carries the rate card, so it is admin-only
-    if (!auth.authed(req)) return json(res, 401, { error: "not signed in" });
     res.writeHead(200, {
       "content-type": "application/json",
       "content-disposition": `attachment; filename="budget-${new Date().toISOString().slice(0, 10)}.json"`,
@@ -234,24 +226,10 @@ async function handle(req, res) {
       return json(res, 400, { error: err.message });
     }
 
-
-
     // --- admin sign-in
-    if (pathname === "/api/admin/login") {
-      if (!auth.enabled()) return json(res, 503, { error: "admin is not configured on this server" });
-      const token = auth.login(body.password);
-      if (!token) return json(res, 401, { error: "wrong password" });
-      return json(res, 200, { token });
-    }
-
-    if (pathname === "/api/admin/logout") {
-      auth.logout(auth.tokenFrom(req));
-      return json(res, 200, { ok: true });
-    }
 
     // --- admin-only mutations: the rate card, assignment, and the prefill switch
     if (pathname.startsWith("/api/admin/")) {
-      if (!auth.authed(req)) return json(res, 401, { error: "not signed in" });
       const action = pathname.slice("/api/admin/".length);
       const ok =
         action === "rate" ? budget.setRate(body.key, body.value)
