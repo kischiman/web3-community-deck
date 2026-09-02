@@ -70,10 +70,6 @@ async function enter() {
   connect();
 }
 
-$("signin").addEventListener("click", attemptSignIn);
-
-// Enter in the password field, since there is no form to do it for us
-
 $("export").addEventListener("click", async () => {
   const res = await fetch("/api/budget/export");
   const blob = await res.blob();
