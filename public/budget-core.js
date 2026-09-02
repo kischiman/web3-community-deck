@@ -71,17 +71,32 @@ window.Budget = (function () {
 
   // A divider is a marker in the list: it names a stretch of the work and how long it
   // runs. Nothing to propose for, nothing to cost — so it carries neither control.
-  function dividerHtml(t) {
+  function dividerHtml(t, segmentTotal) {
     const span = t.span && Number(t.span.qty) ? `${t.span.qty} ${esc(t.span.unit || "months")}` : "";
     return `<div class="line divider" data-id="${esc(t.id)}">
       <span class="divider-name">${esc(t.name)}</span>
       ${span ? `<span class="divider-span">${span}</span>` : ""}
+      ${segmentTotal ? `<span class="divider-total">${money(segmentTotal)}</span>` : ""}
     </div>`;
   }
 
-  function lineHtml(t) {
-    if (t.kind === "divider") return dividerHtml(t);
+  /** What a line is worth, from the numbers this page was actually given. Both are
+   *  withheld unless the board is showing cost, so this is often nothing. */
+  function lineNumbers(t) {
+    const qty = t.suggestedQty;
+    const rate = t.suggestedRate;
+    const fixed = t.unit === "fixed";
+    return {
+      time: fixed ? "fixed" : qty !== null && qty !== undefined ? `${qty} ${esc(t.unit || "days")}` : "",
+      rate: rate ? money(rate) : "",
+      subtotal: !fixed && qty && rate ? qty * rate : fixed && qty ? Number(qty) : 0,
+    };
+  }
+
+  function lineHtml(t, segmentTotal) {
+    if (t.kind === "divider") return dividerHtml(t, segmentTotal);
     const assigned = t.proposals.find((p) => p.id === t.assigned);
+    const n = lineNumbers(t);
     return `<div class="line" data-id="${esc(t.id)}" data-claimed="${!!assigned}">
       <div class="detail">
         <div class="name">${esc(t.name)}${t.kind === "expense" ? '<span class="tag">expense</span>' : ""}${
@@ -90,7 +105,9 @@ window.Budget = (function () {
         ${t.note ? `<div class="note">${esc(t.note)}</div>` : ""}
         ${t.proposals.length ? `<div class="proposals">${t.proposals.map((p) => proposalHtml(t, p)).join("")}</div>` : ""}
       </div>
-      <div class="num scope">${suggestionHtml(t)}</div>
+      <div class="num time">${n.time}</div>
+      <div class="num rate">${n.rate}</div>
+      <div class="num sub">${n.subtotal ? money(n.subtotal) : ""}</div>
       <div class="line-actions">
         <button class="btn ghost small" data-claim="${esc(t.id)}">${
           t.proposals.length ? `Add proposal · ${t.proposals.length} so far` : "Add proposal"
@@ -394,6 +411,7 @@ window.Budget = (function () {
     money,
     terms,
     lineHtml,
+    lineNumbers,
     proposalHtml,
     suggestionHtml,
     send,

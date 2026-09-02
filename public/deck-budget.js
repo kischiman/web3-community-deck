@@ -21,7 +21,7 @@
 
   if (!board && !stepHosts.length) return;
 
-  const { esc, money, lineHtml } = Budget;
+  const { esc, money, lineHtml, lineNumbers } = Budget;
 
   // ------------------------------------------------ slide 2 · the process steps
 
@@ -39,8 +39,23 @@
       const work = lines.filter((t) => t.kind !== "expense");
       const expenses = lines.filter((t) => t.kind === "expense");
 
+      // A separator totals the lines beneath it, up to the next one — that is what
+      // makes it a segment rather than a label.
+      const segmentTotals = new Map();
+      let openSeparator = null;
+      for (const t of work) {
+        if (t.kind === "divider") {
+          openSeparator = t.id;
+          segmentTotals.set(openSeparator, 0);
+          continue;
+        }
+        if (openSeparator) {
+          segmentTotals.set(openSeparator, segmentTotals.get(openSeparator) + lineNumbers(t).subtotal);
+        }
+      }
+
       host.innerHTML =
-        work.map(lineHtml).join("") +
+        work.map((t) => lineHtml(t, segmentTotals.get(t.id))).join("") +
         (expenses.length
           ? `<div class="line divider expenses-mark"><span class="divider-name">Expenses</span></div>` +
             expenses.map(lineHtml).join("")

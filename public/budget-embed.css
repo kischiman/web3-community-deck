@@ -110,6 +110,25 @@
 
 .budget-scope .line:last-of-type { border-bottom: 0; }
 
+.budget-scope .line .num.time,
+.budget-scope .line .num.rate { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+.budget-scope .line .num.sub {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.budget-scope .divider-total {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  white-space: nowrap;
+  order: 5;
+}
+
 .budget-scope .line[data-claimed="true"] { background: var(--claimed-soft); }
 
 .budget-scope .line.divider {
@@ -365,7 +384,8 @@
   padding: 8px 11px;
   border: 1px solid var(--rule);
   border-radius: 7px;
-  background: var(--paper);
+  
+  background: #fff;
 }
 
 .proposal.on { border-color: rgba(63, 107, 74, 0.45); background: var(--claimed-soft); }

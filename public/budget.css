@@ -197,6 +197,31 @@ h3 {
 }
 
 .line:last-of-type { border-bottom: 0; }
+
+/* The admin line has its own cells; this is the shape the board and the process page
+   render — detail, then time, rate and sub-total, with the action last and hard right
+   rather than stranded mid-line. */
+.line:not(.admin) { grid-template-columns: minmax(0, 1fr) 88px 92px 100px 132px; }
+.line:not(.admin) .num { text-align: right; }
+.line:not(.admin) .line-actions { justify-content: flex-end; }
+
+.line .num.time,
+.line .num.rate { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.line .num.sub {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.divider-total {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  white-space: nowrap;
+  order: 5;
+}
 .line[data-claimed="true"] { background: var(--claimed-soft); }
 
 /* Only the admin panel arranges lines; the public board renders the same markup and
@@ -509,7 +534,9 @@ h3 {
   padding: 8px 11px;
   border: 1px solid var(--rule);
   border-radius: 7px;
-  background: var(--paper);
+  /* Lighter than the line it hangs under, so a proposal reads as attached to that
+     line rather than as another one. */
+  background: #fff;
 }
 
 .proposal.on { border-color: rgba(63, 107, 74, 0.45); background: var(--claimed-soft); }
