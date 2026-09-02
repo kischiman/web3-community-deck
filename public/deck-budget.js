@@ -1,8 +1,8 @@
 // The budget, mounted into the deck in two places.
 //
-//  · slide 2 — the work lines for each phase, steps first and the folded Delivery line
-//    under them, each with its scope, whoever has proposed themselves, and the propose
-//    button. Expenses stay on the budget sheet.
+//  · slide 2 — each phase's lines: the work in the order the admin panel sets, then
+//    what the phase costs to run underneath it, each with its scope, whoever has
+//    proposed themselves, and the propose button
 //  · slide 4 — the whole board
 //
 // Both come from budget-core.js, so a proposal made on either slide, on the phone, or
@@ -28,17 +28,23 @@
   function renderSteps(state) {
     for (const host of stepHosts) {
       const phases = host.dataset.budgetPhases.split(/\s+/);
-      // The work for this phase: the steps, and the Delivery line the fold put the rest
-      // of the effort into. Expenses are the budget sheet's business — an apartment or
-      // a translation bill is not a step anyone carries out.
-      // Board order, as arranged in the admin panel — no sorting of our own, or
-      // re-arranging there would have no visible effect here.
-      const lines = state.tasks.filter((t) => phases.includes(t.phase) && t.kind !== "expense");
-      // No process lines for this phase yet — leave the static list alone rather than
-      // replacing a readable fallback with an empty box.
+      const lines = state.tasks.filter((t) => phases.includes(t.phase));
+      // No lines for this phase yet — leave the static list alone rather than replacing
+      // a readable fallback with an empty box.
       if (!lines.length) continue;
+
+      // The work first, in the order set in the admin panel, then what the phase costs
+      // to run underneath it. Splitting them is the one ordering this page imposes:
+      // an apartment is not a step, and reading it among the steps suggests it is.
+      const work = lines.filter((t) => t.kind !== "expense");
+      const expenses = lines.filter((t) => t.kind === "expense");
+
       host.innerHTML =
-        lines.map(lineHtml).join("") +
+        work.map(lineHtml).join("") +
+        (expenses.length
+          ? `<div class="line divider expenses-mark"><span class="divider-name">Expenses</span></div>` +
+            expenses.map(lineHtml).join("")
+          : "") +
         `<div class="plines-add">
           <button class="btn ghost small" data-add="${phases[0]}" data-add-choices="${phases.join(" ")}" data-add-process="1">
             + Add task

@@ -238,6 +238,10 @@ h3 {
   white-space: nowrap;
 }
 
+/* Rendered by the process page to head its expense group. Not a stored line: nothing
+   to edit, nothing to drag. */
+.line.divider.expenses-mark { cursor: default; padding-top: 22px; }
+
 /* The controls only exist in the admin panel, and sit after the rule. */
 .line.divider .line-actions { flex: 0 0 auto; order: 4; }
 

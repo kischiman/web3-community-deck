@@ -93,7 +93,7 @@ window.Budget = (function () {
       <div class="num scope">${suggestionHtml(t)}</div>
       <div class="line-actions">
         <button class="btn ghost small" data-claim="${esc(t.id)}">${
-          t.proposals.length ? `Add yours · ${t.proposals.length} so far` : "Propose yourself"
+          t.proposals.length ? `Add proposal · ${t.proposals.length} so far` : "Add proposal"
         }</button>
       </div>
     </div>`;
@@ -106,7 +106,7 @@ window.Budget = (function () {
 
 <div class="modal" id="claim-modal" role="dialog" aria-modal="true" aria-labelledby="claim-title" hidden>
   <header>
-    <h2 id="claim-title">Propose yourself</h2>
+    <h2 id="claim-title">Add proposal</h2>
     <button class="x" id="claim-close" type="button" aria-label="Close">×</button>
   </header>
   <p class="modal-task" id="claim-task"></p>

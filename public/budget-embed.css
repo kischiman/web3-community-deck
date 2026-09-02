@@ -147,6 +147,8 @@
   white-space: nowrap;
 }
 
+.budget-scope .line.divider.expenses-mark { cursor: default; padding-top: 22px; }
+
 .budget-scope .line.divider .line-actions { flex: 0 0 auto; order: 4; }
 
 .budget-scope .only-here {
