@@ -12,7 +12,7 @@ const phasesEl = $("phases");
 const summaryEl = $("summary");
 const liveEl = $("live");
 
-const { esc, money, lineHtml } = Budget;
+const { esc, money, lineHtml, estimateRowsHtml } = Budget;
 
 function render(state) {
   phasesEl.innerHTML = state.phases
@@ -51,21 +51,21 @@ function render(state) {
   const proposals = all.reduce((a, t) => a + t.proposals.length, 0);
   const staffed = all.filter((t) => t.assigned).length;
 
-  const pct = Number(state.contingency) || 0;
-  const contingency = committed * (pct / 100);
-
   const scope = `
     <div class="row"><span>Lines</span><span class="v">${all.length}</span></div>
     <div class="row"><span>Proposals submitted</span><span class="v">${proposals}</span></div>
     <div class="row"><span>Lines with someone on them</span><span class="v">${staffed}</span></div>`;
 
-  summaryEl.innerHTML = state.money
-    ? `${scope}
-    <div class="row"><span>Committed so far</span><span class="v">${money(committed)}</span></div>
-    <div class="row sub"><span>Contingency at ${pct}%</span><span class="v">${money(contingency)}</span></div>
-    <div class="row total"><span>Committed incl. contingency</span><span class="v">${money(committed + contingency)}</span></div>
-    <div class="row sub"><span>Unstaffed lines are not costed here — that lives in the admin panel.</span><span class="v"></span></div>`
-    : scope;
+  // The same rows the process slide shows, from the same function — the two boards
+  // disagreeing about what the project costs was the whole problem.
+  const estimate = estimateRowsHtml(state);
+
+  // Only worth a line once somebody is actually on something.
+  const committedRow = committed
+    ? `<div class="row sub"><span>Committed so far</span><span class="v">${money(committed)}</span></div>`
+    : "";
+
+  summaryEl.innerHTML = scope + estimate + committedRow;
 }
 
 Budget.onRender(render);

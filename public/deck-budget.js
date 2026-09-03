@@ -21,29 +21,18 @@
 
   if (!board && !stepHosts.length) return;
 
-  const { esc, money, lineHtml, lineNumbers, segmentSumHtml, phaseTotalHtml } = Budget;
+  const { esc, money, lineHtml, lineNumbers, segmentSumHtml, phaseTotalHtml, estimateRowsHtml } = Budget;
 
   // ------------------------------------------------ slide 2 · the process steps
 
-  /** The three phases added up, in the board's own summary box. */
-  function renderProcessSummary(entries) {
+  /** The phases added up, contingency included, in the board's own summary box. */
+  function renderProcessSummary(state) {
     const el = document.getElementById("process-summary");
-    if (!el) return;
-    const grand = entries.reduce((a, e) => a + e.total, 0);
     // Nothing priced yet — an empty box says less than no box.
-    if (!grand) {
-      el.innerHTML = "";
-      return;
-    }
-    el.innerHTML =
-      entries
-        .map((e) => `<div class="row"><span>${esc(e.title)}</span><span class="v">${money(e.total)}</span></div>`)
-        .join("") +
-      `<div class="row total"><span>Total</span><span class="v">${money(grand)}</span></div>`;
+    if (el) el.innerHTML = estimateRowsHtml(state);
   }
 
   function renderSteps(state) {
-    const phaseTotals = [];
     for (const host of stepHosts) {
       const phases = host.dataset.budgetPhases.split(/\s+/);
       const lines = state.tasks.filter((t) => phases.includes(t.phase));
@@ -88,12 +77,11 @@
       }
 
       // Everything in the phase, work and expenses together.
-      const phaseTotal = lines.reduce((a, t) => a + lineNumbers(t).subtotal, 0);
+      const phaseTotal = lines
+        .filter((t) => t.kind !== "divider")
+        .reduce((a, t) => a + lineNumbers(t).subtotal, 0);
       if (phaseTotal) rows.push(phaseTotalHtml(phaseTotal));
-      phaseTotals.push({
-        title: state.phases.find((p) => phases.includes(p.id))?.title || "",
-        total: phaseTotal,
-      });
+
 
       host.innerHTML =
         rows.join("") +
@@ -111,7 +99,7 @@
       if (slot) slot.textContent = owner ? `${owner}` : "";
     }
 
-    renderProcessSummary(phaseTotals);
+    renderProcessSummary(state);
   }
 
   // ------------------------------------------------------- slide 4 · the board

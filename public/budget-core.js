@@ -84,6 +84,37 @@ window.Budget = (function () {
     </div>`;
   }
 
+  /** What the board estimates, phase by phase. Both pages read this rather than each
+   *  adding the lines up their own way — that is how they came to disagree. */
+  function estimateTotals(state) {
+    const byPhase = state.phases.map((p) => ({
+      id: p.id,
+      title: p.title,
+      total: state.tasks
+        .filter((t) => t.phase === p.id && t.kind !== "divider")
+        .reduce((a, t) => a + lineNumbers(t).subtotal, 0),
+    }));
+    const net = byPhase.reduce((a, p) => a + p.total, 0);
+    const pct = Number(state.contingency) || 0;
+    const contingency = net * (pct / 100);
+    return { byPhase, net, pct, contingency, total: net + contingency };
+  }
+
+  /** The summary box's rows. Identical on both pages, because it is one function. */
+  function estimateRowsHtml(state) {
+    const e = estimateTotals(state);
+    if (!e.net) return "";
+    const row = (label, value, cls) =>
+      `<div class="row${cls ? " " + cls : ""}"><span>${esc(label)}</span><span class="v">${value}</span></div>`;
+    return (
+      e.byPhase.map((p) => row(p.title, money(p.total))).join("") +
+      (e.pct
+        ? row("Subtotal", money(e.net), "sub") + row(`Contingency at ${e.pct}%`, money(e.contingency), "sub")
+        : "") +
+      row("Total", money(e.total), "total")
+    );
+  }
+
   /** Closes a phase: everything in it, work and expenses together. Named, because
    *  unlike a segment sum there is no heading above it saying what it adds up. */
   function phaseTotalHtml(total) {
@@ -111,8 +142,10 @@ window.Budget = (function () {
   /** What a line is worth, from the numbers this page was actually given. Both are
    *  withheld unless the board is showing cost, so this is often nothing. */
   function lineNumbers(t) {
-    const qty = t.suggestedQty;
-    const rate = t.suggestedRate;
+    // The line's own figures when the board is showing cost; the suggestion otherwise,
+    // so a scope-only board still shows the quantities it is allowed to.
+    const qty = t.qty ?? t.suggestedQty;
+    const rate = t.rate ?? t.suggestedRate;
     const fixed = t.unit === "fixed";
     return {
       time: fixed ? "fixed" : qty !== null && qty !== undefined ? `${qty} ${esc(t.unit || "days")}` : "",
@@ -447,6 +480,8 @@ window.Budget = (function () {
     lineNumbers,
     segmentSumHtml,
     phaseTotalHtml,
+    estimateTotals,
+    estimateRowsHtml,
     proposalHtml,
     suggestionHtml,
     send,
