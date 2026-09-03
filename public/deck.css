@@ -478,6 +478,11 @@ p { line-height: 1.6; }
 
 /* The panel is the whole surface — it brings its own layout, so it gets a frame and
    room to breathe rather than being re-styled from out here. */
+/* The board's summary box, closing the process slide. */
+.process-summary-wrap { margin-top: 28px; display: flex; justify-content: flex-end; }
+.process-summary-wrap .summary { width: 100%; max-width: 430px; }
+.process-summary-wrap .summary:empty { display: none; }
+
 .admin-frame {
   border: 1px solid var(--rule);
   border-radius: 10px;
