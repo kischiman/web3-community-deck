@@ -71,12 +71,22 @@ window.Budget = (function () {
 
   // A divider is a marker in the list: it names a stretch of the work and how long it
   // runs. Nothing to propose for, nothing to cost — so it carries neither control.
-  function dividerHtml(t, segmentTotal) {
+  function dividerHtml(t) {
     const span = t.span && Number(t.span.qty) ? `${t.span.qty} ${esc(t.span.unit || "months")}` : "";
     return `<div class="line divider" data-id="${esc(t.id)}">
       <span class="divider-name">${esc(t.name)}</span>
       ${span ? `<span class="divider-span">${span}</span>` : ""}
-      ${segmentTotal ? `<span class="divider-total">${money(segmentTotal)}</span>` : ""}
+    </div>`;
+  }
+
+  /** Closes a segment: the same columns, so the figure lands under the sub-totals. */
+  function segmentSumHtml(label, total) {
+    return `<div class="line segment-sum">
+      <div class="detail"><span class="segment-sum-label">${esc(label)} · total</span></div>
+      <div class="num time"></div>
+      <div class="num rate"></div>
+      <div class="num sub">${money(total)}</div>
+      <div class="line-actions"></div>
     </div>`;
   }
 
@@ -93,8 +103,8 @@ window.Budget = (function () {
     };
   }
 
-  function lineHtml(t, segmentTotal) {
-    if (t.kind === "divider") return dividerHtml(t, segmentTotal);
+  function lineHtml(t) {
+    if (t.kind === "divider") return dividerHtml(t);
     const assigned = t.proposals.find((p) => p.id === t.assigned);
     const n = lineNumbers(t);
     return `<div class="line" data-id="${esc(t.id)}" data-claimed="${!!assigned}">
@@ -109,9 +119,14 @@ window.Budget = (function () {
       <div class="num rate">${n.rate}</div>
       <div class="num sub">${n.subtotal ? money(n.subtotal) : ""}</div>
       <div class="line-actions">
-        <button class="btn ghost small" data-claim="${esc(t.id)}">${
-          t.proposals.length ? `Add proposal · ${t.proposals.length} so far` : "Add proposal"
-        }</button>
+        <button class="btn ghost small" data-claim="${esc(t.id)}">Add proposal or comment</button>
+        ${
+          t.proposals.length
+            ? `<span class="proposal-count">${t.proposals.length} proposal${
+                t.proposals.length === 1 ? "" : "s"
+              } so far</span>`
+            : ""
+        }
       </div>
     </div>`;
   }
@@ -123,7 +138,7 @@ window.Budget = (function () {
 
 <div class="modal" id="claim-modal" role="dialog" aria-modal="true" aria-labelledby="claim-title" hidden>
   <header>
-    <h2 id="claim-title">Add proposal</h2>
+    <h2 id="claim-title">Add proposal or comment</h2>
     <button class="x" id="claim-close" type="button" aria-label="Close">×</button>
   </header>
   <p class="modal-task" id="claim-task"></p>
@@ -412,6 +427,7 @@ window.Budget = (function () {
     terms,
     lineHtml,
     lineNumbers,
+    segmentSumHtml,
     proposalHtml,
     suggestionHtml,
     send,

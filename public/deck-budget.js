@@ -21,7 +21,7 @@
 
   if (!board && !stepHosts.length) return;
 
-  const { esc, money, lineHtml, lineNumbers } = Budget;
+  const { esc, money, lineHtml, lineNumbers, segmentSumHtml } = Budget;
 
   // ------------------------------------------------ slide 2 · the process steps
 
@@ -39,23 +39,30 @@
       const work = lines.filter((t) => t.kind !== "expense");
       const expenses = lines.filter((t) => t.kind === "expense");
 
-      // A separator totals the lines beneath it, up to the next one — that is what
-      // makes it a segment rather than a label.
-      const segmentTotals = new Map();
-      let openSeparator = null;
+      // Walk the work in order, closing each segment with its own sum before the next
+      // separator opens one. A segment with nothing to add up is closed silently —
+      // a row reading $0 says less than no row at all.
+      const rows = [];
+      let openLabel = null;
+      let openSum = 0;
+      const closeSegment = () => {
+        if (openLabel && openSum) rows.push(segmentSumHtml(openLabel, openSum));
+        openLabel = null;
+        openSum = 0;
+      };
       for (const t of work) {
         if (t.kind === "divider") {
-          openSeparator = t.id;
-          segmentTotals.set(openSeparator, 0);
-          continue;
+          closeSegment();
+          openLabel = t.name;
+        } else if (openLabel) {
+          openSum += lineNumbers(t).subtotal;
         }
-        if (openSeparator) {
-          segmentTotals.set(openSeparator, segmentTotals.get(openSeparator) + lineNumbers(t).subtotal);
-        }
+        rows.push(lineHtml(t));
       }
+      closeSegment();
 
       host.innerHTML =
-        work.map((t) => lineHtml(t, segmentTotals.get(t.id))).join("") +
+        rows.join("") +
         (expenses.length
           ? `<div class="line divider expenses-mark"><span class="divider-name">Expenses</span></div>` +
             expenses.map(lineHtml).join("")

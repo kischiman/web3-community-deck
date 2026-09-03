@@ -201,9 +201,54 @@ h3 {
 /* The admin line has its own cells; this is the shape the board and the process page
    render — detail, then time, rate and sub-total, with the action last and hard right
    rather than stranded mid-line. */
-.line:not(.admin) { grid-template-columns: minmax(0, 1fr) 88px 92px 100px 132px; }
-.line:not(.admin) .num { text-align: right; }
-.line:not(.admin) .line-actions { justify-content: flex-end; }
+/* Detail takes what is left; the three figures get their own width and breathing room,
+   and the action column is wide enough for the button and the count beneath it. */
+.line:not(.admin) {
+  grid-template-columns: minmax(0, 1fr) 92px 92px 104px 172px;
+  column-gap: 26px;
+  align-items: start;
+}
+
+.line:not(.admin) .num { text-align: right; padding-top: 2px; }
+
+.line:not(.admin) .line-actions {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+/* One width for every button, whatever the line beneath it says. */
+.line:not(.admin) .line-actions .btn { width: 100%; text-align: center; }
+
+.proposal-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* Closes a segment. No border of its own — the next separator draws the line. */
+.line.segment-sum {
+  border-bottom: 0;
+  padding-top: 6px;
+  padding-bottom: 14px;
+}
+
+.segment-sum-label {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.line.segment-sum .num.sub {
+  font-size: 13.5px;
+  font-weight: 600;
+  border-top: 1px solid var(--rule);
+  padding-top: 6px;
+}
 
 .line .num.time,
 .line .num.rate { font-family: var(--mono); font-size: 12px; color: var(--muted); }
@@ -214,14 +259,6 @@ h3 {
   font-variant-numeric: tabular-nums;
 }
 
-.divider-total {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink);
-  white-space: nowrap;
-  order: 5;
-}
 .line[data-claimed="true"] { background: var(--claimed-soft); }
 
 /* Only the admin panel arranges lines; the public board renders the same markup and
