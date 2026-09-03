@@ -84,6 +84,18 @@ window.Budget = (function () {
     </div>`;
   }
 
+  /** Closes a phase: everything in it, work and expenses together. Named, because
+   *  unlike a segment sum there is no heading above it saying what it adds up. */
+  function phaseTotalHtml(total) {
+    return `<div class="line segment-sum phase-total">
+      <div class="detail"><span class="phase-total-label">Phase total</span></div>
+      <div class="num time"></div>
+      <div class="num rate"></div>
+      <div class="num sub">${money(total)}</div>
+      <div class="line-actions"></div>
+    </div>`;
+  }
+
   /** Closes a segment: the same columns, so the figure lands under the sub-totals it
    *  adds up. The separator above already says which segment this is. */
   function segmentSumHtml(total) {
@@ -434,6 +446,7 @@ window.Budget = (function () {
     lineHtml,
     lineNumbers,
     segmentSumHtml,
+    phaseTotalHtml,
     proposalHtml,
     suggestionHtml,
     send,

@@ -21,7 +21,7 @@
 
   if (!board && !stepHosts.length) return;
 
-  const { esc, money, lineHtml, lineNumbers, segmentSumHtml } = Budget;
+  const { esc, money, lineHtml, lineNumbers, segmentSumHtml, phaseTotalHtml } = Budget;
 
   // ------------------------------------------------ slide 2 · the process steps
 
@@ -68,6 +68,10 @@
         const expenseTotal = expenses.reduce((a, t) => a + lineNumbers(t).subtotal, 0);
         if (expenseTotal) rows.push(segmentSumHtml(expenseTotal));
       }
+
+      // Everything in the phase, work and expenses together.
+      const phaseTotal = lines.reduce((a, t) => a + lineNumbers(t).subtotal, 0);
+      if (phaseTotal) rows.push(phaseTotalHtml(phaseTotal));
 
       host.innerHTML =
         rows.join("") +

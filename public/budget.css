@@ -240,6 +240,24 @@ h3 {
 }
 
 
+/* The phase's own figure — heavier than a segment's, and it says what it is, since
+   nothing above it does. */
+.line.segment-sum.phase-total { padding-top: 12px; padding-bottom: 20px; }
+
+.phase-total-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.line.segment-sum.phase-total .num.sub {
+  font-size: 15px;
+  border-top: 2px solid var(--ink);
+  padding-top: 7px;
+}
+
 .line.segment-sum .num.sub {
   font-size: 13.5px;
   font-weight: 600;
