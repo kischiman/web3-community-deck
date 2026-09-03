@@ -43,18 +43,18 @@
       // separator opens one. A segment with nothing to add up is closed silently —
       // a row reading $0 says less than no row at all.
       const rows = [];
-      let openLabel = null;
+      let inSegment = false;
       let openSum = 0;
       const closeSegment = () => {
-        if (openLabel && openSum) rows.push(segmentSumHtml(openLabel, openSum));
-        openLabel = null;
+        if (inSegment && openSum) rows.push(segmentSumHtml(openSum));
+        inSegment = false;
         openSum = 0;
       };
       for (const t of work) {
         if (t.kind === "divider") {
           closeSegment();
-          openLabel = t.name;
-        } else if (openLabel) {
+          inSegment = true;
+        } else if (inSegment) {
           openSum += lineNumbers(t).subtotal;
         }
         rows.push(lineHtml(t));

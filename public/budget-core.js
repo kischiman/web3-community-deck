@@ -79,10 +79,11 @@ window.Budget = (function () {
     </div>`;
   }
 
-  /** Closes a segment: the same columns, so the figure lands under the sub-totals. */
-  function segmentSumHtml(label, total) {
+  /** Closes a segment: the same columns, so the figure lands under the sub-totals it
+   *  adds up. The separator above already says which segment this is. */
+  function segmentSumHtml(total) {
     return `<div class="line segment-sum">
-      <div class="detail"><span class="segment-sum-label">${esc(label)} · total</span></div>
+      <div class="detail"></div>
       <div class="num time"></div>
       <div class="num rate"></div>
       <div class="num sub">${money(total)}</div>
