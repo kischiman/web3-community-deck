@@ -20,10 +20,14 @@ window.Budget = (function () {
   const money = (n) =>
     (Number(n) || 0).toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
-  // Terms for a proposal or line: a fixed sum, a quantity at a rate, or — when no
-  // rate was given — just the quantity, rather than "× $0".
-  const terms = (x) =>
-    x.unit === "fixed" ? "fixed" : x.rate ? `${x.qty} ${esc(x.unit)} × ${money(x.rate)}` : `${x.qty} ${esc(x.unit)}`;
+  // Terms for a proposal or line: a fixed sum, a quantity at a rate, or just the
+  // quantity when no rate was given. A comment that named neither says nothing here —
+  // "0 days" is not what its author wrote.
+  const terms = (x) => {
+    if (x.unit === "fixed") return x.rate || x.qty ? "fixed" : "";
+    if (!Number(x.qty)) return "";
+    return x.rate ? `${x.qty} ${esc(x.unit)} × ${money(x.rate)}` : `${x.qty} ${esc(x.unit)}`;
+  };
 
   // ---------------------------------------------------------------- transport
 
@@ -52,10 +56,11 @@ window.Budget = (function () {
 
   function proposalHtml(t, p) {
     const isAssigned = t.assigned === p.id;
+    const said = terms(p);
     return `<div class="proposal${isAssigned ? " on" : ""}${state.money ? "" : " scope-only"}">
       <span class="who">${isAssigned ? "◆ " : ""}${esc(p.name)}</span>
-      <span class="terms">${terms(p)}</span>
-      ${state.money ? `<span class="amt">${money(p.amount)}</span>` : ""}
+      <span class="terms">${said}</span>
+      ${state.money && p.amount ? `<span class="amt">${money(p.amount)}</span>` : "<span></span>"}
       ${isAssigned ? '<span class="on-tag">on the project</span>' : ""}
       ${p.notes ? `<p class="pnote">${esc(p.notes)}</p>` : ""}
     </div>`;
