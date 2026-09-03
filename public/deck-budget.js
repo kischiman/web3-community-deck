@@ -61,12 +61,16 @@
       }
       closeSegment();
 
+      // Expenses are a segment like any other, and close the same way.
+      if (expenses.length) {
+        rows.push(`<div class="line divider expenses-mark"><span class="divider-name">Expenses</span></div>`);
+        rows.push(...expenses.map(lineHtml));
+        const expenseTotal = expenses.reduce((a, t) => a + lineNumbers(t).subtotal, 0);
+        if (expenseTotal) rows.push(segmentSumHtml(expenseTotal));
+      }
+
       host.innerHTML =
         rows.join("") +
-        (expenses.length
-          ? `<div class="line divider expenses-mark"><span class="divider-name">Expenses</span></div>` +
-            expenses.map(lineHtml).join("")
-          : "") +
         `<div class="plines-add">
           <button class="btn ghost small" data-add="${phases[0]}" data-add-choices="${phases.join(" ")}" data-add-process="1">
             + Add task
