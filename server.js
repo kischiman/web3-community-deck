@@ -136,6 +136,8 @@ export async function handle(req, res) {
   if (pathname === "/m" || pathname === "/mobile") return serveStatic(res, "mobile.html");
   if (pathname === "/budget") return serveStatic(res, "budget.html");
   if (pathname === "/admin") return serveStatic(res, "admin.html");
+  // The budget has its own address rather than a slide in the deck.
+  if (pathname === "/budgets" || pathname === "/budget-admin") return serveStatic(res, "admin.html");
 
   // --- budget: shared state, so everyone with the link sees the same numbers.
   // The base rate card is not in this payload unless the admin has opted in.
@@ -186,6 +188,7 @@ export async function handle(req, res) {
         : action === "prefill" ? budget.setPrefill(body.id, body.value)
         : action === "prefill-all" ? budget.setPrefillAll(body.value)
         : action === "public-money" ? budget.setPublicMoney(body.value)
+        : action === "public-proposals" ? budget.setPublicProposals(body.value)
         : action === "assign" ? budget.assign(body.id, body.proposalId)
         : action === "update" ? budget.updateTask(body.id, body)
         : action === "proposal-update" ? budget.updateProposal(body.id, body.proposalId, body)

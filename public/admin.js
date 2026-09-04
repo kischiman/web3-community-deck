@@ -115,6 +115,17 @@ function renderRates() {
   $("money-state").textContent = money
     ? "rates, amounts and totals are public"
     : "the board shows scope only";
+
+  // Absent means visible, so a board saved before this switch existed stays as it was.
+  const shown = state.settings?.publicProposals !== false;
+  const pt = $("public-proposals");
+  pt.classList.toggle("on", shown);
+  pt.setAttribute("aria-pressed", String(shown));
+  pt.textContent = shown ? "visible" : "hidden";
+  const total = state.tasks.reduce((a, t) => a + t.proposals.length, 0);
+  $("proposals-state").textContent = shown
+    ? `${total} proposal${total === 1 ? "" : "s"} shown to everyone`
+    : `${total} proposal${total === 1 ? "" : "s"}, visible only here`;
 }
 
 function renderPeople() {
@@ -506,6 +517,10 @@ document.addEventListener("click", (e) => {
 
   if (e.target.closest("#public-money")) {
     return mutate("public-money", { value: !(state.settings?.publicMoney === true) });
+  }
+
+  if (e.target.closest("#public-proposals")) {
+    return mutate("public-proposals", { value: state.settings?.publicProposals === false });
   }
 
   const rm = e.target.closest("[data-remove]");

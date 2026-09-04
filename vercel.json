@@ -20,6 +20,10 @@
       "destination": "/admin.html"
     },
     {
+      "source": "/budgets",
+      "destination": "/admin.html"
+    },
+    {
       "source": "/m",
       "destination": "/mobile.html"
     },

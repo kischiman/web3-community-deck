@@ -172,9 +172,12 @@ window.Budget = (function () {
       <div class="line-actions">
         <button class="btn ghost small" data-claim="${esc(t.id)}">Add proposal or comment</button>
         ${
-          t.proposals.length
-            ? `<span class="proposal-count">${t.proposals.length} proposal${
-                t.proposals.length === 1 ? "" : "s"
+          // The count survives the switch even when the proposals themselves do not:
+          // someone who has just submitted should see that it landed, without that
+          // telling them who else did or what they said.
+          (t.proposalCount ?? t.proposals.length)
+            ? `<span class="proposal-count">${t.proposalCount ?? t.proposals.length} proposal${
+                (t.proposalCount ?? t.proposals.length) === 1 ? "" : "s"
               } so far</span>`
             : ""
         }

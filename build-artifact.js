@@ -48,9 +48,6 @@ const replace = (pattern, replacement) => {
 // no phone to point at, and the page explains itself — drop the card entirely
 replace(/<div class="companion-card">[\s\S]*?<\/div>/, "");
 
-// the budget is a live board — a static copy has no server to talk to, so the whole
-// slide goes. The nav is built from the slides that remain, so nothing renumbers.
-replace(/\n<!-- [═\s]*4 · BUDGET[═\s]*-->\n<section class="slide" data-slide="3"[\s\S]*?<\/section>\n/, "\n");
 
 // --- example marks, keyed by domain slug
 const marks = {};
@@ -185,7 +182,7 @@ document.addEventListener("keydown", (e) => {
   if (e.target.matches("input, textarea")) return;
   if (e.key === "ArrowRight" || e.key === "PageDown") step(1);
   else if (e.key === "ArrowLeft" || e.key === "PageUp") step(-1);
-  else if (/^[1-4]$/.test(e.key)) go(Number(e.key) - 1, 0);
+  else if (/^[1-3]$/.test(e.key)) go(Number(e.key) - 1, 0);
 });
 
 // keyed on position, so a stripped panel needs no renumbering
