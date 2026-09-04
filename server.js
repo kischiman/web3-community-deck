@@ -127,8 +127,20 @@ export async function handle(req, res) {
   // Another machine may have served the last request. Re-read before answering, so
   // nobody is shown a copy from a previous invocation — and so a write is applied to
   // the board as it stands rather than as this instance last remembered it.
+  //
+  // If that read fails, say so and stop. What is in memory is the seed, and answering
+  // from it would show an empty board — worse, a write would then save that seed over
+  // the real one. Refusing is the only safe thing to do.
   if (pathname.startsWith("/api/") && pathname !== "/api/info") {
-    await budget.reload();
+    try {
+      await budget.reload();
+    } catch (err) {
+      console.error("[budget] could not read the store:", err.message);
+      return json(res, 503, {
+        error: "Could not reach the budget store. Nothing has been changed.",
+        detail: err.message,
+      });
+    }
   }
 
   // --- pages
@@ -336,29 +348,41 @@ if (standalone) for (const signal of ["SIGTERM", "SIGINT"]) {
 //
 // Wrapped rather than awaited at the top level: a serverless builder may emit
 // CommonJS, where top-level await is a syntax error and the function never starts.
+// Listen first, then load.
+//
+// The port used to open only after the document had been fetched, and the fetch throws
+// when it fails. On a host that waits for the port before sending any traffic, one bad
+// network call at startup meant nothing ever listened and every request came back as a
+// crash with no error to read. Answering is the job; the document arrives when it
+// arrives, and every API request re-reads it anyway.
 if (standalone) {
-  (async () => {
+  server.listen(PORT, "0.0.0.0", () => {
+        const lan = lanAddress();
+        console.log("");
+        console.log("  Web3 · community & social resilience");
+        console.log("  ─────────────────────────────────────────────");
+        console.log(`  Big screen   http://localhost:${PORT}`);
+        console.log(`  Phone        http://${lan}:${PORT}/m`);
+        console.log("");
+        const label = providerLabel();
+        console.log(
+          label
+            ? `  Live features: ${label}  ·  offline fallbacks if a call fails`
+            : "  Live features: off — no API key in .env, using offline fallbacks"
+        );
+        const store = budget.storageInfo();
+        console.log(
+          `  Budget storage: ${store.where}` + (store.durable ? "" : "  ⚠ edits are lost on redeploy")
+        );
+        console.log("");
+      });
 
-      await budget.init();
-    server.listen(PORT, "0.0.0.0", () => {
-      const lan = lanAddress();
-      console.log("");
-      console.log("  Web3 · community & social resilience");
-      console.log("  ─────────────────────────────────────────────");
-      console.log(`  Big screen   http://localhost:${PORT}`);
-      console.log(`  Phone        http://${lan}:${PORT}/m`);
-      console.log("");
-      const label = providerLabel();
-      console.log(
-        label
-          ? `  Live features: ${label}  ·  offline fallbacks if a call fails`
-          : "  Live features: off — no API key in .env, using offline fallbacks"
-      );
-      const store = budget.storageInfo();
-      console.log(
-        `  Budget storage: ${store.where}` + (store.durable ? "" : "  ⚠ edits are lost on redeploy")
-      );
-      console.log("");
-    });
-  })();
+  budget
+    .init()
+    .catch((err) => console.error("[budget] initial load failed — will retry per request:", err.message));
 }
+
+// A rejected promise anywhere must not take the process down with it and strand the
+// port, which on a managed host looks identical to the app never having started.
+process.on("unhandledRejection", (err) => console.error("[unhandled]", err));
+process.on("uncaughtException", (err) => console.error("[uncaught]", err));
