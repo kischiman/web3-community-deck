@@ -117,7 +117,7 @@ before a live session so the first request isn't a cold start.
 
 | | |
 |---|---|
-| Any device | `←` `→` to move, `1`–`3` to jump, or the top nav — your own view only |
+| Any device | `←` `→` to move, `1`–`4` to jump, or the top nav — your own view only |
 | Any slide | Has its own address — `#/proposal`, `#/process`, `#/process/argentina`, `#/budget`. Opening one lands you there without moving the presenter's screen; after that you follow along as usual. |
 | Phone (`/m`) | Capture bottlenecks and reorder them; they appear for everyone |
 | Slide 1 | Click a region of the map (or a legend card) to highlight it |
@@ -159,9 +159,9 @@ Slides 1 and 4 are drawn from three documents:
 |---|---|
 | 1 · goals, hypotheses, the neighbourhoods | *Research Proposal: Digital Technologies for Community-Building and Social Resilience* (NUS) |
 | 2 · process | The same proposal, following the **green-annotated revisions** on its Phase 1 and Phase 2 pages |
-| 2 · Argentina | *Participatory Unblocking of Blockchain Use Cases* — Cossar, Björna & Shimony, BlockchainGov |
-| 2 · Australia | *Policy experiments and the digital divide*, Ch. 16 — Ellie Rennie |
-| 2 · Singapore | *LumiHealth programme to conclude on 31 May*, Health Promotion Board newsroom — all figures in that panel come from this release |
+| 3 · Argentina | *Participatory Unblocking of Blockchain Use Cases* — Cossar, Björna & Shimony, BlockchainGov |
+| 3 · Australia | *Policy experiments and the digital divide*, Ch. 16 — Ellie Rennie |
+| 3 · Singapore | *LumiHealth programme to conclude on 31 May*, Health Promotion Board newsroom — all figures in that panel come from this release |
 
 ## Images
 
