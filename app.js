@@ -332,6 +332,25 @@ for (const signal of ["SIGTERM", "SIGINT"]) {
 // Wrapped rather than awaited at the top level: a serverless builder may emit
 // CommonJS, where top-level await is a syntax error and the function never starts.
 
+/** A request, for a host that imports this file and calls it.
+ *
+ *  Which file a host decides is "the entrypoint" is not something to be clever about:
+ *  it picked server.js, then picked app.js the moment the two were split, and a handler
+ *  on the wrong one is no handler at all. Both files export one now, so whichever it
+ *  reaches for, there is something to call. `handle` reloads the document per request,
+ *  so this path needs no start-up of its own.
+ */
+export default async function serve(req, res) {
+  try {
+    await handle(req, res);
+  } catch (err) {
+    console.error(`[500] ${req.method} ${req.url}:`, err.stack || err.message);
+    if (res.headersSent) return res.end();
+    res.writeHead(500, { "content-type": "application/json" });
+    res.end(JSON.stringify({ error: err.message || "server error" }));
+  }
+}
+
 /** Load the document. The port is already open; this only fills it in. */
 export const init = () => budget.init();
 
