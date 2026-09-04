@@ -61,15 +61,41 @@ The public propose-yourself board stays at `/budget`.
 
 Everyone browses independently — opening a slide moves nobody else's screen. What *is*
 shared is the content: budget lines and proposals, and the bottlenecks captured on
-slide 4. Those arrive live on every open device over SSE, which static hosting cannot
-provide, so the Pages build is the deck alone.
+slide 4.
+
+That content refreshes when a tab comes back to the front, and after anything you do to
+it. It does not stream: the host answers a request and forgets, so there is nothing to
+push down a connection. Two people working at once will see each other's changes on
+their next look rather than as they happen.
 
 The phone companion is for adding to slide 4 from a phone while you read the deck on
 something larger. It is no longer a remote: there is no screen to drive.
 
 ## Deploying
 
-Both configs are in the repo. **Never commit the key** — set it in the host's dashboard.
+**Vercel** is where this runs. The pages come off the CDN, so nothing has to wake up
+before a visitor sees the deck; only the calls those pages make reach a function.
+
+```bash
+vercel            # first run links the project
+vercel --prod
+```
+
+Set these in the project's Environment Variables — **never commit a key**:
+
+| | |
+|---|---|
+| `GIST_ID`, `GITHUB_TOKEN` | where the budget lives. Without them each function starts from the seed and nothing you type survives. |
+| `GEMINI_API_KEY` / `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` | slide 4's generation. Without one it falls back to the bundled library. |
+
+There is no `ADMIN_PASSWORD`: the panel is open, and anyone who can reach `/admin` can
+change or reset the board.
+
+### The other configs
+
+`render.yaml` and `fly.toml` still work if you want a long-running process instead —
+that is the only way to get live updates back, since a serverless host has no
+connection to push down.
 
 **Render** (no card needed): dashboard → New → Blueprint → pick this repo. `render.yaml`
 does the rest; then add `GEMINI_API_KEY` under the service's Environment tab.

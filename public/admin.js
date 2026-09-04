@@ -562,33 +562,22 @@ $("phases").addEventListener("dragend", async () => {
   await mutate("reorder", { phase: section.dataset.phase, ids });
 });
 
-// ---------------------------------------------------------------- live sync
+// ---------------------------------------------------------------- staying current
+//
+// No stream to subscribe to on a serverless host. Re-read when this tab comes back to
+// the front — and mutate() already re-reads after anything you do here.
 
 function connect() {
-  const stream = new EventSource("/api/budget/events");
-  let seen = 0;
-  stream.onmessage = async (e) => {
-    const { updatedAt } = JSON.parse(e.data);
-    if (seen && updatedAt !== state.updatedAt) {
-      try {
-        state = await api("/api/admin/state");
-        render();
-      } catch (err) {
-        // Most often the server restarted under us, which also ended the session.
-        console.error("[admin] could not refresh:", err);
-        reportFailure(err);
-        return;
-      }
+  $("live").textContent = "live";
+  document.addEventListener("visibilitychange", async () => {
+    if (document.hidden) return;
+    try {
+      state = await api("/api/admin/state");
+      render();
+    } catch (err) {
+      reportFailure(err);
     }
-    seen = updatedAt;
-  };
-  stream.onerror = () => {
-    $("live").textContent = "reconnecting…";
-  };
-  stream.onopen = () => {
-    $("live").textContent = "live";
-    $("live").setAttribute("data-on", "true");
-  };
+  });
 }
 
 // ---------------------------------------------------------------- start

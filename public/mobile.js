@@ -36,7 +36,7 @@ form.addEventListener("submit", (e) => {
   if (!text) return;
   entry.value = "";
   entry.focus(); // keep the keyboard up — you're typing what the room says
-  post("/api/bottlenecks", { text });
+  post("/api/bottlenecks", { text }).then(refresh);
 });
 
 // ---------------------------------------------------------------- render
@@ -84,26 +84,29 @@ list.addEventListener("click", (e) => {
   const to = btn.classList.contains("up") ? at - 1 : at + 1;
   if (to < 0 || to >= order.length) return;
   [order[at], order[to]] = [order[to], order[at]];
-  post("/api/bottlenecks/reorder", { ids: order });
+  post("/api/bottlenecks/reorder", { ids: order }).then(refresh);
 });
 
-generateBtn.addEventListener("click", () => post("/api/generate", {}));
+generateBtn.addEventListener("click", () => post("/api/generate", {}).then(refresh));
 
 // ---------------------------------------------------------------- remote
 
-// ---------------------------------------------------------------- stream
+// ---------------------------------------------------------------- staying current
 
-function connect() {
-  const stream = new EventSource("/api/events");
-  stream.onopen = () => {
-    conn.textContent = "connected to the screen";
-    conn.setAttribute("data-live", "true");
-  };
-  stream.onmessage = (e) => render(JSON.parse(e.data));
-  stream.onerror = () => {
-    conn.textContent = "reconnecting…";
-    conn.removeAttribute("data-live");
-  };
-}
+const refresh = () =>
+  fetch("/api/state")
+    .then((r) => r.json())
+    .then((state) => {
+      conn.textContent = "connected";
+      conn.setAttribute("data-live", "true");
+      render(state);
+    })
+    .catch(() => {
+      conn.textContent = "offline";
+      conn.removeAttribute("data-live");
+    });
 
-connect();
+refresh();
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) refresh();
+});

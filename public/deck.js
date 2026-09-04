@@ -194,8 +194,18 @@ fetch("/api/info")
   })
   .catch(() => {});
 
-const stream = new EventSource("/api/events");
-stream.onmessage = (e) => render(JSON.parse(e.data));
+// No stream: the host answers a request and forgets. Read the shared content now,
+// again whenever this tab comes back to the front, and after anything you do to it.
+const refresh = () =>
+  fetch("/api/state")
+    .then((r) => r.json())
+    .then(render)
+    .catch(() => {});
+
+refresh();
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) refresh();
+});
 
 // ---------------------------------------------------------------- render
 
@@ -329,7 +339,7 @@ bottleneckList.addEventListener("dragend", () => {
   [...bottleneckList.children].forEach((li, i) => (li.querySelector(".rank").textContent = i + 1));
   const ids = [...bottleneckList.children].map((li) => Number(li.dataset.id));
   lastRenderedIds = ""; // let the next broadcast re-sync ranks
-  post("/api/bottlenecks/reorder", { ids });
+  post("/api/bottlenecks/reorder", { ids }).then(refresh);
 });
 
 // ---------------------------------------------------------------- actions
@@ -342,10 +352,13 @@ captureForm.addEventListener("submit", (e) => {
   const text = entry.value.trim();
   if (!text) return;
   entry.value = "";
-  post("/api/bottlenecks", { text });
+  post("/api/bottlenecks", { text }).then(refresh);
 });
 
-generateBtn.addEventListener("click", () => post("/api/generate", {}));
+generateBtn.addEventListener("click", () => {
+  renderGeneration({ status: "running", rows: [], source: null, error: null });
+  post("/api/generate", {}).then(refresh);
+});
 // Two-tap clear — no modal dialog to block the room, no accidental wipe mid-talk.
 let clearArmed = null;
 resetBtn.addEventListener("click", () => {
@@ -353,7 +366,7 @@ resetBtn.addEventListener("click", () => {
     clearTimeout(clearArmed);
     clearArmed = null;
     resetBtn.textContent = "Clear";
-    post("/api/reset", {});
+    post("/api/reset", {}).then(refresh);
     return;
   }
   resetBtn.textContent = "Tap again to clear";

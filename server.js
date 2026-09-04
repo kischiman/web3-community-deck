@@ -21,44 +21,19 @@ const PORT = Number(process.env.PORT) || 4400;
 // ---------------------------------------------------------------- state
 
 // Shared content, not a shared screen: everyone browses on their own and sees the
-// same material as each other's changes land.
-const state = {
-  bottlenecks: [], // { id, text }
-  generation: {
-    status: "idle", // idle | running | done | error
-    source: null, // "claude" | "library"
-    rows: [],
-    error: null,
-    startedAt: null,
-    finishedAt: null,
-  },
-};
+// same material as each other's changes land. It lives in the persisted document
+// rather than in this process, because on a serverless host there is no process to
+// come back to.
+const IDLE = { status: "idle", source: null, rows: [], error: null, startedAt: null, finishedAt: null };
 
-let nextId = 1;
-const clients = new Set();
-const budgetClients = new Set();
+const workshop = () => budget.getWorkshop();
+const deckState = () => ({
+  bottlenecks: workshop().bottlenecks,
+  generation: workshop().generation || IDLE,
+});
 
-function budgetChanged() {
-  const payload = `data: ${JSON.stringify({ updatedAt: budget.getState().updatedAt })}\n\n`;
-  for (const res of budgetClients) {
-    try {
-      res.write(payload);
-    } catch {
-      budgetClients.delete(res);
-    }
-  }
-}
-
-function broadcast() {
-  const payload = `data: ${JSON.stringify(state)}\n\n`;
-  for (const res of clients) {
-    try {
-      res.write(payload);
-    } catch {
-      clients.delete(res);
-    }
-  }
-}
+/** Everything mutating goes through here: write the document out and wait for it. */
+const persistAll = () => budget.commit();
 
 // ---------------------------------------------------------------- helpers
 
@@ -145,9 +120,16 @@ const server = http.createServer((req, res) => {
   });
 });
 
-async function handle(req, res) {
+export async function handle(req, res) {
   const url = new URL(req.url, `http://${req.headers.host}`);
   const { pathname } = url;
+
+  // Another machine may have served the last request. Re-read before answering, so
+  // nobody is shown a copy from a previous invocation — and so a write is applied to
+  // the board as it stands rather than as this instance last remembered it.
+  if (pathname.startsWith("/api/") && pathname !== "/api/info") {
+    await budget.reload();
+  }
 
   // --- pages
   if (pathname === "/") return serveStatic(res, "index.html");
@@ -163,22 +145,6 @@ async function handle(req, res) {
     return json(res, 200, { ...budget.adminView(), storage: budget.storageInfo() });
   }
 
-  if (pathname === "/api/budget/events") {
-    res.writeHead(200, {
-      "content-type": "text/event-stream",
-      "cache-control": "no-cache",
-      connection: "keep-alive",
-      "x-accel-buffering": "no",
-    });
-    res.write(`data: ${JSON.stringify({ updatedAt: budget.getState().updatedAt })}\n\n`);
-    budgetClients.add(res);
-    const keepAlive = setInterval(() => res.write(": ping\n\n"), 20000);
-    req.on("close", () => {
-      clearInterval(keepAlive);
-      budgetClients.delete(res);
-    });
-    return;
-  }
 
   if (pathname === "/api/budget/export") {
     res.writeHead(200, {
@@ -189,26 +155,8 @@ async function handle(req, res) {
   }
 
   // --- live state stream
-  if (pathname === "/api/events") {
-    res.writeHead(200, {
-      "content-type": "text/event-stream",
-      "cache-control": "no-cache",
-      connection: "keep-alive",
-      // nginx-based proxies buffer responses by default, which would stall the
-      // stream and make the phone and the screen fall out of step when deployed
-      "x-accel-buffering": "no",
-    });
-    res.write(`data: ${JSON.stringify(state)}\n\n`);
-    clients.add(res);
-    const keepAlive = setInterval(() => res.write(": ping\n\n"), 20000);
-    req.on("close", () => {
-      clearInterval(keepAlive);
-      clients.delete(res);
-    });
-    return;
-  }
 
-  if (pathname === "/api/state") return json(res, 200, state);
+  if (pathname === "/api/state") return json(res, 200, deckState());
 
   if (pathname === "/api/info") {
     return json(res, 200, {
@@ -252,7 +200,7 @@ async function handle(req, res) {
       if (ok === null) return json(res, 404, { error: "unknown admin action" });
       if (!ok) return json(res, 400, { error: "could not apply" });
 
-      budgetChanged();
+      await persistAll();
       return json(res, 200, { ok: true, totals: budget.totals() });
     }
 
@@ -268,7 +216,7 @@ async function handle(req, res) {
       if (ok === null) return json(res, 404, { error: "unknown budget action" });
       if (!ok) return json(res, 400, { error: "could not apply" });
 
-      budgetChanged();
+      await persistAll();
       return json(res, 200, { ok: true });
     }
 
@@ -289,86 +237,65 @@ async function handle(req, res) {
     if (pathname === "/api/bottlenecks") {
       const text = String(body.text || "").trim().slice(0, 240);
       if (!text) return json(res, 400, { error: "empty" });
-      state.bottlenecks.push({ id: nextId++, text });
-      broadcast();
+      const w = workshop();
+      w.bottlenecks.push({ id: w.nextId++, text });
+      await persistAll();
       return json(res, 200, { ok: true });
     }
 
     if (pathname === "/api/bottlenecks/update") {
-      const item = state.bottlenecks.find((b) => b.id === Number(body.id));
+      const item = workshop().bottlenecks.find((b) => b.id === Number(body.id));
       const text = String(body.text || "").trim().slice(0, 240);
       if (item && text) {
         item.text = text;
-        broadcast();
+        await persistAll();
       }
       return json(res, 200, { ok: true });
     }
 
     if (pathname === "/api/bottlenecks/delete") {
-      state.bottlenecks = state.bottlenecks.filter((b) => b.id !== Number(body.id));
-      broadcast();
+      const w = workshop();
+      w.bottlenecks = w.bottlenecks.filter((b) => b.id !== Number(body.id));
+      await persistAll();
       return json(res, 200, { ok: true });
     }
 
     if (pathname === "/api/bottlenecks/reorder") {
       const order = Array.isArray(body.ids) ? body.ids.map(Number) : [];
-      const byId = new Map(state.bottlenecks.map((b) => [b.id, b]));
+      const w = workshop();
+      const byId = new Map(w.bottlenecks.map((b) => [b.id, b]));
       const reordered = order.map((id) => byId.get(id)).filter(Boolean);
       // anything the client didn't know about stays at the end
-      for (const b of state.bottlenecks) if (!order.includes(b.id)) reordered.push(b);
-      state.bottlenecks = reordered;
-      broadcast();
+      for (const b of w.bottlenecks) if (!order.includes(b.id)) reordered.push(b);
+      w.bottlenecks = reordered;
+      await persistAll();
       return json(res, 200, { ok: true });
     }
 
     if (pathname === "/api/generate") {
-      if (state.generation.status === "running") {
-        return json(res, 202, { ok: true, note: "already running" });
-      }
-      if (state.bottlenecks.length === 0) {
+      const w = workshop();
+      if (w.bottlenecks.length === 0) {
         return json(res, 400, { error: "no bottlenecks captured yet" });
       }
-      state.generation = {
-        status: "running",
-        source: null,
-        rows: [],
-        error: null,
-        startedAt: Date.now(),
-        finishedAt: null,
-      };
-      broadcast();
-
-      // fire and forget — the SSE stream carries the result back to both surfaces
-      generateSolutions(state.bottlenecks.map((b) => b.text))
-        .then(({ rows, source }) => {
-          state.generation = {
-            status: "done",
-            source,
-            rows,
-            error: null,
-            startedAt: state.generation.startedAt,
-            finishedAt: Date.now(),
-          };
-        })
-        .catch((err) => {
-          state.generation = {
-            status: "error",
-            source: null,
-            rows: [],
-            error: err.message,
-            startedAt: state.generation.startedAt,
-            finishedAt: Date.now(),
-          };
-        })
-        .finally(broadcast);
-
-      return json(res, 200, { ok: true });
+      // Awaited rather than fired off: a serverless function is frozen the moment it
+      // answers, so a promise settling afterwards would never be seen by anyone.
+      const startedAt = Date.now();
+      try {
+        const { rows, source } = await generateSolutions(w.bottlenecks.map((b) => b.text));
+        w.generation = { status: "done", source, rows, error: null, startedAt, finishedAt: Date.now() };
+      } catch (err) {
+        w.generation = { status: "error", source: null, rows: [], error: err.message, startedAt, finishedAt: Date.now() };
+      }
+      await persistAll();
+      return json(res, 200, { ok: true, generation: w.generation });
     }
 
     if (pathname === "/api/reset") {
-      state.bottlenecks = [];
-      state.generation = { status: "idle", source: null, rows: [], error: null, startedAt: null, finishedAt: null };
-      broadcast();
+      const w = workshop();
+      w.bottlenecks = [];
+      w.nextId = 1;
+      w.generation = null;
+      await persistAll();
       return json(res, 200, { ok: true });
     }
 
@@ -379,35 +306,40 @@ async function handle(req, res) {
   return serveStatic(res, pathname.replace(/^\//, ""));
 }
 
+// A serverless host imports the handler and never reaches the boot below.
+const standalone = !process.env.VERCEL;
+
 // State must be loaded before the first request, or a visitor could be served the
 // seed and then overwrite the real thing.
-await budget.init();
+if (standalone) await budget.init();
 
 // Coalesced writes could otherwise be dropped by a shutdown mid-deploy.
-for (const signal of ["SIGTERM", "SIGINT"]) {
+if (standalone) for (const signal of ["SIGTERM", "SIGINT"]) {
   process.on(signal, async () => {
     await budget.flush().catch(() => {});
     process.exit(0);
   });
 }
 
-server.listen(PORT, "0.0.0.0", () => {
-  const lan = lanAddress();
-  console.log("");
-  console.log("  Web3 · community & social resilience");
-  console.log("  ─────────────────────────────────────────────");
-  console.log(`  Big screen   http://localhost:${PORT}`);
-  console.log(`  Phone        http://${lan}:${PORT}/m`);
-  console.log("");
-  const label = providerLabel();
-  console.log(
-    label
-      ? `  Live features: ${label}  ·  offline fallbacks if a call fails`
-      : "  Live features: off — no API key in .env, using offline fallbacks"
-  );
-  const store = budget.storageInfo();
-  console.log(
-    `  Budget storage: ${store.where}` + (store.durable ? "" : "  ⚠ edits are lost on redeploy")
-  );
-  console.log("");
-});
+if (standalone) {
+  server.listen(PORT, "0.0.0.0", () => {
+    const lan = lanAddress();
+    console.log("");
+    console.log("  Web3 · community & social resilience");
+    console.log("  ─────────────────────────────────────────────");
+    console.log(`  Big screen   http://localhost:${PORT}`);
+    console.log(`  Phone        http://${lan}:${PORT}/m`);
+    console.log("");
+    const label = providerLabel();
+    console.log(
+      label
+        ? `  Live features: ${label}  ·  offline fallbacks if a call fails`
+        : "  Live features: off — no API key in .env, using offline fallbacks"
+    );
+    const store = budget.storageInfo();
+    console.log(
+      `  Budget storage: ${store.where}` + (store.durable ? "" : "  ⚠ edits are lost on redeploy")
+    );
+    console.log("");
+  });
+}

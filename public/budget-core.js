@@ -449,18 +449,18 @@ window.Budget = (function () {
 
   document.addEventListener("keydown", keyGuard, true);
 
-  // ---------------------------------------------------------------- live sync
+  // ---------------------------------------------------------------- staying current
+  //
+  // There is no stream to listen to: the host answers a request and forgets. So the
+  // board is re-read whenever this tab comes back to the front, which is when someone
+  // is about to look at it, and after every change of your own.
 
   function connect() {
-    const stream = new EventSource("/api/budget/events");
-    let seen = 0;
-    stream.onopen = () => onStatus("live");
-    stream.onmessage = (e) => {
-      const { updatedAt } = JSON.parse(e.data);
-      if (seen && updatedAt !== state.updatedAt) load();
-      seen = updatedAt;
-    };
-    stream.onerror = () => onStatus("reconnecting");
+    onStatus("live");
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) load().catch(() => onStatus("offline"));
+    });
+    window.addEventListener("focus", () => load().catch(() => {}));
   }
 
   // Mounting twice on one page must not open two streams or two sets of dialogs.
