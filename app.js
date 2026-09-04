@@ -142,10 +142,15 @@ export async function handle(req, res) {
   if (pathname === "/admin") return serveStatic(res, "admin.html");
   // The budget has its own address rather than a slide in the deck.
   if (pathname === "/budgets" || pathname === "/budget-admin") return serveStatic(res, "admin.html");
+  // The team's view of the process: proposals and comments together.
+  if (pathname === "/team") return serveStatic(res, "team.html");
 
   // --- budget: shared state, so everyone with the link sees the same numbers.
   // The base rate card is not in this payload unless the admin has opted in.
   if (pathname === "/api/budget") return json(res, 200, budget.publicView());
+
+  // The team page reads everything; the switches govern the public deck, not this.
+  if (pathname === "/api/team") return json(res, 200, budget.teamView());
 
   if (pathname === "/api/admin/state") {
     return json(res, 200, { ...budget.adminView(), storage: budget.storageInfo() });
@@ -193,6 +198,8 @@ export async function handle(req, res) {
         : action === "prefill-all" ? budget.setPrefillAll(body.value)
         : action === "public-money" ? budget.setPublicMoney(body.value)
         : action === "public-proposals" ? budget.setPublicProposals(body.value)
+        : action === "public-comments" ? budget.setPublicComments(body.value)
+        : action === "comment-remove" ? budget.removeComment(body.id, body.commentId)
         : action === "assign" ? budget.assign(body.id, body.proposalId)
         : action === "update" ? budget.updateTask(body.id, body)
         : action === "proposal-update" ? budget.updateProposal(body.id, body.proposalId, body)
@@ -216,6 +223,7 @@ export async function handle(req, res) {
       const action = pathname.slice("/api/budget/".length);
       const ok =
         action === "propose" ? budget.propose(body.id, body)
+        : action === "comment" ? budget.addComment(body.id, body)
         : action === "withdraw" ? budget.withdraw(body.id, body.proposalId)
         : action === "task" ? budget.addTask(body)
         : null;

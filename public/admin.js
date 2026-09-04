@@ -125,7 +125,17 @@ function renderRates() {
   const total = state.tasks.reduce((a, t) => a + t.proposals.length, 0);
   $("proposals-state").textContent = shown
     ? `${total} proposal${total === 1 ? "" : "s"} shown to everyone`
-    : `${total} proposal${total === 1 ? "" : "s"}, visible only here`;
+    : `${total} proposal${total === 1 ? "" : "s"}, visible here and on the team page`;
+
+  const cShown = state.settings?.publicComments !== false;
+  const ct = $("public-comments");
+  ct.classList.toggle("on", cShown);
+  ct.setAttribute("aria-pressed", String(cShown));
+  ct.textContent = cShown ? "visible" : "hidden";
+  const cTotal = state.tasks.reduce((a, t) => a + (t.comments || []).length, 0);
+  $("comments-state").textContent = cShown
+    ? `${cTotal} comment${cTotal === 1 ? "" : "s"} shown on the deck`
+    : `${cTotal} comment${cTotal === 1 ? "" : "s"}, hidden from the deck`;
 }
 
 function renderPeople() {
@@ -200,6 +210,18 @@ function lineHtml(t) {
         t.proposals.length
           ? `<div class="proposals">${t.proposals.map((p) => proposalRow(t, p)).join("")}</div>`
           : `<p class="empty-note">No proposals yet</p>`
+      }
+      ${
+        (t.comments || []).length
+          ? `<div class="comments">${t.comments
+              .map(
+                (c) => `<div class="comment"><span class="who">${esc(c.name)}</span>
+                  <button class="remove" data-cremove="${esc(t.id)}" data-cid="${esc(c.id)}"
+                          title="Remove comment" aria-label="Remove comment">&times;</button>
+                  <p class="ctext">${esc(c.text)}</p></div>`
+              )
+              .join("")}</div>`
+          : ""
       }
     </div>
     <div class="num base">
@@ -520,7 +542,21 @@ document.addEventListener("click", (e) => {
   }
 
   if (e.target.closest("#public-proposals")) {
-    return mutate("public-proposals", { value: state.settings?.publicProposals === false });
+    return mutate("public-proposals", { value: state.settings?.publicProposals !== true });
+  }
+
+  if (e.target.closest("#public-comments")) {
+    return mutate("public-comments", { value: state.settings?.publicComments === false });
+  }
+
+  const cx = e.target.closest("[data-cremove]");
+  if (cx) {
+    const t = state.tasks.find((x) => x.id === cx.dataset.cremove);
+    const c = t?.comments?.find((x) => x.id === cx.dataset.cid);
+    if (c && confirm(`Remove ${c.name}'s comment?`)) {
+      return mutate("comment-remove", { id: cx.dataset.cremove, commentId: cx.dataset.cid });
+    }
+    return;
   }
 
   const rm = e.target.closest("[data-remove]");

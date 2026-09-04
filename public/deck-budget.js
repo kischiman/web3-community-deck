@@ -1,8 +1,9 @@
 // The budget, mounted into the deck in two places.
 //
 //  · slide 2 — each phase's lines: the work in the order the admin panel sets, then
-//    what the phase costs to run underneath it, each with its scope, whoever has
-//    proposed themselves, and the propose button
+//    what the phase costs to run underneath it, each with its scope, the comments
+//    people have left, and one button to leave another. Proposals are the team's
+//    working material and live on /team and the board, not here.
 //  · slide 4 — the whole board
 //
 // Both come from budget-core.js, so a proposal made on either slide, on the phone, or
@@ -64,14 +65,14 @@
         } else if (inSegment) {
           openSum += lineNumbers(t).subtotal;
         }
-        rows.push(lineHtml(t));
+        rows.push(lineHtml(t, "comment"));
       }
       closeSegment();
 
       // Expenses are a segment like any other, and close the same way.
       if (expenses.length) {
         rows.push(`<div class="line divider expenses-mark"><span class="divider-name">Expenses</span></div>`);
-        rows.push(...expenses.map(lineHtml));
+        rows.push(...expenses.map((t) => lineHtml(t, "comment")));
         const expenseTotal = expenses.reduce((a, t) => a + lineNumbers(t).subtotal, 0);
         if (expenseTotal) rows.push(segmentSumHtml(expenseTotal));
       }

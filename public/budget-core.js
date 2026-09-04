@@ -31,8 +31,11 @@ window.Budget = (function () {
 
   // ---------------------------------------------------------------- transport
 
+  // Which view this page reads. The team page asks for one the switches do not gate.
+  let source = "/api/budget";
+
   async function load() {
-    state = await (await fetch("/api/budget")).json();
+    state = await (await fetch(source)).json();
     loaded = true;
     renderers.forEach((fn) => fn(state));
   }
@@ -53,6 +56,13 @@ window.Budget = (function () {
   }
 
   // ---------------------------------------------------------------- line markup
+
+  function commentHtml(t, c) {
+    return `<div class="comment">
+      <span class="who">${esc(c.name)}</span>
+      <p class="ctext">${esc(c.text)}</p>
+    </div>`;
+  }
 
   function proposalHtml(t, p) {
     const isAssigned = t.assigned === p.id;
@@ -154,10 +164,23 @@ window.Budget = (function () {
     };
   }
 
-  function lineHtml(t) {
+  /**
+   * `actions` says which buttons a page offers, and it is the page that decides:
+   *   "comment"  the public process page — a name and something to say, nothing else
+   *   "both"     the team page — comments and proposals side by side
+   *   "propose"  the board, as before
+   */
+  function lineHtml(t, actions = "propose") {
     if (t.kind === "divider") return dividerHtml(t);
     const assigned = t.proposals.find((p) => p.id === t.assigned);
     const n = lineNumbers(t);
+    const buttons =
+      actions === "comment"
+        ? `<button class="btn ghost small" data-comment="${esc(t.id)}">Add a comment</button>`
+        : actions === "both"
+          ? `<button class="btn ghost small" data-comment="${esc(t.id)}">Add comment</button>
+             <button class="btn ghost small" data-claim="${esc(t.id)}">Add proposal</button>`
+          : `<button class="btn ghost small" data-claim="${esc(t.id)}">Add proposal or comment</button>`;
     return `<div class="line" data-id="${esc(t.id)}" data-claimed="${!!assigned}">
       <div class="detail">
         <div class="name">${esc(t.name)}${t.kind === "expense" ? '<span class="tag">expense</span>' : ""}${
@@ -165,23 +188,16 @@ window.Budget = (function () {
         }</div>
         ${t.note ? `<div class="note">${esc(t.note)}</div>` : ""}
         ${t.proposals.length ? `<div class="proposals">${t.proposals.map((p) => proposalHtml(t, p)).join("")}</div>` : ""}
+        ${
+          (t.comments || []).length
+            ? `<div class="comments">${t.comments.map((c) => commentHtml(t, c)).join("")}</div>`
+            : ""
+        }
       </div>
       <div class="num time">${n.time}</div>
       <div class="num rate">${n.rate}</div>
       <div class="num sub">${n.subtotal ? money(n.subtotal) : ""}</div>
-      <div class="line-actions">
-        <button class="btn ghost small" data-claim="${esc(t.id)}">Add proposal or comment</button>
-        ${
-          // The count survives the switch even when the proposals themselves do not:
-          // someone who has just submitted should see that it landed, without that
-          // telling them who else did or what they said.
-          (t.proposalCount ?? t.proposals.length)
-            ? `<span class="proposal-count">${t.proposalCount ?? t.proposals.length} proposal${
-                (t.proposalCount ?? t.proposals.length) === 1 ? "" : "s"
-              } so far</span>`
-            : ""
-        }
-      </div>
+      <div class="line-actions">${buttons}</div>
     </div>`;
   }
 
@@ -215,6 +231,24 @@ window.Budget = (function () {
     <div class="modal-actions">
       <button class="btn" type="submit" id="claim-submit">Submit proposal</button>
       <button class="btn ghost" type="button" id="claim-release" hidden>Withdraw</button>
+    </div>
+  </form>
+</div>
+
+<div class="modal" id="comment-modal" role="dialog" aria-modal="true" aria-labelledby="comment-title" hidden>
+  <header>
+    <h2 id="comment-title">Add a comment</h2>
+    <button class="x" id="comment-close" type="button" aria-label="Close">×</button>
+  </header>
+  <p class="modal-task" id="comment-task"></p>
+  <form id="comment-form">
+    <label for="cm-name">Your name</label>
+    <input id="cm-name" type="text" maxlength="60" autocomplete="name" required />
+    <label for="cm-text">Comment</label>
+    <textarea id="cm-text" rows="5" maxlength="1000" required
+              placeholder="A question, a caveat, something the line should account for…"></textarea>
+    <div class="modal-actions">
+      <button class="btn" type="submit">Post comment</button>
     </div>
   </form>
 </div>
@@ -321,6 +355,18 @@ window.Budget = (function () {
 
   let addingPhase = null;
   let addingFromProcess = false;
+  let commentingId = null;
+
+  function openComment(id) {
+    const t = state.tasks.find((x) => x.id === id);
+    if (!t) return;
+    commentingId = id;
+    $("comment-task").innerHTML = `<b>${esc(t.name)}</b>${t.note ? " — " + esc(t.note) : ""}`;
+    $("cm-name").value = localStorage.getItem("budget-name") || "";
+    $("cm-text").value = "";
+    show($("comment-modal"));
+    $("cm-name").focus();
+  }
 
   /**
    * `choices` is for callers whose own idea of a phase covers several of the budget's —
@@ -368,6 +414,7 @@ window.Budget = (function () {
   const hideAll = () => {
     hide($("claim-modal"));
     hide($("task-modal"));
+    if ($("comment-modal")) hide($("comment-modal"));
   };
 
   function mountModals() {
@@ -413,6 +460,18 @@ window.Budget = (function () {
       if (ok) hide($("task-modal"));
     });
 
+    $("comment-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      localStorage.setItem("budget-name", $("cm-name").value.trim());
+      const ok = await send("comment", {
+        id: commentingId,
+        name: $("cm-name").value,
+        text: $("cm-text").value,
+      });
+      if (ok) hide($("comment-modal"));
+    });
+
+    $("comment-close").addEventListener("click", hideAll);
     $("claim-close").addEventListener("click", hideAll);
     $("task-close").addEventListener("click", hideAll);
     $("scrim").addEventListener("click", hideAll);
@@ -423,7 +482,8 @@ window.Budget = (function () {
   function keyGuard(e) {
     const open = $("claim-modal") && !$("claim-modal").hidden;
     const openTask = $("task-modal") && !$("task-modal").hidden;
-    if (!open && !openTask) return;
+    const openComment = $("comment-modal") && !$("comment-modal").hidden;
+    if (!open && !openTask && !openComment) return;
     if (e.key === "Escape") hideAll();
     e.stopPropagation();
   }
@@ -441,6 +501,8 @@ window.Budget = (function () {
       $("c-name").focus();
       return;
     }
+    const commentBtn = e.target.closest("[data-comment]");
+    if (commentBtn) return openComment(commentBtn.dataset.comment);
     const claimBtn = e.target.closest("[data-claim]");
     if (claimBtn) return openClaim(claimBtn.dataset.claim);
     const addBtn = e.target.closest("[data-add]");
@@ -480,6 +542,7 @@ window.Budget = (function () {
     money,
     terms,
     lineHtml,
+    commentHtml,
     lineNumbers,
     segmentSumHtml,
     phaseTotalHtml,
@@ -490,6 +553,7 @@ window.Budget = (function () {
     send,
     load,
     openClaim,
+    openComment,
     openAdd,
     onRender(fn) {
       renderers.push(fn);
@@ -497,6 +561,7 @@ window.Budget = (function () {
     },
     start(opts) {
       if (opts && opts.onStatus) onStatus = opts.onStatus;
+      if (opts && opts.source) source = opts.source;
       if (started) return;
       started = true;
       mountModals();

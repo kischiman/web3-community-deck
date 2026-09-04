@@ -136,6 +136,8 @@ before a live session so the first request isn't a cold start.
 | Private notes | Each line has a `memo`, edited in the admin panel only. `publicView` names the fields it exposes, so a memo cannot reach `/budget`, the process slide or the static builds. |
 | Admin access | **The panel is open.** Anyone who can reach `/admin` can read the rate card and private notes, edit or remove any line or proposal, export the budget, and reset it. The URL is the only thing between the board and the internet. |
 | Where the budget lives | `/budgets` (also `/admin`). It is no longer a slide — the deck is the proposal, the budget is its own page. |
+| Comments and proposals | Two different things. A **comment** is a name and some text, anyone may leave one, and they show on the public deck. A **proposal** carries a duration and a rate and lives on `/team` and the budget sheet. Three switches in the admin panel govern what the public deck shows: budget, proposals, comments. |
+| `/team` | Unlisted. The fullest view: every line with its figures, every proposal, every comment, and both buttons. Reads `/api/team`, which the public switches do not gate. |
 | Proposal visibility | An admin switch. Off hides who has proposed themselves from the public board and the process slide; the lines still accept new proposals. |
 | Dividers | `+ Add divider` in a phase makes a marker rather than a line of work: it carries a span, never a price, is excluded from every total, and shows on the process page to delineate a stretch mid-phase. |
 | Work / expense | A switcher on every line in the admin panel. Expenses stay on the budget sheet; work also appears on the process page. It is a decision now, not derived from the unit, and editing a line no longer overrules it. |

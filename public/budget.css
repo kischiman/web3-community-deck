@@ -569,6 +569,30 @@ h3 {
 
 /* ---------------------------------------------------------------- proposals */
 
+/* A comment is someone talking, not someone costing: no columns, no figures. */
+.comments { margin-top: 10px; display: flex; flex-direction: column; gap: 7px; }
+
+.comment {
+  position: relative;
+  padding: 9px 12px;
+  border-left: 2px solid var(--accent);
+  border-radius: 0 7px 7px 0;
+  background: var(--accent-soft);
+  font-size: 13px;
+}
+
+.comment .who { font-weight: 600; }
+
+.ctext {
+  margin: 3px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+
+.comment .remove { position: absolute; top: 6px; right: 8px; }
+
 .proposals { margin-top: 10px; display: flex; flex-direction: column; gap: 7px; }
 
 .proposal {

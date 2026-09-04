@@ -19,6 +19,10 @@
       "destination": "/admin.html"
     },
     {
+      "source": "/team",
+      "destination": "/team.html"
+    },
+    {
       "source": "/m",
       "destination": "/mobile.html"
     },
