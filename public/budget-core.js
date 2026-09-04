@@ -183,9 +183,7 @@ window.Budget = (function () {
           : `<button class="btn ghost small" data-claim="${esc(t.id)}">Add proposal or comment</button>`;
     return `<div class="line" data-id="${esc(t.id)}" data-claimed="${!!assigned}">
       <div class="detail">
-        <div class="name">${esc(t.name)}${t.kind === "expense" ? '<span class="tag">expense</span>' : ""}${
-          t.added ? '<span class="tag">added</span>' : ""
-        }</div>
+        <div class="name">${esc(t.name)}${t.kind === "expense" ? '<span class="tag">expense</span>' : ""}</div>
         ${t.note ? `<div class="note">${esc(t.note)}</div>` : ""}
         ${t.proposals.length ? `<div class="proposals">${t.proposals.map((p) => proposalHtml(t, p)).join("")}</div>` : ""}
         ${

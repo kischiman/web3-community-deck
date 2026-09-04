@@ -127,7 +127,7 @@ function renderRates() {
     ? `${total} proposal${total === 1 ? "" : "s"} shown to everyone`
     : `${total} proposal${total === 1 ? "" : "s"}, visible here and on the team page`;
 
-  const cShown = state.settings?.publicComments !== false;
+  const cShown = state.settings?.publicComments === true;
   const ct = $("public-comments");
   ct.classList.toggle("on", cShown);
   ct.setAttribute("aria-pressed", String(cShown));
@@ -135,7 +135,7 @@ function renderRates() {
   const cTotal = state.tasks.reduce((a, t) => a + (t.comments || []).length, 0);
   $("comments-state").textContent = cShown
     ? `${cTotal} comment${cTotal === 1 ? "" : "s"} shown on the deck`
-    : `${cTotal} comment${cTotal === 1 ? "" : "s"}, hidden from the deck`;
+    : `${cTotal} comment${cTotal === 1 ? "" : "s"}, visible here and on the team page`;
 }
 
 function renderPeople() {
@@ -196,7 +196,7 @@ function lineHtml(t) {
   const on = t.proposals.find((p) => p.id === t.assigned);
   return `<div class="line admin" data-claimed="${!!on}" data-id="${esc(t.id)}" draggable="true">
     <div class="detail">
-      <div class="name">${esc(t.name)}${t.added ? '<span class="tag">added</span>' : ""}
+      <div class="name">${esc(t.name)}
         <button class="kind-toggle${t.kind === "expense" ? " on" : ""}" data-expense="${esc(t.id)}"
                 title="${
                   t.kind === "expense"
@@ -546,7 +546,7 @@ document.addEventListener("click", (e) => {
   }
 
   if (e.target.closest("#public-comments")) {
-    return mutate("public-comments", { value: state.settings?.publicComments === false });
+    return mutate("public-comments", { value: state.settings?.publicComments !== true });
   }
 
   const cx = e.target.closest("[data-cremove]");
