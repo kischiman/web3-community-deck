@@ -16,15 +16,20 @@ const PORT = Number(process.env.PORT) || 4400;
 let app = null;
 let bootError = null;
 
-const server = http.createServer((req, res) => {
+/** One request, however it arrived. */
+async function serve(req, res) {
   if (app) {
-    return app.handle(req, res).catch((err) => {
+    try {
+      return await app.handle(req, res);
+    } catch (err) {
       console.error(`[500] ${req.method} ${req.url}:`, err.stack || err.message);
       if (res.headersSent) return res.end();
       res.writeHead(500, { "content-type": "application/json" });
-      res.end(JSON.stringify({ error: err.message || "server error" }));
-    });
+      return res.end(JSON.stringify({ error: err.message || "server error" }));
+    }
   }
+
+  if (!bootError) await loading;   // first request may arrive mid-load
 
   // Still loading, or it failed. Either way the port is open and the answer is honest.
   res.writeHead(bootError ? 500 : 503, {
@@ -44,13 +49,28 @@ const server = http.createServer((req, res) => {
       2
     )
   );
-});
+}
 
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`[boot] listening on ${PORT}`);
-});
+// Two ways in, because hosts differ and guessing which one is in use cost a day.
+//
+//   · A default export, for a host that imports this file and calls it per request.
+//     Vercel does exactly this — it names server.js as the entrypoint and looks for a
+//     handler. Without one there is nothing to invoke, and every request comes back as
+//     FUNCTION_INVOCATION_FAILED no matter what the file does when it runs.
+//   · A listening server, for a host that starts this file as a process: Render, Fly,
+//     `npm start`. Skipped where a default export is what is wanted, or the port would
+//     be opened for nobody.
+export default serve;
 
-import("./app.js")
+const managed = Boolean(process.env.VERCEL);
+
+if (!managed) {
+  http.createServer(serve).listen(PORT, "0.0.0.0", () => {
+    console.log(`[boot] listening on ${PORT}`);
+  });
+}
+
+const loading = import("./app.js")
   .then(async (mod) => {
     app = mod;
     console.log("");
