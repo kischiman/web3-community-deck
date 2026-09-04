@@ -309,9 +309,8 @@ export async function handle(req, res) {
 // A serverless host imports the handler and never reaches the boot below.
 const standalone = !process.env.VERCEL;
 
-// State must be loaded before the first request, or a visitor could be served the
-// seed and then overwrite the real thing.
-if (standalone) await budget.init();
+// No top-level await anywhere in this file. A serverless builder may emit CommonJS,
+// where it is a syntax error, and the whole function then fails to start.
 
 // Coalesced writes could otherwise be dropped by a shutdown mid-deploy.
 if (standalone) for (const signal of ["SIGTERM", "SIGINT"]) {
@@ -321,25 +320,34 @@ if (standalone) for (const signal of ["SIGTERM", "SIGINT"]) {
   });
 }
 
+// State must be loaded before the first request, or a visitor could be served the
+// seed and then overwrite the real thing — so listen only once it is in.
+//
+// Wrapped rather than awaited at the top level: a serverless builder may emit
+// CommonJS, where top-level await is a syntax error and the function never starts.
 if (standalone) {
-  server.listen(PORT, "0.0.0.0", () => {
-    const lan = lanAddress();
-    console.log("");
-    console.log("  Web3 · community & social resilience");
-    console.log("  ─────────────────────────────────────────────");
-    console.log(`  Big screen   http://localhost:${PORT}`);
-    console.log(`  Phone        http://${lan}:${PORT}/m`);
-    console.log("");
-    const label = providerLabel();
-    console.log(
-      label
-        ? `  Live features: ${label}  ·  offline fallbacks if a call fails`
-        : "  Live features: off — no API key in .env, using offline fallbacks"
-    );
-    const store = budget.storageInfo();
-    console.log(
-      `  Budget storage: ${store.where}` + (store.durable ? "" : "  ⚠ edits are lost on redeploy")
-    );
-    console.log("");
-  });
+  (async () => {
+
+      await budget.init();
+    server.listen(PORT, "0.0.0.0", () => {
+      const lan = lanAddress();
+      console.log("");
+      console.log("  Web3 · community & social resilience");
+      console.log("  ─────────────────────────────────────────────");
+      console.log(`  Big screen   http://localhost:${PORT}`);
+      console.log(`  Phone        http://${lan}:${PORT}/m`);
+      console.log("");
+      const label = providerLabel();
+      console.log(
+        label
+          ? `  Live features: ${label}  ·  offline fallbacks if a call fails`
+          : "  Live features: off — no API key in .env, using offline fallbacks"
+      );
+      const store = budget.storageInfo();
+      console.log(
+        `  Budget storage: ${store.where}` + (store.durable ? "" : "  ⚠ edits are lost on redeploy")
+      );
+      console.log("");
+    });
+  })();
 }
