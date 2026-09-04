@@ -1,15 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "node build-budget-embed.mjs && node build-artifact.js",
-  "outputDirectory": "public",
   "rewrites": [
     {
       "source": "/",
       "destination": "/index.html"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "/api"
     },
     {
       "source": "/budget",

@@ -309,8 +309,16 @@ export async function handle(req, res) {
   return serveStatic(res, pathname.replace(/^\//, ""));
 }
 
-// A serverless host imports the handler and never reaches the boot below.
-const standalone = !process.env.VERCEL;
+// This file is the entrypoint everywhere: Vercel detects it and runs it exactly as
+// `npm start` does, expecting it to listen on PORT. It was previously written to stand
+// down when VERCEL was set, on the assumption that a wrapper in api/ would be the way
+// in — so the host booted a file that deliberately did nothing, waited for a port that
+// never opened, and failed every request with no error to read.
+//
+// Being long-running again costs nothing here: the document is re-read before each API
+// request and every write is awaited, which is what a host with no memory between
+// requests required, and is merely harmless on one that has it.
+const standalone = true;
 
 // No top-level await anywhere in this file. A serverless builder may emit CommonJS,
 // where it is a syntax error, and the whole function then fails to start.
