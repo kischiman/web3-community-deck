@@ -127,15 +127,16 @@ function renderRates() {
     ? `${total} proposal${total === 1 ? "" : "s"} shown to everyone`
     : `${total} proposal${total === 1 ? "" : "s"}, visible here and on the team page`;
 
-  const cShown = state.settings?.publicComments === true;
+  const cShown = state.settings?.publicComments !== false;
   const ct = $("public-comments");
   ct.classList.toggle("on", cShown);
   ct.setAttribute("aria-pressed", String(cShown));
   ct.textContent = cShown ? "visible" : "hidden";
-  const cTotal = state.tasks.reduce((a, t) => a + (t.comments || []).length, 0);
-  $("comments-state").textContent = cShown
-    ? `${cTotal} comment${cTotal === 1 ? "" : "s"} shown on the deck`
-    : `${cTotal} comment${cTotal === 1 ? "" : "s"}, visible here and on the team page`;
+  const all = state.tasks.flatMap((t) => t.comments || []);
+  const pub = all.filter((c) => c.visibility === "public").length;
+  const team = all.length - pub;
+  $("comments-state").textContent =
+    `${pub} public${cShown ? " (on the deck)" : " (hidden)"} · ${team} team-only`;
 }
 
 function renderPeople() {
@@ -215,7 +216,10 @@ function lineHtml(t) {
         (t.comments || []).length
           ? `<div class="comments">${t.comments
               .map(
-                (c) => `<div class="comment"><span class="who">${esc(c.name)}</span>
+                (c) => `<div class="comment${c.visibility === "public" ? " public" : ""}">
+                  <span class="who">${esc(c.name)}</span>${
+                    c.visibility === "public" ? '<span class="tag">public</span>' : ""
+                  }
                   <button class="remove" data-cremove="${esc(t.id)}" data-cid="${esc(c.id)}"
                           title="Remove comment" aria-label="Remove comment">&times;</button>
                   <p class="ctext">${esc(c.text)}</p></div>`
@@ -546,7 +550,7 @@ document.addEventListener("click", (e) => {
   }
 
   if (e.target.closest("#public-comments")) {
-    return mutate("public-comments", { value: state.settings?.publicComments !== true });
+    return mutate("public-comments", { value: state.settings?.publicComments === false });
   }
 
   const cx = e.target.closest("[data-cremove]");

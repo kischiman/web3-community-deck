@@ -425,6 +425,10 @@
 
 .budget-scope .comment .who { font-weight: 600; }
 
+.budget-scope .comment.public { border-left-color: var(--claimed); background: var(--claimed-soft); }
+
+.budget-scope .comment .tag { margin-left: 7px; }
+
 .budget-scope .ctext {
   margin: 3px 0 0;
   font-size: 13px;

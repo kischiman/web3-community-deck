@@ -31,8 +31,12 @@ window.Budget = (function () {
 
   // ---------------------------------------------------------------- transport
 
-  // Which view this page reads. The team page asks for one the switches do not gate.
+  // Which view this page reads, where its comments go, and whether it sees both kinds.
+  // The team page asks for a view the switches do not gate, and its comments stay with
+  // the team.
   let source = "/api/budget";
+  let commentPath = "/api/budget/comment";
+  let showsBothKinds = false;
 
   async function load() {
     state = await (await fetch(source)).json();
@@ -40,8 +44,10 @@ window.Budget = (function () {
     renderers.forEach((fn) => fn(state));
   }
 
-  async function send(action, body) {
-    const res = await fetch(`/api/budget/${action}`, {
+  const send = (action, body) => post(`/api/budget/${action}`, body);
+
+  async function post(path, body) {
+    const res = await fetch(path, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(body || {}),
@@ -58,8 +64,12 @@ window.Budget = (function () {
   // ---------------------------------------------------------------- line markup
 
   function commentHtml(t, c) {
-    return `<div class="comment">
-      <span class="who">${esc(c.name)}</span>
+    // Marked only where both kinds appear together — on the deck every comment is
+    // public, and saying so on each would be noise.
+    const badge =
+      showsBothKinds && c.visibility === "public" ? '<span class="tag">public</span>' : "";
+    return `<div class="comment${c.visibility === "public" ? " public" : ""}">
+      <span class="who">${esc(c.name)}</span>${badge}
       <p class="ctext">${esc(c.text)}</p>
     </div>`;
   }
@@ -461,7 +471,7 @@ window.Budget = (function () {
     $("comment-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       localStorage.setItem("budget-name", $("cm-name").value.trim());
-      const ok = await send("comment", {
+      const ok = await post(commentPath, {
         id: commentingId,
         name: $("cm-name").value,
         text: $("cm-text").value,
@@ -560,6 +570,8 @@ window.Budget = (function () {
     start(opts) {
       if (opts && opts.onStatus) onStatus = opts.onStatus;
       if (opts && opts.source) source = opts.source;
+      if (opts && opts.commentPath) commentPath = opts.commentPath;
+      if (opts && opts.showsBothKinds) showsBothKinds = true;
       if (started) return;
       started = true;
       mountModals();

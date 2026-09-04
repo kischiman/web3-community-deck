@@ -223,7 +223,7 @@ export async function handle(req, res) {
       const action = pathname.slice("/api/budget/".length);
       const ok =
         action === "propose" ? budget.propose(body.id, body)
-        : action === "comment" ? budget.addComment(body.id, body)
+        : action === "comment" ? budget.addComment(body.id, body, "public")
         : action === "withdraw" ? budget.withdraw(body.id, body.proposalId)
         : action === "task" ? budget.addTask(body)
         : null;
@@ -231,6 +231,14 @@ export async function handle(req, res) {
       if (ok === null) return json(res, 404, { error: "unknown budget action" });
       if (!ok) return json(res, 400, { error: "could not apply" });
 
+      await persistAll();
+      return json(res, 200, { ok: true });
+    }
+
+    // The team's own comments. A separate route rather than a flag, so which page a
+    // comment came from is a fact about how it arrived, not something a caller asserts.
+    if (pathname === "/api/team/comment") {
+      if (!budget.addComment(body.id, body, "team")) return json(res, 400, { error: "could not apply" });
       await persistAll();
       return json(res, 200, { ok: true });
     }
